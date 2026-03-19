@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawSwipe — Tests</title>
+<style>
+  body { font-family: monospace; background: #111; color: #eee; padding: 24px; max-width: 700px; margin: 0 auto; }
+  h1 { color: #FF8A50; margin-bottom: 4px; }
+  .suite { margin-top: 24px; }
+  .suite-name { font-weight: bold; color: #aaa; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .test { padding: 6px 0; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .icon { font-size: 14px; flex-shrink: 0; }
+  .pass { color: #4ade80; }
+  .fail { color: #f87171; }
+  .err { font-size: 11px; color: #f87171; margin-top: 2px; padding-left: 26px; }
+  #summary { margin-top: 24px; font-size: 15px; font-weight: bold; }
+  .all-pass { color: #4ade80; }
+  .some-fail { color: #f87171; }
+</style>
+</head>
+<body>
+<h1>🐾 PawSwipe — Test Suite</h1>
+<p style="color:#888;font-size:12px">Core logic unit tests — no DOM required</p>
+<div id="output"></div>
+<div id="summary"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   Minimal test runner
+───────────────────────────────────────────────────────────── */
+var results = [];
+var currentSuite = null;
+
+function suite(name) { currentSuite = name; }
+
+function test(name, fn) {
+  try {
+    fn();
+    results.push({ suite: currentSuite, name: name, pass: true });
+  } catch (e) {
+    results.push({ suite: currentSuite, name: name, pass: false, error: e.message });
+  }
+}
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message || 'Assertion failed');
+}
+
+function assertEqual(a, b, message) {
+  if (a !== b) throw new Error((message || 'Expected equal') + ': got ' + JSON.stringify(a) + ' expected ' + JSON.stringify(b));
+}
+
+function assertDeepEqual(a, b, message) {
+  if (JSON.stringify(a) !== JSON.stringify(b)) {
+    throw new Error((message || 'Expected deep equal') + ': got ' + JSON.stringify(a) + ' expected ' + JSON.stringify(b));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Inline pet data (mirrors index.html — must stay in sync)
+───────────────────────────────────────────────────────────── */
+var PETS = [
+  { id:1, name:'Max', species:'dog', breed:'Golden Retriever', age:3, ageLabel:'3 yr', gender:'Male', traits:['Friendly','Playful','Trained','Good with kids'], bio:'Max is a good boy.', shelter:'BC SPCA Vancouver', location:'Vancouver, BC', fee:'$250', emoji:'🐕', compat:96, kids:true, dogs:true, cats:false, adoptionUrl:'https://spca.bc.ca' },
+  { id:2, name:'Luna', species:'cat', breed:'Domestic Shorthair', age:2, ageLabel:'2 yr', gender:'Female', traits:['Independent','Affectionate','Indoor','Lap cat'], bio:'Luna is graceful.', shelter:'VOKRA', location:'Vancouver, BC', fee:'$150', emoji:'🐱', compat:91, kids:false, dogs:false, cats:true, adoptionUrl:'https://vokra.ca' },
+  { id:3, name:'Biscuit', species:'rabbit', breed:'Holland Lop', age:1, ageLabel:'1 yr', gender:'Male', traits:['Curious','Gentle','Quiet','Litter-trained'], bio:'Biscuit is an adorable rabbit.', shelter:'BC SPCA Burnaby', location:'Burnaby, BC', fee:'$75', emoji:'🐇', compat:88, kids:true, dogs:false, cats:false, adoptionUrl:'https://spca.bc.ca/locations/burnaby-bc-spca/' },
+  { id:4, name:'Bella', species:'dog', breed:'Labrador Mix', age:5, ageLabel:'5 yr', gender:'Female', traits:['Calm','Gentle','Great with kids','Loyal'], bio:'Bella is sweet.', shelter:'Rescue BC', location:'Richmond, BC', fee:'$200', emoji:'🐶', compat:94, kids:true, dogs:true, cats:true, adoptionUrl:'https://rescuebc.ca' },
+  { id:5, name:'Oliver', species:'cat', breed:'Tabby', age:4, ageLabel:'4 yr', gender:'Male', traits:['Playful','Social','Vocal','Energetic'], bio:'Oliver is talkative.', shelter:'VOKRA', location:'Vancouver, BC', fee:'$150', emoji:'😸', compat:89, kids:true, dogs:false, cats:true, adoptionUrl:'https://vokra.ca' },
+  { id:6, name:'Cooper', species:'dog', breed:'Border Collie Mix', age:2, ageLabel:'2 yr', gender:'Male', traits:['Intelligent','Active','Trainable','Energetic'], bio:'Cooper is smart.', shelter:'BC SPCA Surrey', location:'Surrey, BC', fee:'$275', emoji:'🐕‍🦺', compat:82, kids:true, dogs:true, cats:false, adoptionUrl:'https://spca.bc.ca/locations/surrey-bc-spca/' },
+  { id:7, name:'Cleo', species:'cat', breed:'Siamese Mix', age:7, ageLabel:'7 yr', gender:'Female', traits:['Senior','Calm','Affectionate','Quiet'], bio:'Cleo is a serene senior.', shelter:'BC SPCA Langley', location:'Langley, BC', fee:'$100', emoji:'🐈', compat:87, kids:false, dogs:false, cats:true, adoptionUrl:'https://spca.bc.ca/locations/langley-bc-spca/' },
+  { id:8, name:'Daisy', species:'dog', breed:'Beagle', age:3, ageLabel:'3 yr', gender:'Female', traits:['Curious','Friendly','Scent-driven','Social'], bio:'Daisy loves sniffing.', shelter:'Rescue BC', location:'North Vancouver, BC', fee:'$225', emoji:'🐕', compat:92, kids:true, dogs:true, cats:false, adoptionUrl:'https://rescuebc.ca' },
+  { id:9, name:'Mochi', species:'rabbit', breed:'Netherland Dwarf', age:2, ageLabel:'2 yr', gender:'Female', traits:['Tiny','Sweet','Litter-trained','Curious'], bio:'Mochi is tiny.', shelter:'BC SPCA Burnaby', location:'Burnaby, BC', fee:'$75', emoji:'🐰', compat:90, kids:true, dogs:false, cats:false, adoptionUrl:'https://spca.bc.ca/locations/burnaby-bc-spca/' },
+  { id:10, name:'Rocky', species:'dog', breed:'Husky Mix', age:4, ageLabel:'4 yr', gender:'Male', traits:['Talkative','Active','Loyal','Adventurous'], bio:'Rocky is adventurous.', shelter:'BC SPCA Vancouver', location:'Vancouver, BC', fee:'$275', emoji:'🐺', compat:85, kids:true, dogs:true, cats:false, adoptionUrl:'https://spca.bc.ca' },
+  { id:11, name:'Pearl', species:'cat', breed:'Persian Mix', age:5, ageLabel:'5 yr', gender:'Female', traits:['Fluffy','Elegant','Calm','Indoor'], bio:'Pearl is elegant.', shelter:'VOKRA', location:'Vancouver, BC', fee:'$175', emoji:'🐈‍⬛', compat:88, kids:false, dogs:false, cats:false, adoptionUrl:'https://vokra.ca' },
+  { id:12, name:'Archie', species:'dog', breed:'Dachshund', age:6, ageLabel:'6 yr', gender:'Male', traits:['Stubborn','Loveable','Low-exercise','Apartment-friendly'], bio:'Archie has opinions.', shelter:'BC SPCA Langley', location:'Langley, BC', fee:'$200', emoji:'🌭', compat:93, kids:true, dogs:false, cats:true, adoptionUrl:'https://spca.bc.ca/locations/langley-bc-spca/' }
+];
+
+/* ─────────────────────────────────────────────────────────────
+   Pure logic helpers (replicated from app without DOM)
+───────────────────────────────────────────────────────────── */
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function filterPets(pets, filter) {
+  return pets.filter(function(p) {
+    if (filter === 'all') return true;
+    if (filter === 'dog') return p.species === 'dog';
+    if (filter === 'cat') return p.species === 'cat';
+    if (filter === 'rabbit') return p.species === 'rabbit';
+    if (filter === 'senior') return p.age >= 7;
+    if (filter === 'kidfriendly') return p.kids === true;
+    return true;
+  });
+}
+
+function makeState() {
+  return { pets: [], index: 0, liked: [], history: [], filter: 'all', swipeCount: 0 };
+}
+
+function applyFilter(state, filter) {
+  state.filter = filter;
+  state.pets = filterPets(PETS, filter);
+  state.index = 0;
+  state.history = [];
+  state.swipeCount = 0;
+  return state;
+}
+
+function recordLike(state) {
+  var pet = state.pets[state.index];
+  state.history.push({ type: 'like', pet: pet, index: state.index });
+  if (!state.liked.find(function(p) { return p.id === pet.id; })) {
+    state.liked.push(pet);
+  }
+  state.index++;
+  state.swipeCount++;
+  return state;
+}
+
+function recordPass(state) {
+  var pet = state.pets[state.index];
+  state.history.push({ type: 'pass', pet: pet, index: state.index });
+  state.index++;
+  state.swipeCount++;
+  return state;
+}
+
+function doUndo(state) {
+  if (state.history.length === 0) return state;
+  var last = state.history.pop();
+  if (last.type === 'like') {
+    state.liked = state.liked.filter(function(p) { return p.id !== last.pet.id; });
+  }
+  state.index = last.index;
+  state.swipeCount = Math.max(0, state.swipeCount - 1);
+  return state;
+}
+
+function calcProgress(state) {
+  if (state.pets.length === 0) return 0;
+  return (state.index / state.pets.length) * 100;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Tests
+───────────────────────────────────────────────────────────── */
+
+// ── Pet data integrity ────────────────────────────────────────
+suite('Pet data integrity');
+
+test('All 12 pets are defined', function() {
+  assertEqual(PETS.length, 12);
+});
+
+test('Every pet has required fields', function() {
+  var required = ['id','name','species','breed','age','ageLabel','gender','traits','bio','shelter','location','fee','emoji','compat','adoptionUrl'];
+  PETS.forEach(function(p) {
+    required.forEach(function(field) {
+      assert(p[field] !== undefined && p[field] !== null && p[field] !== '',
+        'Pet ' + p.name + ' is missing field: ' + field);
+    });
+  });
+});
+
+test('Pet IDs are unique', function() {
+  var ids = PETS.map(function(p) { return p.id; });
+  var unique = ids.filter(function(id, i) { return ids.indexOf(id) === i; });
+  assertEqual(unique.length, ids.length, 'Duplicate IDs found');
+});
+
+test('All species are valid', function() {
+  var valid = ['dog', 'cat', 'rabbit'];
+  PETS.forEach(function(p) {
+    assert(valid.indexOf(p.species) !== -1, 'Invalid species: ' + p.species + ' (pet: ' + p.name + ')');
+  });
+});
+
+test('Compat percentages are 1–100', function() {
+  PETS.forEach(function(p) {
+    assert(p.compat >= 1 && p.compat <= 100, 'Invalid compat for ' + p.name + ': ' + p.compat);
+  });
+});
+
+test('Traits array is non-empty for every pet', function() {
+  PETS.forEach(function(p) {
+    assert(Array.isArray(p.traits) && p.traits.length > 0, p.name + ' has empty traits');
+  });
+});
+
+test('Adoption URLs are non-empty strings', function() {
+  PETS.forEach(function(p) {
+    assert(typeof p.adoptionUrl === 'string' && p.adoptionUrl.length > 0, p.name + ' has invalid adoptionUrl');
+  });
+});
+
+// ── Filtering ─────────────────────────────────────────────────
+suite('Filtering');
+
+test('"all" filter returns all 12 pets', function() {
+  assertEqual(filterPets(PETS, 'all').length, 12);
+});
+
+test('"dog" filter returns only dogs', function() {
+  var dogs = filterPets(PETS, 'dog');
+  assert(dogs.length > 0, 'No dogs found');
+  dogs.forEach(function(p) { assertEqual(p.species, 'dog'); });
+});
+
+test('"cat" filter returns only cats', function() {
+  var cats = filterPets(PETS, 'cat');
+  assert(cats.length > 0, 'No cats found');
+  cats.forEach(function(p) { assertEqual(p.species, 'cat'); });
+});
+
+test('"rabbit" filter returns only rabbits', function() {
+  var rabbits = filterPets(PETS, 'rabbit');
+  assert(rabbits.length > 0, 'No rabbits found');
+  rabbits.forEach(function(p) { assertEqual(p.species, 'rabbit'); });
+});
+
+test('"senior" filter returns pets age 7+', function() {
+  var seniors = filterPets(PETS, 'senior');
+  assert(seniors.length > 0, 'No seniors found');
+  seniors.forEach(function(p) { assert(p.age >= 7, p.name + ' is not a senior (age ' + p.age + ')'); });
+});
+
+test('"kidfriendly" filter returns pets with kids:true', function() {
+  var kf = filterPets(PETS, 'kidfriendly');
+  assert(kf.length > 0, 'No kid-friendly pets found');
+  kf.forEach(function(p) { assert(p.kids === true, p.name + ' is not kid-friendly'); });
+});
+
+test('dogs + cats + rabbits covers all 12 pets', function() {
+  var dogs = filterPets(PETS, 'dog').length;
+  var cats = filterPets(PETS, 'cat').length;
+  var rabbits = filterPets(PETS, 'rabbit').length;
+  assertEqual(dogs + cats + rabbits, 12, 'Species counts do not add up to 12');
+});
+
+// ── State management ──────────────────────────────────────────
+suite('State management');
+
+test('Initial state is clean', function() {
+  var s = makeState();
+  assertEqual(s.index, 0);
+  assertEqual(s.liked.length, 0);
+  assertEqual(s.history.length, 0);
+  assertEqual(s.swipeCount, 0);
+});
+
+test('applyFilter resets index and history', function() {
+  var s = makeState();
+  s.index = 5;
+  s.history.push({ type: 'pass' });
+  applyFilter(s, 'dog');
+  assertEqual(s.index, 0);
+  assertEqual(s.history.length, 0);
+});
+
+test('applyFilter sets correct pet list', function() {
+  var s = applyFilter(makeState(), 'cat');
+  s.pets.forEach(function(p) { assertEqual(p.species, 'cat'); });
+});
+
+test('recordLike adds pet to liked list', function() {
+  var s = applyFilter(makeState(), 'all');
+  var firstPet = s.pets[0];
+  recordLike(s);
+  assertEqual(s.liked.length, 1);
+  assertEqual(s.liked[0].id, firstPet.id);
+});
+
+test('recordLike does not duplicate pets', function() {
+  var s = applyFilter(makeState(), 'all');
+  // Manually add first pet to liked before swiping
+  s.liked.push(s.pets[0]);
+  var petId = s.pets[0].id;
+  recordLike(s);
+  var count = s.liked.filter(function(p) { return p.id === petId; }).length;
+  assertEqual(count, 1, 'Pet was duplicated in liked list');
+});
+
+test('recordLike increments index and swipeCount', function() {
+  var s = applyFilter(makeState(), 'all');
+  assertEqual(s.index, 0);
+  recordLike(s);
+  assertEqual(s.index, 1);
+  assertEqual(s.swipeCount, 1);
+});
+
+test('recordPass does NOT add to liked list', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordPass(s);
+  assertEqual(s.liked.length, 0);
+});
+
+test('recordPass increments index and swipeCount', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordPass(s);
+  assertEqual(s.index, 1);
+  assertEqual(s.swipeCount, 1);
+});
+
+test('History is correctly recorded for like', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordLike(s);
+  assertEqual(s.history.length, 1);
+  assertEqual(s.history[0].type, 'like');
+  assertEqual(s.history[0].index, 0);
+});
+
+test('History is correctly recorded for pass', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordPass(s);
+  assertEqual(s.history.length, 1);
+  assertEqual(s.history[0].type, 'pass');
+});
+
+// ── Undo ─────────────────────────────────────────────────────
+suite('Undo');
+
+test('Undo after like removes from liked and restores index', function() {
+  var s = applyFilter(makeState(), 'all');
+  var petId = s.pets[0].id;
+  recordLike(s);
+  assertEqual(s.liked.length, 1);
+  assertEqual(s.index, 1);
+  doUndo(s);
+  assertEqual(s.liked.length, 0, 'Pet should be removed from liked after undo');
+  assertEqual(s.index, 0, 'Index should be restored to 0 after undo');
+});
+
+test('Undo after pass restores index without touching liked', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordPass(s);
+  assertEqual(s.index, 1);
+  doUndo(s);
+  assertEqual(s.index, 0);
+  assertEqual(s.liked.length, 0);
+});
+
+test('Undo on empty history is a no-op', function() {
+  var s = applyFilter(makeState(), 'all');
+  doUndo(s);
+  assertEqual(s.index, 0);
+  assertEqual(s.liked.length, 0);
+});
+
+test('Multiple undo steps work correctly', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordLike(s);  // index -> 1, liked: [pet0]
+  recordPass(s);  // index -> 2
+  recordLike(s);  // index -> 3, liked: [pet0, pet2]
+  assertEqual(s.liked.length, 2);
+  assertEqual(s.index, 3);
+  doUndo(s);      // undo like, index -> 2, liked: [pet0]
+  assertEqual(s.liked.length, 1);
+  assertEqual(s.index, 2);
+  doUndo(s);      // undo pass, index -> 1
+  assertEqual(s.liked.length, 1);
+  assertEqual(s.index, 1);
+  doUndo(s);      // undo first like, index -> 0, liked: []
+  assertEqual(s.liked.length, 0);
+  assertEqual(s.index, 0);
+});
+
+test('Undo decrements swipeCount', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordLike(s);
+  assertEqual(s.swipeCount, 1);
+  doUndo(s);
+  assertEqual(s.swipeCount, 0);
+});
+
+test('swipeCount never goes below 0', function() {
+  var s = applyFilter(makeState(), 'all');
+  doUndo(s); // no-op
+  assertEqual(s.swipeCount, 0);
+});
+
+// ── Progress ─────────────────────────────────────────────────
+suite('Progress calculation');
+
+test('Progress starts at 0%', function() {
+  var s = applyFilter(makeState(), 'all');
+  assertEqual(calcProgress(s), 0);
+});
+
+test('Progress increases after swipes', function() {
+  var s = applyFilter(makeState(), 'all');
+  recordLike(s);
+  var pct = calcProgress(s);
+  assert(pct > 0 && pct <= 100, 'Progress should be > 0 after one swipe, got: ' + pct);
+});
+
+test('Progress is 100% when all cards are swiped', function() {
+  var s = applyFilter(makeState(), 'all');
+  // Swipe through all
+  while (s.index < s.pets.length) recordPass(s);
+  assertEqual(calcProgress(s), 100);
+});
+
+test('Empty pet list returns 0% progress', function() {
+  var s = makeState();
+  s.pets = [];
+  assertEqual(calcProgress(s), 0);
+});
+
+// ── Utilities ─────────────────────────────────────────────────
+suite('Utility functions');
+
+test('cap() capitalises first letter', function() {
+  assertEqual(cap('dog'), 'Dog');
+  assertEqual(cap('cat'), 'Cat');
+  assertEqual(cap('rabbit'), 'Rabbit');
+});
+
+test('cap() handles empty string', function() {
+  assertEqual(cap(''), '');
+});
+
+test('esc() escapes HTML special chars', function() {
+  assertEqual(esc('<script>'), '&lt;script&gt;');
+  assertEqual(esc('"hello"'), '&quot;hello&quot;');
+  assertEqual(esc("it's"), 'it&#39;s');
+  assertEqual(esc('a&b'), 'a&amp;b');
+});
+
+test('esc() leaves safe strings unchanged', function() {
+  assertEqual(esc('Golden Retriever'), 'Golden Retriever');
+  assertEqual(esc('BC SPCA Vancouver'), 'BC SPCA Vancouver');
+});
+
+test('esc() coerces numbers to strings', function() {
+  assertEqual(esc(42), '42');
+});
+
+// ─────────────────────────────────────────────────────────────
+// Render results
+// ─────────────────────────────────────────────────────────────
+var out = document.getElementById('output');
+var suites = {};
+results.forEach(function(r) {
+  if (!suites[r.suite]) suites[r.suite] = [];
+  suites[r.suite].push(r);
+});
+
+Object.keys(suites).forEach(function(suiteName) {
+  var div = document.createElement('div');
+  div.className = 'suite';
+  div.innerHTML = '<div class="suite-name">▸ ' + suiteName + '</div>';
+  suites[suiteName].forEach(function(r) {
+    var item = document.createElement('div');
+    item.className = 'test';
+    item.innerHTML = '<span class="icon ' + (r.pass ? 'pass' : 'fail') + '">' + (r.pass ? '✓' : '✗') + '</span>' +
+      '<span>' + r.name + '</span>';
+    div.appendChild(item);
+    if (!r.pass && r.error) {
+      var err = document.createElement('div');
+      err.className = 'err';
+      err.textContent = '  → ' + r.error;
+      div.appendChild(err);
+    }
+  });
+  out.appendChild(div);
+});
+
+var passed = results.filter(function(r) { return r.pass; }).length;
+var failed = results.filter(function(r) { return !r.pass; }).length;
+var summary = document.getElementById('summary');
+summary.className = failed === 0 ? 'all-pass' : 'some-fail';
+summary.textContent = (failed === 0 ? '✓ All ' : '✗ ') + passed + ' tests passed' + (failed > 0 ? ', ' + failed + ' failed' : '') + ' — ' + results.length + ' total';
+</script>
+</body>
+</html>

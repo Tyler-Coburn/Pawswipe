@@ -740,4 +740,1018 @@ html, body {
   50% { opacity: 1; transform: scale(1.2); }
 }
 
-/* ════════════
+/* ═══════════════════════════════════════
+   TOAST NOTIFICATION
+═══════════════════════════════════════ */
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(26,26,26,0.96);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text);
+  padding: 11px 22px;
+  border-radius: 14px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 200;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 88vw;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ═══════════════════════════════════════
+   DETAIL OVERLAY
+═══════════════════════════════════════ */
+.detail-overlay {
+  position: fixed; inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.88);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+}
+.detail-overlay.open { display: block; }
+.detail-sheet {
+  background: var(--surface);
+  margin: 36px 14px 60px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.detail-photo {
+  height: 280px;
+  display: flex; align-items: center; justify-content: center;
+  background: #2A2520;
+  position: relative;
+}
+.detail-emoji { font-size: 110px; filter: drop-shadow(0 10px 28px rgba(0,0,0,0.45)); }
+.detail-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text); font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-body { padding: 20px; }
+.detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.detail-name { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: var(--text); }
+.detail-meta { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.detail-section { margin-bottom: 16px; }
+.detail-section-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 8px;
+}
+.detail-bio { font-size: 13px; color: var(--text2); line-height: 1.75; }
+.detail-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.detail-tag {
+  background: rgba(255,255,255,0.08);
+  border-radius: 50px; padding: 4px 12px;
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.7);
+}
+.detail-shelter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.detail-shelter-icon { font-size: 22px; }
+.detail-shelter-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.detail-shelter-loc { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.detail-actions { display: flex; gap: 10px; }
+.detail-adopt {
+  flex: 1;
+  display: block;
+  background: linear-gradient(135deg, #FF8A50, #FF3D00);
+  color: white; text-align: center;
+  padding: 16px; border-radius: 14px;
+  font-size: 15px; font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(255,80,0,0.4);
+}
+.detail-like-btn {
+  background: rgba(255,107,53,0.1);
+  border: 1px solid rgba(255,107,53,0.3);
+  color: var(--orange);
+  padding: 16px 20px;
+  border-radius: 14px;
+  font-size: 22px; cursor: pointer;
+}
+
+/* ═══════════════════════════════════════
+   SWIPE ANIMATION HELPERS
+═══════════════════════════════════════ */
+.card.fly-right {
+  transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.38s !important;
+  transform: translateX(150vw) rotate(30deg) !important;
+  opacity: 0 !important;
+}
+.card.fly-left {
+  transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.38s !important;
+  transform: translateX(-150vw) rotate(-30deg) !important;
+  opacity: 0 !important;
+}
+.card.snap-back {
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <div class="logo-wrap">
+      <div class="logo-row">
+        <span class="logo-paw">🐾</span>
+        <span class="logo-text">PawSwipe</span>
+      </div>
+      <div class="logo-sub">Metro Vancouver</div>
+    </div>
+    <div class="header-actions">
+      <button class="hbtn" id="btnFilters" title="Filters" aria-label="Filters">⚙️</button>
+      <button class="hbtn" id="btnNotif" title="Notifications" aria-label="Notifications">
+        🔔<span class="hbtn-dot"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── FILTER BAR ── -->
+  <div class="filter-bar" id="filterBar" role="group" aria-label="Filter pets">
+    <div class="chip active" data-filter="all" tabindex="0" role="button">All Pets</div>
+    <div class="chip" data-filter="dog" tabindex="0" role="button">🐕 Dogs</div>
+    <div class="chip" data-filter="cat" tabindex="0" role="button">🐈 Cats</div>
+    <div class="chip" data-filter="rabbit" tabindex="0" role="button">🐇 Rabbits</div>
+    <div class="chip" data-filter="senior" tabindex="0" role="button">🌿 Seniors</div>
+    <div class="chip" data-filter="kidfriendly" tabindex="0" role="button">👶 Kid-Friendly</div>
+  </div>
+
+  <!-- ── PROGRESS BAR ── -->
+  <div class="progress-bar" role="progressbar" aria-label="Deck progress">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- ── VIEWS ── -->
+  <div class="content">
+
+    <!-- ━━ SWIPE VIEW ━━ -->
+    <div class="view active" id="view-swipe">
+
+      <div class="swipe-view" id="swipeView">
+
+        <!-- Dot indicator bar -->
+        <div class="dot-bar" id="dotBar" aria-hidden="true"></div>
+
+        <!-- Background card layers (stack illusion) -->
+        <div class="card-layer back2" id="layerBack2"></div>
+        <div class="card-layer back1" id="layerBack1"></div>
+
+        <!-- Loading state -->
+        <div class="loading-state" id="loadingState" aria-live="polite">
+          <div class="loading-paw" aria-hidden="true">🐾</div>
+          <div class="loading-title">Finding your match…</div>
+          <div class="loading-sub">Fetching adorable pets<br>from local shelters</div>
+          <div class="loading-dots" aria-hidden="true">
+            <div class="ldot"></div>
+            <div class="ldot"></div>
+            <div class="ldot"></div>
+          </div>
+        </div>
+
+        <!-- Main swipe card -->
+        <div class="card" id="mainCard" role="article" aria-label="Pet card">
+          <div class="stamp stamp-like" id="stampLike" aria-hidden="true">ADOPT ❤️</div>
+          <div class="stamp stamp-pass" id="stampPass" aria-hidden="true">PASS ✕</div>
+
+          <div class="card-photo-wrap" id="cardPhotoWrap">
+            <div class="photo-placeholder" id="photoPlaceholder">
+              <div class="photo-placeholder-em" id="photoEmoji" aria-hidden="true">🐶</div>
+              <div class="photo-placeholder-lbl">Photo coming soon</div>
+            </div>
+            <div class="photo-gradient"></div>
+            <div class="badge badge-compat">
+              <span class="badge-compat-n" id="compatPct">96%</span>
+              <span class="badge-compat-l">match</span>
+            </div>
+            <div class="badge badge-org">
+              <span id="orgName">BC SPCA Vancouver</span>
+            </div>
+            <div class="badge badge-breed">
+              <span id="breedLabel">Golden Retriever</span>
+            </div>
+          </div>
+
+          <div class="card-info">
+            <div class="info-top">
+              <div>
+                <div class="animal-name" id="animalName">Max</div>
+                <div class="animal-meta" id="animalMeta">3 yr · Male · Dog</div>
+              </div>
+              <div class="fee-box">
+                <div class="fee-amount" id="feeAmount">$250</div>
+                <div class="fee-label">adoption</div>
+              </div>
+            </div>
+            <div class="tags" id="animalTags"></div>
+            <div class="bio" id="animalBio">Loading…</div>
+            <div class="info-bottom">
+              <div class="location" id="animalLocation">📍 Vancouver</div>
+              <button class="more-btn" id="moreBtn" onclick="showDetail()">More info →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Swipe hints -->
+        <div class="swipe-hint" id="swipeHint" aria-hidden="true">
+          <span>← PASS</span>
+          <span>ADOPT →</span>
+        </div>
+
+      </div><!-- /swipe-view -->
+
+      <!-- Action buttons -->
+      <div class="action-row">
+        <button class="ab ab-undo" id="btnUndo" title="Undo last swipe" aria-label="Undo" onclick="doUndo()">↩️</button>
+        <button class="ab ab-pass" title="Pass" aria-label="Pass" onclick="doPass()">✕</button>
+        <button class="ab ab-like" title="Adopt interest" aria-label="Like" onclick="doLike()">🐾</button>
+        <button class="ab ab-star" title="Super-like" aria-label="Super-like" onclick="doStar()">⭐</button>
+        <button class="ab ab-love" title="Love" aria-label="Love" onclick="doLove()">💚</button>
+      </div>
+
+      <div class="kb-hint" aria-hidden="true">← PASS &nbsp;·&nbsp; → LIKE &nbsp;·&nbsp; ↓ UNDO &nbsp;·&nbsp; ↑ SUPER</div>
+
+    </div><!-- /view-swipe -->
+
+    <!-- ━━ LIKED VIEW ━━ -->
+    <div class="view" id="view-liked" aria-label="Liked pets">
+      <div class="liked-view" id="likedList"></div>
+    </div>
+
+    <!-- ━━ SHELTERS VIEW ━━ -->
+    <div class="view" id="view-shelters" aria-label="Shelters">
+      <div class="shelters-view" id="sheltersList"></div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-btn active" data-tab="swipe" onclick="navigate('swipe')" aria-label="Discover">
+      <span class="nav-icon" aria-hidden="true">🐾</span>
+      <span class="nav-label">Discover</span>
+    </button>
+    <button class="nav-btn" data-tab="liked" onclick="navigate('liked')" aria-label="Liked pets">
+      <span class="nav-icon" aria-hidden="true">❤️</span>
+      <span class="nav-label">Liked</span>
+      <span class="nav-badge" id="likedBadge" aria-live="polite">0</span>
+    </button>
+    <button class="nav-btn" data-tab="shelters" onclick="navigate('shelters')" aria-label="Shelters">
+      <span class="nav-icon" aria-hidden="true">🏠</span>
+      <span class="nav-label">Shelters</span>
+    </button>
+  </nav>
+
+</div><!-- /app -->
+
+<!-- ── TOAST ── -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ── DETAIL OVERLAY ── -->
+<div class="detail-overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Pet details">
+  <div class="detail-sheet">
+    <div class="detail-photo">
+      <div class="detail-emoji" id="detailEmoji" aria-hidden="true">🐶</div>
+      <button class="detail-close" onclick="closeDetail()" aria-label="Close details">✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-header">
+        <div>
+          <div class="detail-name" id="detailName">Name</div>
+          <div class="detail-meta" id="detailMeta">age · gender · species</div>
+        </div>
+        <div class="fee-box">
+          <div class="fee-amount" id="detailFee">$0</div>
+          <div class="fee-label">adoption</div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-label">About</div>
+        <div class="detail-bio" id="detailBio"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-label">Personality</div>
+        <div class="detail-tags" id="detailTags"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-label">Compatible with</div>
+        <div class="detail-tags" id="detailCompat"></div>
+      </div>
+      <div class="detail-shelter-row">
+        <div class="detail-shelter-icon" id="detailShelterIcon" aria-hidden="true">🏠</div>
+        <div>
+          <div class="detail-shelter-name" id="detailShelterName"></div>
+          <div class="detail-shelter-loc" id="detailShelterLoc"></div>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <a class="detail-adopt" id="detailAdoptUrl" href="#" target="_blank" rel="noopener noreferrer">🐾 Start Adoption</a>
+        <button class="detail-like-btn" onclick="closeDetail(); doLike();" aria-label="Like and close">❤️</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   PawSwipe — Metro Vancouver
+   Single-file vanilla JS app
+   ========================================================== */
+
+/* ── Pet data ─────────────────────────────────────────────── */
+var PETS = [
+  {
+    id: 1, name: 'Max', species: 'dog', breed: 'Golden Retriever',
+    age: 3, ageLabel: '3 yr', gender: 'Male',
+    traits: ['Friendly', 'Playful', 'Trained', 'Good with kids'],
+    bio: 'Max is pure sunshine in dog form. He loves everyone he meets, excels at fetch, and gives the best cuddles after a long walk. He already knows sit, stay, come, and heel.',
+    shelter: 'BC SPCA Vancouver', location: 'Vancouver, BC',
+    fee: '$250', emoji: '🐕', compat: 96,
+    kids: true, dogs: true, cats: false,
+    adoptionUrl: 'https://spca.bc.ca'
+  },
+  {
+    id: 2, name: 'Luna', species: 'cat', breed: 'Domestic Shorthair',
+    age: 2, ageLabel: '2 yr', gender: 'Female',
+    traits: ['Independent', 'Affectionate', 'Indoor', 'Lap cat'],
+    bio: 'Luna is a quiet, graceful cat who warms up quickly. She loves morning sunbeams and evening cuddles on the couch. Perfect for apartment living.',
+    shelter: 'VOKRA', location: 'Vancouver, BC',
+    fee: '$150', emoji: '🐱', compat: 91,
+    kids: false, dogs: false, cats: true,
+    adoptionUrl: 'https://vokra.ca'
+  },
+  {
+    id: 3, name: 'Biscuit', species: 'rabbit', breed: 'Holland Lop',
+    age: 1, ageLabel: '1 yr', gender: 'Male',
+    traits: ['Curious', 'Gentle', 'Quiet', 'Litter-trained'],
+    bio: 'Biscuit is an adorable lop-eared rabbit who loves exploring and binkying around his playpen. He is litter-trained and great for first-time rabbit owners.',
+    shelter: 'BC SPCA Burnaby', location: 'Burnaby, BC',
+    fee: '$75', emoji: '🐇', compat: 88,
+    kids: true, dogs: false, cats: false,
+    adoptionUrl: 'https://spca.bc.ca/locations/burnaby-bc-spca/'
+  },
+  {
+    id: 4, name: 'Bella', species: 'dog', breed: 'Labrador Mix',
+    age: 5, ageLabel: '5 yr', gender: 'Female',
+    traits: ['Calm', 'Gentle', 'Great with kids', 'Loyal'],
+    bio: 'Bella is a sweet lab mix who has completed obedience training. She adores children, gets along with other dogs, and loves lounging after a good park run.',
+    shelter: 'Rescue BC', location: 'Richmond, BC',
+    fee: '$200', emoji: '🐶', compat: 94,
+    kids: true, dogs: true, cats: true,
+    adoptionUrl: 'https://rescuebc.ca'
+  },
+  {
+    id: 5, name: 'Oliver', species: 'cat', breed: 'Tabby',
+    age: 4, ageLabel: '4 yr', gender: 'Male',
+    traits: ['Playful', 'Social', 'Vocal', 'Energetic'],
+    bio: 'Oliver is your classic tabby with a huge personality. He greets everyone at the door, loves interactive toys, and will sit on your laptop whenever you try to work.',
+    shelter: 'VOKRA', location: 'Vancouver, BC',
+    fee: '$150', emoji: '😸', compat: 89,
+    kids: true, dogs: false, cats: true,
+    adoptionUrl: 'https://vokra.ca'
+  },
+  {
+    id: 6, name: 'Cooper', species: 'dog', breed: 'Border Collie Mix',
+    age: 2, ageLabel: '2 yr', gender: 'Male',
+    traits: ['Intelligent', 'Active', 'Trainable', 'Energetic'],
+    bio: 'Cooper is a high-energy border collie mix who thrives with mental stimulation. He would do best in an active home with a yard. He already knows 15+ commands.',
+    shelter: 'BC SPCA Surrey', location: 'Surrey, BC',
+    fee: '$275', emoji: '🐕‍🦺', compat: 82,
+    kids: true, dogs: true, cats: false,
+    adoptionUrl: 'https://spca.bc.ca/locations/surrey-bc-spca/'
+  },
+  {
+    id: 7, name: 'Cleo', species: 'cat', breed: 'Siamese Mix',
+    age: 7, ageLabel: '7 yr', gender: 'Female',
+    traits: ['Senior', 'Calm', 'Affectionate', 'Quiet'],
+    bio: 'Cleo is a beautiful senior Siamese who deserves a cozy retirement home. She is calm, loves routine, and will bond deeply with her special person. Perfect for a quiet household.',
+    shelter: 'BC SPCA Langley', location: 'Langley, BC',
+    fee: '$100', emoji: '🐈', compat: 87,
+    kids: false, dogs: false, cats: true,
+    adoptionUrl: 'https://spca.bc.ca/locations/langley-bc-spca/'
+  },
+  {
+    id: 8, name: 'Daisy', species: 'dog', breed: 'Beagle',
+    age: 3, ageLabel: '3 yr', gender: 'Female',
+    traits: ['Curious', 'Friendly', 'Scent-driven', 'Social'],
+    bio: 'Daisy is a nose-to-ground beagle who loves sniffing every inch of the trail. She is friendly with dogs and people alike, and her happy howl will brighten your mornings.',
+    shelter: 'Rescue BC', location: 'North Vancouver, BC',
+    fee: '$225', emoji: '🐕', compat: 92,
+    kids: true, dogs: true, cats: false,
+    adoptionUrl: 'https://rescuebc.ca'
+  },
+  {
+    id: 9, name: 'Mochi', species: 'rabbit', breed: 'Netherland Dwarf',
+    age: 2, ageLabel: '2 yr', gender: 'Female',
+    traits: ['Tiny', 'Sweet', 'Litter-trained', 'Curious'],
+    bio: 'Mochi is a tiny 1.2 kg Netherland Dwarf with a huge personality. She is fully litter-trained, loves her leafy greens, and will hop into your lap for pets.',
+    shelter: 'BC SPCA Burnaby', location: 'Burnaby, BC',
+    fee: '$75', emoji: '🐰', compat: 90,
+    kids: true, dogs: false, cats: false,
+    adoptionUrl: 'https://spca.bc.ca/locations/burnaby-bc-spca/'
+  },
+  {
+    id: 10, name: 'Rocky', species: 'dog', breed: 'Husky Mix',
+    age: 4, ageLabel: '4 yr', gender: 'Male',
+    traits: ['Talkative', 'Active', 'Loyal', 'Adventurous'],
+    bio: 'Rocky is a striking husky mix who loves hiking, running, and having long conversations with you. He needs an active owner and adores cold-weather adventures.',
+    shelter: 'BC SPCA Vancouver', location: 'Vancouver, BC',
+    fee: '$275', emoji: '🐺', compat: 85,
+    kids: true, dogs: true, cats: false,
+    adoptionUrl: 'https://spca.bc.ca'
+  },
+  {
+    id: 11, name: 'Pearl', species: 'cat', breed: 'Persian Mix',
+    age: 5, ageLabel: '5 yr', gender: 'Female',
+    traits: ['Fluffy', 'Elegant', 'Calm', 'Indoor'],
+    bio: 'Pearl is a gorgeous long-haired Persian mix who carries herself like royalty. She enjoys quiet afternoons, gentle pets, and watching birds from the windowsill.',
+    shelter: 'VOKRA', location: 'Vancouver, BC',
+    fee: '$175', emoji: '🐈‍⬛', compat: 88,
+    kids: false, dogs: false, cats: false,
+    adoptionUrl: 'https://vokra.ca'
+  },
+  {
+    id: 12, name: 'Archie', species: 'dog', breed: 'Dachshund',
+    age: 6, ageLabel: '6 yr', gender: 'Male',
+    traits: ['Stubborn', 'Loveable', 'Low-exercise', 'Apartment-friendly'],
+    bio: 'Archie is a sausage-shaped bundle of strong opinions. He thinks he is the boss but is completely harmless. Perfect for apartment living — short legs, short walks!',
+    shelter: 'BC SPCA Langley', location: 'Langley, BC',
+    fee: '$200', emoji: '🌭', compat: 93,
+    kids: true, dogs: false, cats: true,
+    adoptionUrl: 'https://spca.bc.ca/locations/langley-bc-spca/'
+  }
+];
+
+/* ── Shelter directory ────────────────────────────────────── */
+var SHELTERS = [
+  {
+    name: 'BC SPCA Vancouver',
+    address: '1205 E 7th Ave, Vancouver, BC V5T 1R1',
+    tagline: 'Protecting animals since 1895',
+    icon: '🐾', color: 'rgba(255,107,53,0.15)', accent: '#FF6B35',
+    url: 'https://spca.bc.ca'
+  },
+  {
+    name: 'VOKRA',
+    address: '3855 Henning Dr, Burnaby, BC V5C 6N3',
+    tagline: 'Vancouver Orphan Kitten Rescue Association',
+    icon: '🐱', color: 'rgba(74,154,212,0.15)', accent: '#4A9AD4',
+    url: 'https://vokra.ca'
+  },
+  {
+    name: 'BC SPCA Burnaby',
+    address: '3150 Boundary Rd, Burnaby, BC V5M 4A3',
+    tagline: 'Adoption & education services',
+    icon: '🏠', color: 'rgba(61,186,111,0.15)', accent: '#3DBA6F',
+    url: 'https://spca.bc.ca/locations/burnaby-bc-spca/'
+  },
+  {
+    name: 'Rescue BC',
+    address: 'Serving Metro Vancouver',
+    tagline: 'Fostering hope, finding forever homes',
+    icon: '💙', color: 'rgba(255,255,255,0.04)', accent: '#4A9AD4',
+    url: 'https://rescuebc.ca'
+  },
+  {
+    name: 'BC SPCA Surrey',
+    address: '14434 76B Ave, Surrey, BC V3S 0J4',
+    tagline: 'Animals first in the Fraser Valley',
+    icon: '🌿', color: 'rgba(61,186,111,0.12)', accent: '#3DBA6F',
+    url: 'https://spca.bc.ca/locations/surrey-bc-spca/'
+  },
+  {
+    name: 'BC SPCA Langley',
+    address: '6893 216 St, Langley, BC V2Y 2M4',
+    tagline: 'Serving Langley & the Township',
+    icon: '🌻', color: 'rgba(255,138,80,0.12)', accent: '#FF8A50',
+    url: 'https://spca.bc.ca/locations/langley-bc-spca/'
+  }
+];
+
+/* ── App state ────────────────────────────────────────────── */
+var state = {
+  pets: [],        // filtered pet list
+  index: 0,        // current card index
+  liked: [],       // liked Pet objects
+  history: [],     // { type:'like'|'pass', pet, index } for undo
+  filter: 'all',
+  tab: 'swipe',
+  swipeCount: 0
+};
+
+/* ── Init ─────────────────────────────────────────────────── */
+function init() {
+  loadSaved();
+  applyFilter('all');
+  renderShelters();
+  setupSwipe();
+  setupKeys();
+  updateBadge();
+  // Brief loading animation then show first card
+  setTimeout(function() {
+    document.getElementById('loadingState').style.display = 'none';
+    renderCard();
+    updateProgress();
+  }, 900);
+}
+
+/* ── Filtering ────────────────────────────────────────────── */
+function applyFilter(filter) {
+  state.filter = filter;
+  state.index = 0;
+  state.history = [];
+  state.swipeCount = 0;
+  state.pets = PETS.filter(function(p) {
+    if (filter === 'all') return true;
+    if (filter === 'dog') return p.species === 'dog';
+    if (filter === 'cat') return p.species === 'cat';
+    if (filter === 'rabbit') return p.species === 'rabbit';
+    if (filter === 'senior') return p.age >= 7;
+    if (filter === 'kidfriendly') return p.kids === true;
+    return true;
+  });
+  // Remove any existing empty state
+  var existing = document.querySelector('#swipeView .empty-state');
+  if (existing) existing.remove();
+  var card = document.getElementById('mainCard');
+  if (card) { card.style.display = ''; card.style.transform = ''; card.style.opacity = '1'; }
+  document.getElementById('loadingState').style.display = 'none';
+  renderCard();
+  updateProgress();
+}
+
+/* ── Render current card ──────────────────────────────────── */
+function renderCard() {
+  var card = document.getElementById('mainCard');
+  var l1 = document.getElementById('layerBack1');
+  var l2 = document.getElementById('layerBack2');
+
+  if (!card) return;
+
+  if (state.index >= state.pets.length) {
+    card.style.display = 'none';
+    if (l1) l1.style.display = 'none';
+    if (l2) l2.style.display = 'none';
+    showEmptyState();
+    return;
+  }
+
+  card.style.display = 'flex';
+  card.style.transform = '';
+  card.style.opacity = '1';
+  card.classList.remove('fly-right', 'fly-left', 'snap-back');
+  if (l1) l1.style.display = '';
+  if (l2) l2.style.display = '';
+
+  document.getElementById('stampLike').style.opacity = '0';
+  document.getElementById('stampPass').style.opacity = '0';
+
+  var pet = state.pets[state.index];
+  document.getElementById('photoEmoji').textContent = pet.emoji;
+  document.getElementById('compatPct').textContent = pet.compat + '%';
+  document.getElementById('orgName').textContent = pet.shelter;
+  document.getElementById('breedLabel').textContent = pet.breed;
+  document.getElementById('animalName').textContent = pet.name;
+  document.getElementById('animalMeta').textContent =
+    pet.ageLabel + ' · ' + pet.gender + ' · ' + cap(pet.species);
+  document.getElementById('feeAmount').textContent = pet.fee;
+  document.getElementById('animalBio').textContent = pet.bio;
+  document.getElementById('animalLocation').textContent = '📍 ' + pet.location;
+
+  var tagsEl = document.getElementById('animalTags');
+  tagsEl.innerHTML = pet.traits.map(function(t) {
+    return '<span class="tag">' + esc(t) + '</span>';
+  }).join('');
+
+  renderDots(1, 1);
+
+  // Show swipe hint for the first two swipes
+  var hint = document.getElementById('swipeHint');
+  if (state.swipeCount < 2) {
+    hint.classList.remove('hidden');
+  } else {
+    hint.classList.add('hidden');
+  }
+
+  // Undo button enabled only when there is history
+  document.getElementById('btnUndo').classList.toggle('enabled', state.history.length > 0);
+}
+
+function renderDots(current, total) {
+  var bar = document.getElementById('dotBar');
+  if (!bar) return;
+  if (total <= 1) { bar.innerHTML = ''; return; }
+  var html = '';
+  for (var i = 0; i < total; i++) {
+    var cls = i === current - 1 ? ' active' : (i < current - 1 ? ' done' : '');
+    html += '<div class="d' + cls + '"></div>';
+  }
+  bar.innerHTML = html;
+}
+
+/* ── Swipe drag (touch + mouse) ───────────────────────────── */
+var drag = { active: false, startX: 0, startY: 0, dx: 0, dy: 0, locked: false };
+
+function setupSwipe() {
+  var card = document.getElementById('mainCard');
+  if (!card) return;
+  card.addEventListener('touchstart', onDragStart, { passive: true });
+  card.addEventListener('touchmove', onDragMove, { passive: false });
+  card.addEventListener('touchend', onDragEnd, { passive: true });
+  card.addEventListener('mousedown', onDragStart);
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup', onDragEnd);
+}
+
+function getXY(e) {
+  if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  return { x: e.clientX, y: e.clientY };
+}
+
+function onDragStart(e) {
+  if (state.index >= state.pets.length) return;
+  if (drag.locked) return;
+  var p = getXY(e);
+  drag = { active: true, startX: p.x, startY: p.y, dx: 0, dy: 0, locked: false };
+  var card = document.getElementById('mainCard');
+  card.style.transition = 'none';
+}
+
+function onDragMove(e) {
+  if (!drag.active) return;
+  if (e.cancelable) e.preventDefault();
+  var p = getXY(e);
+  drag.dx = p.x - drag.startX;
+  drag.dy = p.y - drag.startY;
+  var rotate = drag.dx * 0.07;
+  var card = document.getElementById('mainCard');
+  card.style.transform =
+    'translate(' + drag.dx + 'px,' + (drag.dy * 0.25) + 'px) rotate(' + rotate + 'deg)';
+
+  var threshold = 55;
+  var likeStamp = document.getElementById('stampLike');
+  var passStamp = document.getElementById('stampPass');
+  if (drag.dx > threshold) {
+    likeStamp.style.opacity = Math.min((drag.dx - threshold) / 55, 1);
+    passStamp.style.opacity = '0';
+  } else if (drag.dx < -threshold) {
+    passStamp.style.opacity = Math.min((-drag.dx - threshold) / 55, 1);
+    likeStamp.style.opacity = '0';
+  } else {
+    likeStamp.style.opacity = '0';
+    passStamp.style.opacity = '0';
+  }
+}
+
+function onDragEnd() {
+  if (!drag.active) return;
+  drag.active = false;
+  var THRESHOLD = 100;
+  var card = document.getElementById('mainCard');
+  if (drag.dx > THRESHOLD) {
+    performSwipe('right');
+  } else if (drag.dx < -THRESHOLD) {
+    performSwipe('left');
+  } else {
+    // Spring back
+    card.classList.add('snap-back');
+    card.style.transform = '';
+    document.getElementById('stampLike').style.opacity = '0';
+    document.getElementById('stampPass').style.opacity = '0';
+  }
+}
+
+function performSwipe(direction) {
+  if (drag.locked) return;
+  drag.locked = true;
+  var card = document.getElementById('mainCard');
+  var dy = drag.dy || 0;
+
+  card.classList.remove('snap-back');
+  if (direction === 'right') {
+    card.classList.add('fly-right');
+  } else {
+    card.classList.add('fly-left');
+  }
+
+  setTimeout(function() {
+    drag.locked = false;
+    if (direction === 'right') {
+      recordLike();
+    } else {
+      recordPass();
+    }
+    state.index++;
+    state.swipeCount++;
+    renderCard();
+    updateProgress();
+  }, 380);
+}
+
+/* ── Action handlers ──────────────────────────────────────── */
+function doLike() {
+  if (state.index >= state.pets.length || drag.locked) return;
+  drag.dy = 0;
+  drag.dx = 200;
+  performSwipe('right');
+}
+
+function doPass() {
+  if (state.index >= state.pets.length || drag.locked) return;
+  drag.dy = 0;
+  drag.dx = -200;
+  performSwipe('left');
+}
+
+function doStar() {
+  if (state.index >= state.pets.length || drag.locked) return;
+  showToast('⭐ Super-liked! Priority match flagged.');
+  drag.dy = 0;
+  drag.dx = 200;
+  performSwipe('right');
+}
+
+function doLove() {
+  if (state.index >= state.pets.length || drag.locked) return;
+  showToast('💚 Love sent! The shelter has been notified.');
+  drag.dy = 0;
+  drag.dx = 200;
+  performSwipe('right');
+}
+
+function doUndo() {
+  if (state.history.length === 0 || drag.locked) return;
+  var last = state.history.pop();
+  if (last.type === 'like') {
+    state.liked = state.liked.filter(function(p) { return p.id !== last.pet.id; });
+    updateBadge();
+    saveToStorage();
+  }
+  state.index = last.index;
+  state.swipeCount = Math.max(0, state.swipeCount - 1);
+  var existing = document.querySelector('#swipeView .empty-state');
+  if (existing) existing.remove();
+  var card = document.getElementById('mainCard');
+  if (card) { card.style.display = 'flex'; card.style.transform = ''; card.style.opacity = '1'; }
+  var l1 = document.getElementById('layerBack1');
+  var l2 = document.getElementById('layerBack2');
+  if (l1) l1.style.display = '';
+  if (l2) l2.style.display = '';
+  renderCard();
+  updateProgress();
+  showToast('↩ Undone — reviewing again');
+}
+
+/* ── Like / pass recording ────────────────────────────────── */
+function recordLike() {
+  var pet = state.pets[state.index];
+  state.history.push({ type: 'like', pet: pet, index: state.index });
+  if (!state.liked.find(function(p) { return p.id === pet.id; })) {
+    state.liked.push(pet);
+    updateBadge();
+    saveToStorage();
+    showToast('❤️ ' + pet.name + ' added to your liked list!');
+  }
+}
+
+function recordPass() {
+  var pet = state.pets[state.index];
+  state.history.push({ type: 'pass', pet: pet, index: state.index });
+}
+
+/* ── Progress bar ─────────────────────────────────────────── */
+function updateProgress() {
+  var fill = document.getElementById('progressFill');
+  if (!fill) return;
+  var total = state.pets.length;
+  var pct = total > 0 ? (state.index / total) * 100 : 0;
+  fill.style.width = Math.min(pct, 100) + '%';
+}
+
+/* ── Tab navigation ───────────────────────────────────────── */
+function navigate(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+  var target = document.getElementById('view-' + tab);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  if (tab === 'liked') renderLiked();
+}
+
+/* ── Liked view ───────────────────────────────────────────── */
+function renderLiked() {
+  var list = document.getElementById('likedList');
+  if (!list) return;
+  if (state.liked.length === 0) {
+    list.innerHTML =
+      '<div class="empty-state">' +
+        '<div class="empty-em">🐾</div>' +
+        '<div class="empty-title">No matches yet</div>' +
+        '<div class="empty-sub">Start swiping to find<br>your perfect companion</div>' +
+        '<button class="empty-btn" onclick="navigate(\'swipe\')">Start Swiping</button>' +
+      '</div>';
+    return;
+  }
+  var html = '<div class="view-label">YOUR MATCHES — ' + state.liked.length + '</div>';
+  state.liked.forEach(function(pet) {
+    html +=
+      '<div class="liked-card">' +
+        '<div class="liked-thumb-ph">' + esc(pet.emoji) + '</div>' +
+        '<div class="liked-info">' +
+          '<div class="liked-name">' + esc(pet.name) + '</div>' +
+          '<div class="liked-sub">' + esc(pet.ageLabel) + ' · ' + esc(pet.gender) + ' · ' + esc(cap(pet.species)) + '</div>' +
+          '<div class="liked-loc">📍 ' + esc(pet.location) + '</div>' +
+        '</div>' +
+        '<div class="liked-actions">' +
+          '<button class="adopt-btn" onclick="openAdopt(\'' + esc(pet.adoptionUrl) + '\')">Adopt</button>' +
+        '</div>' +
+      '</div>';
+  });
+  list.innerHTML = html;
+}
+
+/* ── Shelters view ────────────────────────────────────────── */
+function renderShelters() {
+  var list = document.getElementById('sheltersList');
+  if (!list) return;
+  var html = '<div class="view-label">METRO VANCOUVER SHELTERS</div>';
+  SHELTERS.forEach(function(s) {
+    html +=
+      '<a class="shelter-card" href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer">' +
+        '<div class="shelter-icon" style="background:' + s.color + '">' + esc(s.icon) + '</div>' +
+        '<div class="shelter-info">' +
+          '<div class="shelter-name">' + esc(s.name) + '</div>' +
+          '<div class="shelter-addr">' + esc(s.address) + '</div>' +
+          '<div class="shelter-link" style="color:' + s.accent + '">' + esc(s.tagline) + '</div>' +
+        '</div>' +
+        '<div class="shelter-arrow">›</div>' +
+      '</a>';
+  });
+  list.innerHTML = html;
+}
+
+/* ── Empty deck state ─────────────────────────────────────── */
+function showEmptyState() {
+  var view = document.getElementById('swipeView');
+  if (!view || view.querySelector('.empty-state')) return;
+  var el = document.createElement('div');
+  el.className = 'empty-state';
+  el.innerHTML =
+    '<div class="empty-em">🎉</div>' +
+    '<div class="empty-title">You\'ve seen them all!</div>' +
+    '<div class="empty-sub">Check your liked matches<br>or see them again.</div>' +
+    '<button class="empty-btn" onclick="resetDeck()">See them again</button>';
+  view.appendChild(el);
+}
+
+function resetDeck() {
+  state.index = 0;
+  state.history = [];
+  state.swipeCount = 0;
+  var existing = document.querySelector('#swipeView .empty-state');
+  if (existing) existing.remove();
+  var card = document.getElementById('mainCard');
+  if (card) { card.style.display = 'flex'; card.style.transform = ''; card.style.opacity = '1'; }
+  var l1 = document.getElementById('layerBack1');
+  var l2 = document.getElementById('layerBack2');
+  if (l1) l1.style.display = '';
+  if (l2) l2.style.display = '';
+  renderCard();
+  updateProgress();
+}
+
+/* ── Detail overlay ───────────────────────────────────────── */
+function showDetail() {
+  if (state.index >= state.pets.length) return;
+  var pet = state.pets[state.index];
+  var overlay = document.getElementById('detailOverlay');
+  document.getElementById('detailEmoji').textContent = pet.emoji;
+  document.getElementById('detailName').textContent = pet.name;
+  document.getElementById('detailMeta').textContent =
+    pet.ageLabel + ' · ' + pet.gender + ' · ' + cap(pet.species);
+  document.getElementById('detailFee').textContent = pet.fee;
+  document.getElementById('detailBio').textContent = pet.bio;
+
+  var tags = document.getElementById('detailTags');
+  tags.innerHTML = pet.traits.map(function(t) {
+    return '<span class="detail-tag">' + esc(t) + '</span>';
+  }).join('');
+
+  var compat = document.getElementById('detailCompat');
+  var compatItems = [];
+  if (pet.kids) compatItems.push('<span class="detail-tag">✓ Kids</span>');
+  if (pet.dogs) compatItems.push('<span class="detail-tag">✓ Dogs</span>');
+  if (pet.cats) compatItems.push('<span class="detail-tag">✓ Cats</span>');
+  if (compatItems.length === 0) compatItems.push('<span class="detail-tag">Adults only</span>');
+  compat.innerHTML = compatItems.join('');
+
+  document.getElementById('detailShelterName').textContent = pet.shelter;
+  document.getElementById('detailShelterLoc').textContent = pet.location;
+  document.getElementById('detailAdoptUrl').href = pet.adoptionUrl;
+
+  overlay.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+}
+
+/* ── Keyboard shortcuts ───────────────────────────────────── */
+function setupKeys() {
+  document.addEventListener('keydown', function(e) {
+    if (state.tab !== 'swipe') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === 'l') doLike();
+    else if (e.key === 'ArrowLeft' || e.key === 'a') doPass();
+    else if (e.key === 'ArrowDown' || e.key === 'z') doUndo();
+    else if (e.key === 'ArrowUp' || e.key === 's') doStar();
+    else if (e.key === 'Escape') closeDetail();
+  });
+}
+
+/* ── Filter chips ─────────────────────────────────────────── */
+document.getElementById('filterBar').addEventListener('click', function(e) {
+  var chip = e.target.closest('.chip');
+  if (!chip) return;
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  chip.classList.add('active');
+  applyFilter(chip.dataset.filter);
+});
+document.getElementById('filterBar').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    var chip = e.target.closest('.chip');
+    if (chip) chip.click();
+  }
+});
+
+/* ── Toast ────────────────────────────────────────────────── */
+var toastTimer = null;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2800);
+}
+
+/* ── LocalStorage persistence ─────────────────────────────── */
+function saveToStorage() {
+  try {
+    localStorage.setItem('pawswipe_liked', JSON.stringify(state.liked.map(function(p) { return p.id; })));
+  } catch (e) { /* storage unavailable */ }
+}
+
+function loadSaved() {
+  try {
+    var raw = localStorage.getItem('pawswipe_liked');
+    if (!raw) return;
+    var ids = JSON.parse(raw);
+    state.liked = PETS.filter(function(p) { return ids.indexOf(p.id) !== -1; });
+  } catch (e) { /* ignore */ }
+}
+
+/* ── Utilities ────────────────────────────────────────────── */
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function openAdopt(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function updateBadge() {
+  var badge = document.getElementById('likedBadge');
+  if (!badge) return;
+  var count = state.liked.length;
+  badge.textContent = count;
+  badge.classList.toggle('show', count > 0);
+}
+
+/* ── Boot ─────────────────────────────────────────────────── */
+init();
+</script>
+</body>
+</html>
