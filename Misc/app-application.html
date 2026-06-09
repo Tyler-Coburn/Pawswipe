@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adoption Application — PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --r-card:18px;--r-inner:12px;--r-pill:100px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#E8DDD2;font-family:var(--fb);font-weight:300;color:var(--charcoal);}
+
+/* SHELL */
+.shell{
+  max-width:540px;margin:0 auto;height:100vh;
+  display:flex;flex-direction:column;
+  background:var(--cream);
+  overflow:hidden;
+}
+@media(min-width:540px){.shell{box-shadow:0 0 60px rgba(30,26,23,.18);}}
+
+/* HEADER */
+.app-header{
+  flex-shrink:0;
+  background:var(--warm-white);
+  border-bottom:1px solid var(--ls);
+  padding:14px 20px 0;
+}
+.header-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.back-btn{
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--ls);background:var(--warm-white);
+  color:var(--mid);font-size:.9rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.back-btn:hover{background:var(--amber-pale);color:var(--clay);}
+.header-center{}
+.header-title{font-family:var(--fd);font-weight:700;font-size:1rem;color:var(--charcoal);text-align:center;}
+.header-sub{font-size:.72rem;color:var(--rain);text-align:center;margin-top:2px;font-weight:500;}
+.header-step{font-size:.72rem;color:var(--mid-light);text-align:center;margin-top:1px;}
+.header-close{
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--ls);background:var(--warm-white);
+  color:var(--mid);font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.header-close:hover{background:#fee;color:#c0392b;border-color:#c0392b;}
+
+/* PROGRESS STEPS */
+.steps-row{
+  display:flex;align-items:center;padding:12px 20px;
+  gap:0;
+}
+.step-dot{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:700;
+  flex-shrink:0;transition:all .3s;
+}
+.step-dot.done{background:var(--amber);color:white;}
+.step-dot.active{background:var(--clay);color:white;box-shadow:0 0 0 4px rgba(168,78,42,.2);}
+.step-dot.todo{background:rgba(107,94,82,.15);color:var(--mid-light);}
+.step-line{flex:1;height:2px;background:rgba(107,94,82,.12);transition:background .4s;}
+.step-line.done{background:var(--amber);}
+.step-label{
+  position:absolute;top:28px;left:50%;transform:translateX(-50%);
+  font-size:.6rem;color:var(--mid-light);white-space:nowrap;letter-spacing:.03em;
+}
+
+/* SCREENS */
+.screens-wrap{flex:1;overflow:hidden;position:relative;}
+.screen{
+  position:absolute;inset:0;overflow-y:auto;
+  padding:24px 20px 20px;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+.screen.active{transform:translateX(0);}
+.screen.exited{transform:translateX(-100%);}
+
+/* FORM ELEMENTS */
+.field{margin-bottom:16px;}
+.field-label{
+  font-size:.82rem;font-weight:500;color:var(--charcoal);
+  margin-bottom:6px;display:flex;align-items:center;gap:5px;
+}
+.req{color:var(--clay);}
+.pre-filled{
+  font-size:.62rem;font-weight:400;color:var(--sage);
+  background:var(--sage-pale);padding:2px 7px;border-radius:100px;letter-spacing:.03em;
+}
+.field-input,.field-select,.field-textarea{
+  width:100%;padding:11px 14px;
+  border-radius:var(--r-inner);border:1.5px solid var(--ls);
+  background:var(--warm-white);font-family:var(--fb);
+  font-size:.9rem;font-weight:300;color:var(--charcoal);outline:none;
+  transition:border-color .2s,box-shadow .2s;appearance:none;
+}
+.field-input:focus,.field-select:focus,.field-textarea:focus{
+  border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,146,58,.13);
+}
+.field-input.pre{background:var(--sage-pale);border-color:rgba(74,110,92,.2);color:var(--sage);}
+.field-select{background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B5E52' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer;}
+.field-textarea{min-height:90px;resize:vertical;line-height:1.6;}
+.field-hint{font-size:.72rem;color:var(--mid-light);margin-top:5px;line-height:1.5;}
+.char-count{font-size:.7rem;color:var(--mid-light);text-align:right;margin-top:4px;}
+.char-count.good{color:var(--sage);}
+.field-error{font-size:.73rem;color:#c0392b;margin-top:4px;}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field-row.thirds{grid-template-columns:2fr 1fr 1fr;}
+
+/* PILLS */
+.pill-row{display:flex;gap:6px;flex-wrap:wrap;}
+.pill{
+  padding:8px 16px;border-radius:var(--r-pill);
+  border:1.5px solid var(--ls);background:var(--warm-white);
+  font-size:.82rem;font-weight:400;color:var(--mid);
+  cursor:pointer;transition:all .18s;font-family:var(--fb);
+}
+.pill:hover{border-color:var(--amber);color:var(--clay);}
+.pill.selected{background:var(--clay);border-color:var(--clay);color:white;font-weight:500;}
+
+/* SUB Q */
+.sub-q{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s ease,opacity .3s ease;
+  opacity:0;
+}
+.sub-q.open{max-height:300px;opacity:1;}
+
+/* SECTION HEADERS */
+.section-label{
+  font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:14px;margin-top:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.section-label::before{content:'';flex:1;max-width:24px;height:1px;background:var(--amber);}
+.section-divider{height:1px;background:var(--ls);margin:20px 0;}
+
+/* LIFESTYLE CARDS */
+.option-cards{display:flex;flex-direction:column;gap:8px;}
+.option-card{
+  background:var(--warm-white);border:2px solid var(--ls);border-radius:14px;
+  padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:14px;
+  transition:all .2s;border-left:4px solid transparent;
+}
+.option-card:hover{border-color:rgba(232,146,58,.35);}
+.option-card.selected{border-color:var(--blush);background:var(--amber-pale);border-left-color:var(--clay);}
+.oc-emoji{font-size:1.5rem;flex-shrink:0;}
+.oc-label{font-size:.88rem;font-weight:500;color:var(--charcoal);}
+.oc-sub{font-size:.74rem;color:var(--mid);margin-top:1px;}
+
+/* PET LIST ITEM */
+.pet-item{
+  display:flex;gap:8px;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--ls);
+}
+.pet-item:last-of-type{border-bottom:none;}
+.pet-remove{
+  width:28px;height:28px;border-radius:50%;border:none;
+  background:rgba(192,57,43,.1);color:#c0392b;
+  cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .18s;
+}
+.pet-remove:hover{background:rgba(192,57,43,.2);}
+.add-pet-btn{
+  margin-top:8px;padding:8px 16px;border-radius:var(--r-pill);
+  border:1.5px dashed var(--ls);background:transparent;
+  font-family:var(--fb);font-size:.8rem;color:var(--mid);cursor:pointer;
+  transition:all .18s;width:100%;
+}
+.add-pet-btn:hover{border-color:var(--amber);color:var(--clay);}
+
+/* CHECKBOX */
+.checkbox-field{
+  display:flex;align-items:flex-start;gap:12px;cursor:pointer;
+  padding:14px;border-radius:var(--r-inner);
+  border:1.5px solid var(--ls);background:var(--warm-white);
+  transition:border-color .2s,background .2s;margin-bottom:10px;
+}
+.checkbox-field:hover{border-color:rgba(232,146,58,.3);}
+.checkbox-field.checked-state{border-color:var(--sage);background:var(--sage-pale);}
+.cb-box{
+  width:20px;height:20px;min-width:20px;border-radius:6px;
+  border:2px solid var(--mid-light);background:white;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;margin-top:1px;flex-shrink:0;
+}
+.cb-box.on{background:var(--sage);border-color:var(--sage);}
+.cb-box.on::after{content:'✓';color:white;font-size:.72rem;font-weight:700;}
+.cb-text{font-size:.85rem;color:var(--charcoal);line-height:1.5;font-weight:300;}
+
+/* SUMMARY CARDS */
+.summary-section{margin-bottom:12px;}
+.summary-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:var(--r-inner);
+  padding:12px 16px;cursor:pointer;transition:background .18s;
+}
+.summary-toggle:hover{background:var(--amber-pale);}
+.summary-toggle-label{font-size:.85rem;font-weight:500;color:var(--charcoal);}
+.summary-toggle-icon{font-size:.8rem;color:var(--mid-light);transition:transform .2s;}
+.summary-toggle-icon.open{transform:rotate(90deg);}
+.summary-body{
+  background:var(--cream);border:1px solid var(--ls);border-top:none;
+  border-radius:0 0 var(--r-inner) var(--r-inner);
+  padding:12px 16px;
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+}
+.summary-body.open{max-height:300px;}
+.summary-row{
+  display:flex;gap:8px;justify-content:space-between;
+  font-size:.82rem;padding:5px 0;
+  border-bottom:1px solid var(--ls);
+}
+.summary-row:last-child{border-bottom:none;}
+.sum-key{color:var(--mid);font-weight:400;}
+.sum-val{color:var(--charcoal);font-weight:500;text-align:right;max-width:60%;}
+
+/* FOOTER */
+.screen-footer{
+  flex-shrink:0;padding:12px 20px 16px;
+  background:var(--cream);border-top:1px solid var(--ls);
+}
+.footer-note{font-size:.72rem;color:var(--mid-light);text-align:center;margin-bottom:8px;}
+.btn-primary{
+  width:100%;padding:14px;border-radius:var(--r-pill);
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.92rem;font-weight:500;cursor:pointer;
+  transition:all .2s;box-shadow:0 4px 16px rgba(168,78,42,.28);
+}
+.btn-primary:hover:not(:disabled){background:var(--amber-deep);transform:translateY(-1px);box-shadow:0 6px 22px rgba(168,78,42,.4);}
+.btn-primary:disabled{background:rgba(107,94,82,.25);color:rgba(107,94,82,.6);box-shadow:none;cursor:not-allowed;transform:none;}
+
+/* SUCCESS SCREEN */
+.success-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px 28px;gap:12px;
+}
+.success-check{margin-bottom:8px;}
+.success-title{font-family:var(--fd);font-weight:900;font-size:2rem;letter-spacing:-.02em;color:var(--charcoal);}
+.success-emoji{font-size:2rem;}
+.success-body{font-size:.9rem;color:var(--mid);line-height:1.7;max-width:340px;}
+.success-body strong{color:var(--charcoal);}
+.success-actions{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:8px;}
+.btn-outline{
+  padding:13px;border-radius:var(--r-pill);
+  border:1.5px solid var(--clay);background:transparent;color:var(--clay);
+  font-family:var(--fb);font-size:.88rem;font-weight:500;cursor:pointer;
+  transition:all .18s;
+}
+.btn-outline:hover{background:var(--clay);color:white;}
+.btn-ghost{
+  padding:10px;background:none;border:none;
+  font-family:var(--fb);font-size:.85rem;color:var(--mid);cursor:pointer;
+  transition:color .18s;
+}
+.btn-ghost:hover{color:var(--clay);}
+
+/* Slider */
+.slider-wrap{padding:6px 0;}
+.slider-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.slider-lbl{font-size:.82rem;color:var(--charcoal);}
+.slider-val{font-family:var(--fd);font-weight:700;font-size:1rem;color:var(--clay);}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:rgba(107,94,82,.15);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);box-shadow:0 2px 8px rgba(232,146,58,.4);transition:transform .15s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);}
+.slider-ends{display:flex;justify-content:space-between;font-size:.65rem;color:var(--mid-light);margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <div class="header-row">
+      <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+      <div class="header-center">
+        <div class="header-title">Adoption Application</div>
+        <div class="header-sub">Linus &amp; Chester · BC SPCA Vancouver</div>
+        <div class="header-step" id="stepLabel">Step 1 of 4</div>
+      </div>
+      <button class="header-close" onclick="confirmClose()">✕</button>
+    </div>
+    <!-- Step dots -->
+    <div class="steps-row" id="stepsRow">
+      <div class="step-dot active" data-s="0">1</div>
+      <div class="step-line" data-l="0"></div>
+      <div class="step-dot todo" data-s="1">2</div>
+      <div class="step-line" data-l="1"></div>
+      <div class="step-dot todo" data-s="2">3</div>
+      <div class="step-line" data-l="2"></div>
+      <div class="step-dot todo" data-s="3">4</div>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens-wrap">
+
+    <!-- ═══ STEP 1 — ABOUT YOU ═══ -->
+    <div class="screen active" data-step="0" id="s0">
+      <div class="section-label">About you</div>
+
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Full name <span class="req">*</span> <span class="pre-filled">pre-filled</span></div>
+          <input class="field-input pre" type="text" value="Sarah Chen" id="s1-name">
+        </div>
+        <div class="field">
+          <div class="field-label">Email <span class="req">*</span> <span class="pre-filled">pre-filled</span></div>
+          <input class="field-input pre" type="email" value="sarah.chen@gmail.com" id="s1-email">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Phone number <span class="req">*</span></div>
+        <input class="field-input" type="tel" placeholder="(604) 555-0123" id="s1-phone" oninput="validateS0()">
+      </div>
+
+      <div class="field">
+        <div class="field-label">Street address <span class="req">*</span></div>
+        <input class="field-input" type="text" placeholder="e.g. 2145 W 10th Ave" id="s1-street" oninput="validateS0()">
+      </div>
+
+      <div class="field-row thirds">
+        <div class="field">
+          <div class="field-label">City <span class="req">*</span></div>
+          <select class="field-select" id="s1-city" onchange="validateS0()">
+            <option value="">Select…</option>
+            <option selected>Vancouver</option>
+            <option>Burnaby</option>
+            <option>Richmond</option>
+            <option>North Vancouver</option>
+            <option>West Vancouver</option>
+            <option>Coquitlam</option>
+            <option>Surrey</option>
+            <option>Langley</option>
+            <option>New Westminster</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-label">Province</div>
+          <input class="field-input pre" type="text" value="BC" readonly>
+        </div>
+        <div class="field">
+          <div class="field-label">Postal code <span class="req">*</span></div>
+          <input class="field-input" type="text" placeholder="V6K 2A1" id="s1-postal" maxlength="7" oninput="validateS0()">
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">How long have you lived at this address?</div>
+        <select class="field-select" id="s1-tenure">
+          <option>Less than 6 months</option>
+          <option>6–12 months</option>
+          <option selected>1–2 years</option>
+          <option>2–5 years</option>
+          <option>5+ years</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Do you rent or own? <span class="req">*</span></div>
+        <div class="pill-row">
+          <button class="pill" data-group="tenure" data-val="rent" onclick="selectPill(this);showRentQ(true)">Renting</button>
+          <button class="pill selected" data-group="tenure" data-val="own" onclick="selectPill(this);showRentQ(false)">Own my home</button>
+        </div>
+      </div>
+
+      <div class="sub-q" id="rent-q">
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">Does your landlord permit pets?</div>
+          <div class="pill-row">
+            <button class="pill" data-group="landlord" data-val="yes" onclick="selectPill(this)">✓ Yes, permitted</button>
+            <button class="pill" data-group="landlord" data-val="no" onclick="selectPill(this)">Not yet confirmed</button>
+            <button class="pill" data-group="landlord" data-val="ask" onclick="selectPill(this)">Will ask</button>
+          </div>
+          <div class="field-hint">Many landlords approve small, quiet animals. We can provide a pet résumé template if needed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2 — YOUR HOME ═══ -->
+    <div class="screen" data-step="1" id="s1">
+      <div class="section-label">Your home</div>
+
+      <div class="field">
+        <div class="field-label">Housing type <span class="pre-filled">pre-filled from profile</span></div>
+        <div class="option-cards" id="s2-housing">
+          <div class="option-card selected" data-val="apartment" onclick="selectOptionCard('s2-housing',this)">
+            <span class="oc-emoji">🏢</span>
+            <div><div class="oc-label">Apartment / Condo</div><div class="oc-sub">Perfect for Linus &amp; Chester — both low-energy apartment dogs</div></div>
+          </div>
+          <div class="option-card" data-val="house" onclick="selectOptionCard('s2-housing',this)">
+            <span class="oc-emoji">🏠</span>
+            <div><div class="oc-label">House</div></div>
+          </div>
+          <div class="option-card" data-val="townhouse" onclick="selectOptionCard('s2-housing',this)">
+            <span class="oc-emoji">🏘</span>
+            <div><div class="oc-label">Townhouse</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Outdoor / yard access <span class="pre-filled">pre-filled</span></div>
+        <div class="pill-row">
+          <button class="pill" data-group="yard" data-val="yes" onclick="selectPill(this)">✓ Have outdoor space</button>
+          <button class="pill selected" data-group="yard" data-val="no" onclick="selectPill(this)">No yard</button>
+        </div>
+        <div class="field-hint">That's fine — Linus &amp; Chester are apartment dogs who enjoy short, gentle walks.</div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="field">
+        <div class="field-label">How would Linus &amp; Chester spend most of their time? <span class="req">*</span></div>
+        <div class="option-cards" id="s2-time">
+          <div class="option-card selected" data-val="indoor" onclick="selectOptionCard('s2-time',this)">
+            <span class="oc-emoji">🛋</span>
+            <div><div class="oc-label">Mostly indoors</div><div class="oc-sub">Short walks, long naps — exactly what they love</div></div>
+          </div>
+          <div class="option-card" data-val="mix" onclick="selectOptionCard('s2-time',this)">
+            <span class="oc-emoji">🌤</span>
+            <div><div class="oc-label">Mix of indoor and outdoor</div></div>
+          </div>
+          <div class="option-card" data-val="outdoor" onclick="selectOptionCard('s2-time',this)">
+            <span class="oc-emoji">🌲</span>
+            <div><div class="oc-label">Mostly outdoors</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Where will they sleep? <span class="req">*</span></div>
+        <div class="pill-row" style="flex-wrap:wrap;">
+          <button class="pill selected" data-group="sleep" onclick="selectPill(this)">My bed</button>
+          <button class="pill" data-group="sleep" onclick="selectPill(this)">Dog bed in bedroom</button>
+          <button class="pill" data-group="sleep" onclick="selectPill(this)">Crate</button>
+          <button class="pill" data-group="sleep" onclick="selectPill(this)">Their own space</button>
+          <button class="pill" data-group="sleep" onclick="selectPill(this)">Undecided</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="slider-wrap">
+          <div class="slider-label-row">
+            <span class="slider-lbl">Hours alone per day</span>
+            <span class="slider-val" id="alone-val">~4 hours</span>
+          </div>
+          <input type="range" min="0" max="12" value="4" step="1"
+            oninput="document.getElementById('alone-val').textContent='~'+this.value+(this.value==1?' hour':' hours')">
+          <div class="slider-ends"><span>Never alone</span><span>12 hrs/day</span></div>
+        </div>
+        <div class="field-hint">Linus &amp; Chester are bonded — they keep each other company. Under 6 hrs alone is ideal for this pair.</div>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3 — YOUR EXPERIENCE ═══ -->
+    <div class="screen" data-step="2" id="s2">
+      <div class="section-label">Your experience</div>
+
+      <div class="field">
+        <div class="field-label">Pet ownership experience <span class="pre-filled">pre-filled from profile</span></div>
+        <div class="option-cards" id="s3-exp">
+          <div class="option-card" data-val="first" onclick="selectOptionCard('s3-exp',this)">
+            <span class="oc-emoji">🐣</span>
+            <div><div class="oc-label">First time</div></div>
+          </div>
+          <div class="option-card" data-val="some" onclick="selectOptionCard('s3-exp',this)">
+            <span class="oc-emoji">🐾</span>
+            <div><div class="oc-label">Some experience</div><div class="oc-sub">Had pets before, been a while</div></div>
+          </div>
+          <div class="option-card selected" data-val="experienced" onclick="selectOptionCard('s3-exp',this)">
+            <span class="oc-emoji">⭐</span>
+            <div><div class="oc-label">Experienced</div><div class="oc-sub">Pets most of my life</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="field">
+        <div class="field-label">Current pets (list any you have)</div>
+        <div id="petList">
+          <div class="pet-item" id="pet-1">
+            <input class="field-input" type="text" placeholder="e.g. Cat, 3 years old, spayed" style="flex:1;" value="Mochi — cat, 4 yrs, spayed">
+            <button class="pet-remove" onclick="removePet('pet-1')">✕</button>
+          </div>
+        </div>
+        <button class="add-pet-btn" onclick="addPet()">+ Add another pet</button>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Have you ever had to give up a pet?</div>
+        <div class="pill-row">
+          <button class="pill" data-group="giveup" data-val="yes" onclick="selectPill(this);showGiveupQ(true)">Yes</button>
+          <button class="pill selected" data-group="giveup" data-val="no" onclick="selectPill(this);showGiveupQ(false)">No</button>
+        </div>
+      </div>
+
+      <div class="sub-q" id="giveup-q">
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">What happened? <span class="req">*</span></div>
+          <textarea class="field-textarea" placeholder="Please share what led to that decision. We ask this to understand the full picture, not to judge."></textarea>
+          <div class="field-hint">This is a safe space. Your honest answer helps us find the right match — not disqualify you.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">What attracted you to Linus &amp; Chester specifically? <span class="req">*</span></div>
+        <textarea class="field-textarea" id="why-text" placeholder="Tell us in your own words what drew you to this pair. What was it about their photo, story, or traits that resonated with you?" oninput="updateCharCount('why-text','why-count',50)"></textarea>
+        <div class="char-count" id="why-count">Minimum 50 characters</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">What are you hoping they'll bring to your life?</div>
+        <textarea class="field-textarea" placeholder="Companionship, routine, a reason to walk more, a second heartbeat in the apartment… whatever feels true." oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 4 — REVIEW & SUBMIT ═══ -->
+    <div class="screen" data-step="3" id="s3">
+      <div class="section-label">Review &amp; submit</div>
+
+      <!-- Summary accordion -->
+      <div class="summary-section">
+        <div class="summary-toggle" onclick="toggleSummary(this)">
+          <span class="summary-toggle-label">👤 About you</span>
+          <span class="summary-toggle-icon">›</span>
+        </div>
+        <div class="summary-body">
+          <div class="summary-row"><span class="sum-key">Name</span><span class="sum-val">Sarah Chen</span></div>
+          <div class="summary-row"><span class="sum-key">Email</span><span class="sum-val">sarah.chen@gmail.com</span></div>
+          <div class="summary-row"><span class="sum-key">Location</span><span class="sum-val">Kitsilano, Vancouver BC</span></div>
+          <div class="summary-row"><span class="sum-key">Tenure</span><span class="sum-val">Own — 1–2 years</span></div>
+        </div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-toggle" onclick="toggleSummary(this)">
+          <span class="summary-toggle-label">🏢 Your home</span>
+          <span class="summary-toggle-icon">›</span>
+        </div>
+        <div class="summary-body">
+          <div class="summary-row"><span class="sum-key">Housing</span><span class="sum-val">Apartment / Condo</span></div>
+          <div class="summary-row"><span class="sum-key">Yard</span><span class="sum-val">No outdoor space</span></div>
+          <div class="summary-row"><span class="sum-key">Time arrangement</span><span class="sum-val">Mostly indoors</span></div>
+          <div class="summary-row"><span class="sum-key">Sleeping</span><span class="sum-val">My bed</span></div>
+          <div class="summary-row"><span class="sum-key">Alone time</span><span class="sum-val">~4 hours/day</span></div>
+        </div>
+      </div>
+      <div class="summary-section">
+        <div class="summary-toggle" onclick="toggleSummary(this)">
+          <span class="summary-toggle-label">🐾 Your experience</span>
+          <span class="summary-toggle-icon">›</span>
+        </div>
+        <div class="summary-body">
+          <div class="summary-row"><span class="sum-key">Experience</span><span class="sum-val">Experienced (lifelong pet owner)</span></div>
+          <div class="summary-row"><span class="sum-key">Current pets</span><span class="sum-val">Mochi — cat, 4 yrs, spayed</span></div>
+          <div class="summary-row"><span class="sum-key">Given up pet</span><span class="sum-val">No</span></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- Agreements -->
+      <div class="field">
+        <div class="field-label" style="margin-bottom:10px;">Please read and confirm each statement <span class="req">*</span></div>
+
+        <div class="checkbox-field" onclick="toggleCb(this,'cb1')" id="cb1-wrap">
+          <div class="cb-box" id="cb1"></div>
+          <div class="cb-text">I understand that adopting Linus &amp; Chester is a lifelong commitment. I am prepared to provide proper care, regular veterinary attention, and a loving, stable home for both dogs.</div>
+        </div>
+        <div class="checkbox-field" onclick="toggleCb(this,'cb2')" id="cb2-wrap">
+          <div class="cb-box" id="cb2"></div>
+          <div class="cb-text">I agree that if my circumstances change and I can no longer care for them, I will contact BC SPCA Vancouver before rehoming or surrendering this animal.</div>
+        </div>
+        <div class="checkbox-field" onclick="toggleCb(this,'cb3')" id="cb3-wrap">
+          <div class="cb-box" id="cb3"></div>
+          <div class="cb-text">I consent to a home visit if requested by BC SPCA Vancouver as part of the adoption process.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SUCCESS ═══ -->
+    <div class="screen" data-step="4" id="s4" style="overflow-y:auto;">
+      <div class="success-screen">
+        <div class="success-check">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(232,146,58,.15)" stroke-width="6"/>
+            <circle cx="40" cy="40" r="36" fill="none" stroke="var(--amber)" stroke-width="6"
+              stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round"
+              id="successRing" style="transform:rotate(-90deg);transform-origin:center;
+              transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1) .2s;"/>
+            <path d="M26 40 L36 50 L54 32" fill="none" stroke="var(--amber)" stroke-width="4"
+              stroke-linecap="round" stroke-linejoin="round"
+              stroke-dasharray="40" stroke-dashoffset="40"
+              id="successCheck" style="transition:stroke-dashoffset .6s ease .9s;"/>
+          </svg>
+        </div>
+        <div class="success-emoji">🐾</div>
+        <div class="success-title">Application sent!</div>
+        <div class="success-body">
+          We've let <strong>BC SPCA Vancouver</strong> know you're interested in <strong>Linus &amp; Chester</strong>.
+          They'll be in touch at <strong>sarah.chen@gmail.com</strong> within 3–5 business days.<br><br>
+          In the meantime, you're welcome to message them directly — they're friendly!
+        </div>
+        <div class="success-actions">
+          <button class="btn-primary" onclick="window.location='app-messages.html'">💬 Message BC SPCA Vancouver</button>
+          <button class="btn-outline" onclick="window.location='app-swipe-screen.html'">Keep swiping 🐾</button>
+          <button class="btn-ghost" onclick="window.location='app-matches.html'">View my matches</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screens-wrap -->
+
+  <!-- FOOTER -->
+  <div class="screen-footer" id="screenFooter">
+    <div class="footer-note" id="footerNote"></div>
+    <button class="btn-primary" id="continueBtn" onclick="advance()" disabled>Continue →</button>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+let step = 0;
+const totalSteps = 4;
+
+function advance() {
+  if (step < totalSteps - 1) {
+    goTo(step + 1);
+  } else if (step === totalSteps - 1) {
+    submitApp();
+  }
+}
+
+function goBack() {
+  if (step > 0) goTo(step - 1, true);
+}
+
+function goTo(next, back = false) {
+  const screens = document.querySelectorAll('.screen');
+  const from = screens[step];
+  const to = screens[next];
+  from.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1)';
+  to.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1)';
+  if (!back) {
+    to.style.transform = 'translateX(100%)';
+    requestAnimationFrame(() => {
+      from.classList.remove('active'); from.style.transform = 'translateX(-100%)';
+      to.classList.add('active'); to.style.transform = 'translateX(0)';
+    });
+  } else {
+    to.style.transform = 'translateX(-100%)';
+    requestAnimationFrame(() => {
+      from.classList.remove('active'); from.style.transform = 'translateX(100%)';
+      to.classList.add('active'); to.style.transform = 'translateX(0)';
+    });
+  }
+  step = next;
+  updateUI();
+}
+
+function updateUI() {
+  // Steps row
+  document.querySelectorAll('[data-s]').forEach(dot => {
+    const s = parseInt(dot.dataset.s);
+    dot.className = 'step-dot ' + (s < step ? 'done' : s === step ? 'active' : 'todo');
+    if (s < step) dot.textContent = '✓';
+    else dot.textContent = s + 1;
+  });
+  document.querySelectorAll('[data-l]').forEach(line => {
+    const l = parseInt(line.dataset.l);
+    line.className = 'step-line' + (l < step ? ' done' : '');
+  });
+
+  document.getElementById('stepLabel').textContent = step < totalSteps ? `Step ${step + 1} of ${totalSteps}` : '';
+  document.getElementById('backBtn').style.opacity = step > 0 && step < totalSteps ? '1' : '0';
+  document.getElementById('backBtn').style.pointerEvents = step > 0 && step < totalSteps ? 'all' : 'none';
+
+  const footer = document.getElementById('screenFooter');
+  const btn = document.getElementById('continueBtn');
+  const note = document.getElementById('footerNote');
+
+  if (step >= totalSteps) { footer.style.display = 'none'; return; }
+  footer.style.display = '';
+
+  const labels = ['Continue →', 'Continue →', 'Continue →', 'Submit Application →'];
+  btn.textContent = labels[step];
+
+  if (step === totalSteps - 1) {
+    note.textContent = 'BC SPCA Vancouver typically responds within 3–5 business days.';
+  } else {
+    note.textContent = '';
+  }
+
+  validate();
+}
+
+function validate() {
+  const btn = document.getElementById('continueBtn');
+  if (step === 0) {
+    const phone = document.getElementById('s1-phone').value.trim();
+    const street = document.getElementById('s1-street').value.trim();
+    const postal = document.getElementById('s1-postal').value.trim();
+    btn.disabled = !(phone && street && postal);
+  } else if (step === 1) {
+    btn.disabled = false;
+  } else if (step === 2) {
+    const why = document.getElementById('why-text').value.trim();
+    btn.disabled = why.length < 50;
+  } else if (step === 3) {
+    const cb1 = document.getElementById('cb1').classList.contains('on');
+    const cb2 = document.getElementById('cb2').classList.contains('on');
+    const cb3 = document.getElementById('cb3').classList.contains('on');
+    btn.disabled = !(cb1 && cb2 && cb3);
+  }
+}
+
+function validateS0() { if (step === 0) validate(); }
+
+function submitApp() {
+  goTo(4);
+  // Trigger success animation
+  setTimeout(() => {
+    document.getElementById('successRing').style.strokeDashoffset = '0';
+    document.getElementById('successCheck').style.strokeDashoffset = '0';
+  }, 100);
+}
+
+// Interactions
+function selectPill(el) {
+  const group = el.dataset.group;
+  if (group) {
+    document.querySelectorAll(`.pill[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
+  }
+  el.classList.add('selected');
+  validate();
+}
+
+function selectOptionCard(containerId, el) {
+  document.querySelectorAll(`#${containerId} .option-card`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  validate();
+}
+
+function showRentQ(show) {
+  document.getElementById('rent-q').classList.toggle('open', show);
+}
+
+function showGiveupQ(show) {
+  document.getElementById('giveup-q').classList.toggle('open', show);
+}
+
+function toggleCb(wrap, id) {
+  const box = document.getElementById(id);
+  const isOn = box.classList.toggle('on');
+  wrap.classList.toggle('checked-state', isOn);
+  validate();
+}
+
+function updateCharCount(inputId, countId, min) {
+  const len = document.getElementById(inputId).value.trim().length;
+  const el = document.getElementById(countId);
+  if (len >= min) { el.textContent = `${len} characters ✓`; el.className = 'char-count good'; }
+  else { el.textContent = `${len}/${min} characters`; el.className = 'char-count'; }
+  validate();
+}
+
+function toggleSummary(toggle) {
+  const body = toggle.nextElementSibling;
+  const icon = toggle.querySelector('.summary-toggle-icon');
+  const isOpen = body.classList.toggle('open');
+  icon.classList.toggle('open', isOpen);
+}
+
+function addPet() {
+  const list = document.getElementById('petList');
+  const id = 'pet-' + Date.now();
+  const item = document.createElement('div');
+  item.className = 'pet-item'; item.id = id;
+  item.innerHTML = `<input class="field-input" type="text" placeholder="e.g. Dog, 2 years old, neutered" style="flex:1;"><button class="pet-remove" onclick="removePet('${id}')">✕</button>`;
+  list.appendChild(item);
+}
+
+function removePet(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function confirmClose() {
+  if (confirm('Discard this application? Your answers won\'t be saved.')) {
+    window.location.href = 'animal-detail.html';
+  }
+}
+
+// Init
+updateUI();
+document.getElementById('s1-phone').addEventListener('input', validateS0);
+</script>
+</body>
+</html>

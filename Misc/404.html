@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Page not found · PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--mid:#6B5E52;--mid-light:#9B8E84;
+  --charcoal:#1E1A17;
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--charcoal);
+  font-family:var(--fb);font-weight:300;
+  color:var(--cream);
+  display:flex;flex-direction:column;
+  min-height:100vh;
+  overflow:hidden;
+  position:relative;
+}
+
+/* Subtle radial glow */
+body::before{
+  content:'';
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(168,78,42,.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* Ghost 404 */
+.ghost-404{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--fd);font-weight:900;
+  font-size:clamp(120px,22vw,280px);
+  color:rgba(253,246,236,.04);
+  letter-spacing:-.04em;line-height:1;
+  white-space:nowrap;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* NAV */
+.nav{
+  position:relative;z-index:10;
+  padding:18px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.nav-logo{font-family:var(--fd);font-weight:900;font-size:1.2rem;color:var(--cream);letter-spacing:-.02em;text-decoration:none;}
+.nav-logo span{color:var(--amber);}
+.nav-link{font-size:.82rem;color:rgba(253,246,236,.4);text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:var(--cream);}
+
+/* CENTRE CONTENT */
+.centre{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:32px 24px;
+  position:relative;z-index:5;
+  gap:0;
+}
+
+/* Bouncing paw */
+@keyframes bounce{
+  0%,100%{transform:translateY(0) rotate(-5deg);}
+  40%{transform:translateY(-22px) rotate(3deg);}
+  60%{transform:translateY(-14px) rotate(-2deg);}
+}
+.paw-icon{
+  font-size:5.5rem;
+  display:block;
+  margin-bottom:24px;
+  animation:bounce 2.6s cubic-bezier(.36,.07,.19,.97) infinite;
+  filter:drop-shadow(0 8px 24px rgba(168,78,42,.4));
+  line-height:1;
+}
+
+/* Headline */
+.headline{
+  font-family:var(--fd);font-weight:700;font-size:clamp(1.6rem,5vw,2.2rem);
+  letter-spacing:-.02em;color:var(--cream);
+  margin-bottom:12px;line-height:1.1;
+}
+.headline em{font-style:italic;font-weight:300;color:var(--amber);}
+
+/* Body */
+.body-text{
+  font-size:clamp(.88rem,2.5vw,1rem);font-weight:300;
+  color:rgba(253,246,236,.45);
+  max-width:380px;line-height:1.7;
+  margin-bottom:32px;
+}
+
+/* Buttons */
+.btn-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.btn-clay{
+  padding:13px 28px;border-radius:100px;
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.9rem;font-weight:500;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:7px;
+  transition:all .2s;
+  box-shadow:0 4px 20px rgba(168,78,42,.35);
+}
+.btn-clay:hover{background:var(--amber-deep);transform:translateY(-2px);box-shadow:0 6px 26px rgba(168,78,42,.5);}
+.btn-outline{
+  padding:12px 28px;border-radius:100px;
+  background:transparent;color:rgba(253,246,236,.7);
+  border:1.5px solid rgba(253,246,236,.2);
+  font-family:var(--fb);font-size:.9rem;font-weight:400;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:7px;
+  transition:all .2s;
+}
+.btn-outline:hover{border-color:rgba(253,246,236,.5);color:var(--cream);transform:translateY(-2px);}
+
+/* Hint text */
+.hint{
+  margin-top:28px;font-size:.75rem;color:rgba(253,246,236,.2);
+  letter-spacing:.04em;
+}
+.hint a{color:rgba(232,146,58,.5);text-decoration:none;transition:color .2s;}
+.hint a:hover{color:var(--amber);}
+
+/* Decorative corner paws */
+.corner-paw{
+  position:absolute;
+  font-size:4rem;opacity:.04;
+  pointer-events:none;user-select:none;
+}
+.cp-tl{top:80px;left:30px;transform:rotate(-30deg);}
+.cp-tr{top:100px;right:40px;transform:rotate(20deg);}
+.cp-bl{bottom:60px;left:50px;transform:rotate(15deg);}
+.cp-br{bottom:80px;right:30px;transform:rotate(-20deg);}
+</style>
+</head>
+<body>
+
+<!-- Decorative corners -->
+<span class="corner-paw cp-tl">🐾</span>
+<span class="corner-paw cp-tr">🐾</span>
+<span class="corner-paw cp-bl">🐾</span>
+<span class="corner-paw cp-br">🐾</span>
+
+<!-- Ghost 404 -->
+<div class="ghost-404">404</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="pawswipe-vancouver.html">Paw<span>Swipe</span></a>
+  <a class="nav-link" href="shelters-directory.html">Shelters</a>
+</nav>
+
+<!-- CONTENT -->
+<div class="centre">
+  <span class="paw-icon">🐾</span>
+
+  <h1 class="headline">Hmm, that page<br>went for a <em>walk.</em></h1>
+
+  <p class="body-text">
+    The page you're looking for might have been adopted by another URL, moved to a forever home, or never existed in the first place.
+  </p>
+
+  <div class="btn-row">
+    <a class="btn-clay" href="pawswipe-vancouver.html">Go home →</a>
+    <a class="btn-outline" href="app-swipe-screen.html">🐾 Browse animals</a>
+  </div>
+
+  <div class="hint">
+    Looking for a shelter? Try <a href="shelters-directory.html">shelters-directory.html</a>
+  </div>
+</div>
+
+</body>
+</html>

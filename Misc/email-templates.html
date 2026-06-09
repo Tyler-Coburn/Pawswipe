@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Templates — PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--amber:#E8923A;--amber-deep:#C97520;
+  --clay:#A84E2A;--sage:#4A6E5C;--rain:#7B9DB0;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E8DDD2;font-family:var(--fb);font-weight:300;color:var(--charcoal);padding:0;}
+
+/* PICKER UI */
+.picker-bar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(30,26,23,.95);backdrop-filter:blur(14px);
+  padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.picker-logo{font-family:var(--fd);font-weight:900;font-size:1.1rem;color:#FDF6EC;letter-spacing:-.02em;}
+.picker-logo span{color:var(--amber);}
+.picker-sub{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(253,246,236,.35);}
+.picker-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.picker-tab{
+  padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);
+  background:transparent;font-family:var(--fb);font-size:.75rem;font-weight:400;
+  color:rgba(253,246,236,.55);cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.picker-tab:hover{background:rgba(255,255,255,.07);color:rgba(253,246,236,.85);}
+.picker-tab.active{background:rgba(232,146,58,.2);border-color:rgba(232,146,58,.4);color:var(--amber);font-weight:600;}
+
+/* EMAIL FRAME */
+.email-frame{
+  max-width:640px;margin:36px auto;padding:0 20px 80px;
+}
+.email-meta{
+  background:rgba(30,26,23,.06);border-radius:10px;padding:12px 16px;
+  margin-bottom:16px;font-size:.78rem;
+}
+.email-meta-row{display:flex;gap:8px;padding:4px 0;color:var(--mid);}
+.email-meta-key{font-weight:600;color:var(--charcoal);min-width:60px;}
+.email-meta-val{color:var(--mid);}
+.email-meta-subject{font-weight:500;color:var(--charcoal);}
+
+/* Email display panel */
+.email-display{display:none;}
+.email-display.active{display:block;}
+
+/* ── EMAIL BODY STYLES (all inline-CSS compatible) ── */
+.email-wrapper{
+  background:#FDF6EC;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 40px rgba(30,26,23,.12);
+  max-width:600px;
+  margin:0 auto;
+  font-family:'DM Sans',Helvetica,Arial,sans-serif;
+}
+
+/* Email header */
+.em-header{
+  background:#1E1A17;padding:24px 32px;text-align:left;
+  border-bottom:2px solid rgba(232,146,58,.2);
+}
+.em-wordmark{
+  font-family:'Fraunces',Georgia,serif;font-size:1.3rem;font-weight:900;
+  letter-spacing:-.02em;line-height:1;
+}
+.em-wordmark .paw{color:#A84E2A;font-style:italic;}
+.em-wordmark .swipe{color:#E8923A;}
+.em-tagline{font-size:.7rem;color:rgba(253,246,236,.35);margin-top:4px;letter-spacing:.04em;}
+
+/* Email body */
+.em-body{padding:32px;}
+.em-eyebrow{
+  font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:10px;
+}
+.em-headline{
+  font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1.6rem;
+  letter-spacing:-.02em;color:#1E1A17;line-height:1.15;margin-bottom:14px;
+}
+.em-headline em{font-style:italic;font-weight:300;color:var(--clay);}
+.em-intro{font-size:.9rem;color:#6B5E52;line-height:1.75;margin-bottom:20px;}
+.em-intro strong{color:#1E1A17;}
+
+/* Summary box */
+.em-summary{
+  background:#FFFAF4;border-left:3px solid var(--amber);
+  border-radius:0 10px 10px 0;padding:16px 18px;margin-bottom:20px;
+}
+.em-summary-title{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9B8E84;margin-bottom:10px;}
+.em-bullet{display:flex;gap:8px;font-size:.85rem;color:#6B5E52;margin-bottom:6px;line-height:1.4;}
+.em-bullet::before{content:'•';color:var(--amber);font-weight:900;flex-shrink:0;}
+.em-bullet:last-child{margin-bottom:0;}
+
+/* Quote */
+.em-quote{
+  background:#FBE8D4;border-left:3px solid var(--clay);
+  border-radius:0 10px 10px 0;padding:16px 18px;margin-bottom:20px;
+}
+.em-quote-text{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:300;font-size:.95rem;color:#1E1A17;line-height:1.65;}
+.em-quote-attr{font-size:.72rem;color:#9B8E84;margin-top:8px;}
+
+/* Steps */
+.em-steps{margin-bottom:20px;}
+.em-step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+.em-step-num{
+  width:24px;height:24px;border-radius:50%;
+  background:#A84E2A;color:white;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.em-step-text{font-size:.87rem;color:#6B5E52;line-height:1.5;}
+.em-step-text strong{color:#1E1A17;}
+
+/* CTA button */
+.em-cta-wrap{text-align:center;margin:24px 0;}
+.em-cta{
+  display:inline-block;padding:14px 32px;border-radius:100px;
+  background:#A84E2A;color:white;text-decoration:none;
+  font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:.9rem;font-weight:600;
+  letter-spacing:.01em;line-height:1;
+}
+.em-cta-secondary{
+  display:inline-block;padding:11px 28px;border-radius:100px;
+  border:1.5px solid #A84E2A;color:#A84E2A;text-decoration:none;
+  font-family:'DM Sans',Helvetica,Arial,sans-serif;font-size:.85rem;font-weight:500;
+  margin-top:10px;
+}
+
+/* Animal card in email */
+.em-animal{
+  background:#FFFAF4;border:1px solid rgba(232,146,58,.15);
+  border-radius:12px;padding:14px 16px;margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;
+}
+.em-animal-emoji{font-size:2.5rem;flex-shrink:0;}
+.em-animal-name{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:1.1rem;color:#1E1A17;}
+.em-animal-meta{font-size:.78rem;color:#9B8E84;margin-top:3px;}
+.em-animal-org{font-size:.7rem;color:#7B9DB0;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+
+/* Divider */
+.em-divider{height:1px;background:rgba(232,146,58,.15);margin:20px 0;}
+
+/* Compassionate notice */
+.em-compassion{
+  background:#F0F7F4;border:1px solid rgba(74,110,92,.15);
+  border-radius:10px;padding:16px 18px;margin-bottom:20px;
+}
+.em-compassion-title{font-size:.82rem;font-weight:600;color:var(--sage);margin-bottom:6px;}
+.em-compassion-text{font-size:.85rem;color:#6B5E52;line-height:1.65;}
+
+/* Footer */
+.em-footer{
+  background:#F5EDE3;padding:20px 32px;
+  border-top:1px solid rgba(232,146,58,.12);
+}
+.em-footer-logo{font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:.95rem;color:#A84E2A;letter-spacing:-.02em;margin-bottom:6px;}
+.em-footer-logo span{color:#E8923A;}
+.em-footer-text{font-size:.72rem;color:#9B8E84;line-height:1.6;}
+.em-footer-links{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+.em-footer-link{font-size:.7rem;color:#9B8E84;text-decoration:none;}
+
+/* USAGE NOTES PANEL */
+.usage-panel{
+  max-width:600px;margin:0 auto 24px;
+  background:rgba(30,26,23,.06);border-radius:12px;padding:14px 18px;
+  font-size:.78rem;color:var(--mid);line-height:1.6;
+}
+.usage-panel strong{color:var(--charcoal);}
+.usage-panel code{
+  background:rgba(30,26,23,.1);padding:1px 5px;border-radius:4px;
+  font-size:.72rem;font-family:'Courier New',monospace;color:var(--charcoal);
+}
+</style>
+</head>
+<body>
+
+<!-- PICKER BAR -->
+<div class="picker-bar">
+  <div>
+    <div class="picker-logo">Paw<span>Swipe</span></div>
+    <div class="picker-sub">Transactional email templates · v1.0</div>
+  </div>
+  <div class="picker-tabs">
+    <button class="picker-tab active" onclick="showEmail(0,this)">1. Match → Shelter</button>
+    <button class="picker-tab" onclick="showEmail(1,this)">2. Match → Adopter</button>
+    <button class="picker-tab" onclick="showEmail(2,this)">3. Application received</button>
+    <button class="picker-tab" onclick="showEmail(3,this)">4. Approved 🎉</button>
+    <button class="picker-tab" onclick="showEmail(4,this)">5. Not approved</button>
+  </div>
+</div>
+
+<div class="email-frame">
+
+  <!-- ═══ TEMPLATE 1 — Match → Shelter ═══ -->
+  <div class="email-display active" id="email-0">
+    <div class="email-meta">
+      <div class="email-meta-row"><span class="email-meta-key">To:</span><span class="email-meta-val">vancouver@spca.bc.ca</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">From:</span><span class="email-meta-val">matches@pawswipe.ca</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Subject:</span><span class="email-meta-subject email-meta-val">🐾 New match: Sarah Chen is interested in Linus &amp; Chester</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Trigger:</span><span class="email-meta-val">User swipes right / taps "I'm Interested"</span></div>
+    </div>
+    <div class="email-wrapper">
+      <div class="em-header">
+        <div class="em-wordmark"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        <div class="em-tagline">Vancouver &amp; Lower Mainland · Shelter notification</div>
+      </div>
+      <div class="em-body">
+        <div class="em-eyebrow">New match</div>
+        <div class="em-headline">Someone is interested in <em>Linus &amp; Chester.</em></div>
+
+        <div class="em-animal">
+          <div class="em-animal-emoji">🐶</div>
+          <div>
+            <div class="em-animal-name">Linus &amp; Chester</div>
+            <div class="em-animal-meta">Senior · Bonded pair · Havanese / Chihuahua-Dachshund</div>
+            <div class="em-animal-org">BC SPCA Vancouver · Listed 34 days</div>
+          </div>
+        </div>
+
+        <div class="em-intro"><strong>Sarah Chen</strong> just liked their profile on PawSwipe Vancouver. Here's a quick look at her household:</div>
+
+        <div class="em-summary">
+          <div class="em-summary-title">Household snapshot</div>
+          <div class="em-bullet">Lives in a 2-bedroom apartment in Kitsilano, Vancouver — owns her home</div>
+          <div class="em-bullet">1 resident cat (Mochi, 4 yrs, spayed) — Linus &amp; Chester listed as cat-friendly</div>
+          <div class="em-bullet">Experienced pet owner · ~4 hours home alone daily · Moderate activity</div>
+        </div>
+
+        <div class="em-cta-wrap">
+          <a href="#" class="em-cta">View Sarah's full interest →</a><br>
+          <a href="#" class="em-cta-secondary">Message Sarah directly</a>
+        </div>
+
+        <div class="em-divider"></div>
+        <div class="em-intro" style="font-size:.82rem;">You have <strong>3 applications</strong> waiting for a response. Adopters typically expect to hear back within 3–5 business days.</div>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">Paw<span>Swipe</span></div>
+        <div class="em-footer-text">You're receiving this because your shelter is a PawSwipe partner. To manage notification preferences, visit your shelter dashboard.</div>
+        <div class="em-footer-links">
+          <a href="#" class="em-footer-link">Shelter dashboard</a>
+          <a href="#" class="em-footer-link">Notification settings</a>
+          <a href="#" class="em-footer-link">Unsubscribe</a>
+        </div>
+      </div>
+    </div>
+    <div class="usage-panel"><strong>Usage:</strong> Sent to shelter when an adopter swipes right or taps "I'm Interested". Triggered by Supabase Edge Function on <code>swipes</code> table insert where <code>direction = 'right'</code>. Use Resend template ID <code>match-to-shelter-v1</code>.</div>
+  </div>
+
+  <!-- ═══ TEMPLATE 2 — Match → Adopter ═══ -->
+  <div class="email-display" id="email-1">
+    <div class="email-meta">
+      <div class="email-meta-row"><span class="email-meta-key">To:</span><span class="email-meta-val">sarah.chen@gmail.com</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">From:</span><span class="email-meta-val">matches@pawswipe.ca</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Subject:</span><span class="email-meta-subject email-meta-val">You matched with Linus &amp; Chester! 🎉</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Trigger:</span><span class="email-meta-val">Immediately after adopter swipes right</span></div>
+    </div>
+    <div class="email-wrapper">
+      <div class="em-header">
+        <div class="em-wordmark"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        <div class="em-tagline">Vancouver &amp; Lower Mainland · Match confirmation</div>
+      </div>
+      <div class="em-body">
+        <div class="em-eyebrow">🎉 It's a match</div>
+        <div class="em-headline">You matched with <em>Linus &amp; Chester!</em></div>
+
+        <div class="em-intro">Great news, Sarah — <strong>BC SPCA Vancouver</strong> has received your interest in Linus &amp; Chester. They're a wonderful team and you sound like exactly what they need. The shelter will be in touch soon.</div>
+
+        <div class="em-animal">
+          <div class="em-animal-emoji">🐶</div>
+          <div>
+            <div class="em-animal-name">Linus &amp; Chester</div>
+            <div class="em-animal-meta">Senior · Bonded pair · In care 34 days · 🔥 Urgent</div>
+            <div class="em-animal-org">BC SPCA Vancouver · 1205 E 7th Ave</div>
+          </div>
+        </div>
+
+        <div class="em-intro">In the meantime, you can message them directly — they're friendly and responsive.</div>
+
+        <div class="em-cta-wrap">
+          <a href="#" class="em-cta">💬 Message BC SPCA Vancouver</a><br>
+          <a href="#" class="em-cta-secondary">View Linus &amp; Chester's full profile →</a>
+        </div>
+
+        <div class="em-divider"></div>
+        <div class="em-summary">
+          <div class="em-summary-title">What happens next?</div>
+          <div class="em-bullet">BC SPCA Vancouver will review your interest and reach out within 3–5 business days</div>
+          <div class="em-bullet">They may invite you to a meet &amp; greet at 1205 E 7th Ave</div>
+          <div class="em-bullet">If it's a great fit, you'll complete a short adoption application</div>
+        </div>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">Paw<span>Swipe</span></div>
+        <div class="em-footer-text">PawSwipe Vancouver connects adopters with BC SPCA, VOKRA, RAPS, LAPS, and more. Free forever for adopters.</div>
+        <div class="em-footer-links">
+          <a href="#" class="em-footer-link">Browse more animals</a>
+          <a href="#" class="em-footer-link">View my matches</a>
+          <a href="#" class="em-footer-link">Unsubscribe</a>
+        </div>
+      </div>
+    </div>
+    <div class="usage-panel"><strong>Usage:</strong> Sent to adopter immediately after swipe right match. Triggered simultaneously with Template 1 by the same Edge Function. Use Resend template ID <code>match-to-adopter-v1</code>.</div>
+  </div>
+
+  <!-- ═══ TEMPLATE 3 — Application received ═══ -->
+  <div class="email-display" id="email-2">
+    <div class="email-meta">
+      <div class="email-meta-row"><span class="email-meta-key">To:</span><span class="email-meta-val">sarah.chen@gmail.com</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">From:</span><span class="email-meta-val">applications@pawswipe.ca</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Subject:</span><span class="email-meta-subject email-meta-val">Application submitted for Linus &amp; Chester ✓</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Trigger:</span><span class="email-meta-val">Adopter submits 4-step application form</span></div>
+    </div>
+    <div class="email-wrapper">
+      <div class="em-header">
+        <div class="em-wordmark"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        <div class="em-tagline">Vancouver &amp; Lower Mainland · Application confirmation</div>
+      </div>
+      <div class="em-body">
+        <div class="em-eyebrow">Application submitted</div>
+        <div class="em-headline">Your application is <em>on its way.</em></div>
+
+        <div class="em-intro">Hi Sarah — we've received your adoption application for <strong>Linus &amp; Chester</strong> at BC SPCA Vancouver. Here's your confirmation.</div>
+
+        <div class="em-animal">
+          <div class="em-animal-emoji">🐶</div>
+          <div>
+            <div class="em-animal-name">Linus &amp; Chester</div>
+            <div class="em-animal-meta">Application ref: APP-2026-0047 · Submitted May 18, 2026</div>
+            <div class="em-animal-org">BC SPCA Vancouver · (604) 879-7721</div>
+          </div>
+        </div>
+
+        <div class="em-intro" style="margin-bottom:16px;">The shelter will review your application and be in touch within <strong>3–5 business days</strong>. Here's what to expect:</div>
+
+        <div class="em-steps">
+          <div class="em-step">
+            <div class="em-step-num">1</div>
+            <div class="em-step-text"><strong>Shelter reviews your application</strong> — the team reads every one carefully before responding.</div>
+          </div>
+          <div class="em-step">
+            <div class="em-step-num">2</div>
+            <div class="em-step-text"><strong>You'll hear back by email and in the app</strong> — either an invitation to meet, a request for more info, or a status update.</div>
+          </div>
+          <div class="em-step">
+            <div class="em-step-num">3</div>
+            <div class="em-step-text"><strong>If it's a match — a meet &amp; greet!</strong> — you'll visit the shelter and let Linus &amp; Chester make the final call.</div>
+          </div>
+        </div>
+
+        <div class="em-cta-wrap">
+          <a href="#" class="em-cta">Message BC SPCA Vancouver →</a><br>
+          <a href="#" class="em-cta-secondary">View application status</a>
+        </div>
+
+        <div class="em-intro" style="font-size:.82rem;margin-top:0;">Questions? Reply directly to this email or message the shelter through the app. We're here to help.</div>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">Paw<span>Swipe</span></div>
+        <div class="em-footer-text">Application ref: APP-2026-0047 · sarah.chen@gmail.com · PawSwipe Vancouver</div>
+        <div class="em-footer-links">
+          <a href="#" class="em-footer-link">View application</a>
+          <a href="#" class="em-footer-link">Browse more animals</a>
+          <a href="#" class="em-footer-link">Unsubscribe</a>
+        </div>
+      </div>
+    </div>
+    <div class="usage-panel"><strong>Usage:</strong> Sent to adopter immediately on application submission. Triggered by <code>applications</code> table insert. Store <code>application_id</code> in email for reference linking. Resend template ID <code>application-received-v1</code>.</div>
+  </div>
+
+  <!-- ═══ TEMPLATE 4 — Approved ═══ -->
+  <div class="email-display" id="email-3">
+    <div class="email-meta">
+      <div class="email-meta-row"><span class="email-meta-key">To:</span><span class="email-meta-val">sarah.chen@gmail.com</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">From:</span><span class="email-meta-val">applications@pawswipe.ca</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Subject:</span><span class="email-meta-subject email-meta-val">🎉 Great news about Linus &amp; Chester!</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Trigger:</span><span class="email-meta-val">Shelter approves application in dashboard</span></div>
+    </div>
+    <div class="email-wrapper">
+      <div class="em-header">
+        <div class="em-wordmark"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        <div class="em-tagline">Vancouver &amp; Lower Mainland · Application update</div>
+      </div>
+      <div class="em-body">
+        <div class="em-eyebrow">🎉 Application approved</div>
+        <div class="em-headline">Great news, Sarah — <em>you're in!</em></div>
+
+        <div class="em-intro">BC SPCA Vancouver has reviewed your application for <strong>Linus &amp; Chester</strong> and they'd love to invite you to a meet &amp; greet. Here's a message from the team:</div>
+
+        <div class="em-quote">
+          <div class="em-quote-text">"Hi Sarah, we've reviewed your application and we'd love to invite you to a meet and greet at our shelter. Linus and Chester are going to adore you. We're available Saturday May 23, 12–4pm or Sunday May 24, 12–4pm. Please reply to confirm a time that works — we recommend bringing any other household members."</div>
+          <div class="em-quote-attr">— BC SPCA Vancouver team</div>
+        </div>
+
+        <div class="em-animal">
+          <div class="em-animal-emoji">🐶</div>
+          <div>
+            <div class="em-animal-name">Linus &amp; Chester</div>
+            <div class="em-animal-meta">Meet &amp; greet: BC SPCA Vancouver · 1205 E 7th Ave</div>
+            <div class="em-animal-org">Sat May 23 or Sun May 24 · 12–4pm</div>
+          </div>
+        </div>
+
+        <div class="em-cta-wrap">
+          <a href="#" class="em-cta">Reply to confirm your appointment →</a><br>
+          <a href="#" class="em-cta-secondary">Message BC SPCA directly</a>
+        </div>
+
+        <div class="em-intro" style="font-size:.82rem;margin-top:0;">When you visit, bring a valid ID and ideally bring all members of your household so Linus &amp; Chester can meet everyone. See you soon! 🐾</div>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">Paw<span>Swipe</span></div>
+        <div class="em-footer-text">Application APP-2026-0047 · Approved May 18, 2026 · BC SPCA Vancouver</div>
+        <div class="em-footer-links">
+          <a href="#" class="em-footer-link">View application</a>
+          <a href="#" class="em-footer-link">Shelter directions</a>
+          <a href="#" class="em-footer-link">Unsubscribe</a>
+        </div>
+      </div>
+    </div>
+    <div class="usage-panel"><strong>Usage:</strong> Sent to adopter when shelter clicks "Approve" in the application review dashboard. The shelter's message is pulled from <code>decision_message</code> in the <code>applications</code> table. Resend template ID <code>application-approved-v1</code>.</div>
+  </div>
+
+  <!-- ═══ TEMPLATE 5 — Not approved ═══ -->
+  <div class="email-display" id="email-4">
+    <div class="email-meta">
+      <div class="email-meta-row"><span class="email-meta-key">To:</span><span class="email-meta-val">sarah.chen@gmail.com</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">From:</span><span class="email-meta-val">applications@pawswipe.ca</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Subject:</span><span class="email-meta-subject email-meta-val">Update on your application for Linus &amp; Chester</span></div>
+      <div class="email-meta-row"><span class="email-meta-key">Trigger:</span><span class="email-meta-val">Shelter clicks "Decline" in application review</span></div>
+    </div>
+    <div class="email-wrapper">
+      <div class="em-header">
+        <div class="em-wordmark"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        <div class="em-tagline">Vancouver &amp; Lower Mainland · Application update</div>
+      </div>
+      <div class="em-body">
+        <div class="em-eyebrow">Application update</div>
+        <div class="em-headline">An update on <em>Linus &amp; Chester.</em></div>
+
+        <div class="em-intro">Hi Sarah — thank you for your thoughtful application for Linus &amp; Chester at BC SPCA Vancouver. After careful consideration, the team has decided to move forward with another applicant at this time.</div>
+
+        <div class="em-compassion">
+          <div class="em-compassion-title">This doesn't reflect on you.</div>
+          <div class="em-compassion-text">Adoption decisions involve many factors — match timing, household dynamics, and sometimes simply who arrived first. This outcome is not a judgement of you as a future pet owner. It means another match may be waiting. And it likely is.</div>
+        </div>
+
+        <div class="em-animal">
+          <div class="em-animal-emoji">🐾</div>
+          <div>
+            <div class="em-animal-name">Your perfect match is out there.</div>
+            <div class="em-animal-meta">PawSwipe has 248+ animals listed right now in the Lower Mainland.</div>
+            <div class="em-animal-org">BC SPCA · VOKRA · RAPS · LAPS · and more</div>
+          </div>
+        </div>
+
+        <div class="em-intro">Your preferences are saved. Swipe through new animals whenever you're ready — we'll keep looking with you.</div>
+
+        <div class="em-cta-wrap">
+          <a href="#" class="em-cta">Keep swiping — we'll help you find the right one →</a>
+        </div>
+
+        <div class="em-divider"></div>
+        <div class="em-intro" style="font-size:.82rem;margin-top:0;">If you have questions about this decision, you're welcome to message BC SPCA Vancouver directly through the app. They're kind people who care about getting it right for both the animals and the adopters.</div>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">Paw<span>Swipe</span></div>
+        <div class="em-footer-text">Application APP-2026-0047 · BC SPCA Vancouver · PawSwipe Vancouver</div>
+        <div class="em-footer-links">
+          <a href="#" class="em-footer-link">Browse animals</a>
+          <a href="#" class="em-footer-link">Message BC SPCA</a>
+          <a href="#" class="em-footer-link">Unsubscribe</a>
+        </div>
+      </div>
+    </div>
+    <div class="usage-panel"><strong>Usage:</strong> Sent to adopter when shelter clicks "Decline" in the application review dashboard. Subject line deliberately doesn't say "rejected" — it says "update". Tone is warm and non-shameful. Resend template ID <code>application-declined-v1</code>. Do NOT send this more than once per application.</div>
+  </div>
+
+</div><!-- /email-frame -->
+
+<script>
+function showEmail(idx, btn) {
+  document.querySelectorAll('.email-display').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.picker-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('email-' + idx).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 52, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

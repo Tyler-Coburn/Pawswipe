@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BC SPCA Vancouver — PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;--sage-light:#7EA88E;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-light:#B8D0DC;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);font-family:var(--fb);font-weight:300;color:var(--charcoal);}
+
+/* NAV */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(253,246,236,.93);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--ls);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 40px;
+}
+.nav-logo{font-family:var(--fd);font-weight:900;font-size:1.2rem;color:var(--clay);letter-spacing:-.02em;text-decoration:none;}
+.nav-logo span{color:var(--amber);}
+.nav-links{display:flex;gap:24px;align-items:center;}
+.nav-links a{font-size:.85rem;color:var(--mid);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--clay);}
+.nav-cta{
+  padding:8px 18px;border-radius:100px;
+  background:var(--clay);color:white;text-decoration:none;
+  font-size:.82rem;font-weight:500;
+  transition:all .2s;box-shadow:0 3px 12px rgba(168,78,42,.25);
+}
+.nav-cta:hover{background:var(--amber-deep);transform:translateY(-1px);}
+
+/* ══ HERO BANNER ══ */
+.hero{
+  height:280px;background:var(--charcoal);
+  position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;
+}
+.hero-glow{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 90% at 30% 50%,rgba(168,78,42,.25) 0%,transparent 65%);
+}
+.hero-paw{
+  position:absolute;right:-40px;bottom:-40px;
+  font-size:18rem;opacity:.04;line-height:1;
+  transform:rotate(15deg);
+}
+.hero-content{
+  position:relative;z-index:2;
+  padding:0 40px 32px;
+  display:flex;align-items:flex-end;gap:24px;width:100%;
+}
+.hero-logo{
+  width:88px;height:88px;border-radius:20px;
+  background:var(--clay);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:2.2rem;color:var(--cream);
+  flex-shrink:0;
+  box-shadow:0 8px 28px rgba(0,0,0,.35);
+  border:3px solid rgba(255,255,255,.1);
+}
+.hero-info{flex:1;}
+.hero-badges{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.hbadge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 11px;border-radius:100px;
+  font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+}
+.hb-type{background:rgba(168,78,42,.35);color:var(--blush);}
+.hb-nokill{background:rgba(74,110,92,.35);color:#90C4A8;}
+.hb-verify{background:rgba(232,146,58,.25);color:var(--amber);}
+.hero-name{
+  font-family:var(--fd);font-weight:900;font-size:2.4rem;
+  letter-spacing:-.03em;color:var(--cream);line-height:1;
+  margin-bottom:6px;
+}
+.hero-tagline{font-size:.9rem;color:rgba(253,246,236,.55);}
+.hero-back{
+  position:absolute;top:16px;left:40px;
+  display:flex;align-items:center;gap:6px;
+  font-size:.82rem;color:rgba(253,246,236,.5);text-decoration:none;
+  transition:color .2s;
+}
+.hero-back:hover{color:var(--cream);}
+
+/* ══ STATS BAR ══ */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--warm-white);border-bottom:1px solid var(--ls);
+}
+.stat-tile{
+  padding:20px 24px;text-align:center;
+  border-right:1px solid var(--ls);
+}
+.stat-tile:last-child{border-right:none;}
+.stat-num{
+  font-family:var(--fd);font-weight:900;font-size:1.9rem;
+  color:var(--clay);line-height:1;margin-bottom:4px;
+}
+.stat-lbl{font-size:.75rem;color:var(--mid);}
+
+/* ══ MAIN GRID ══ */
+.main{max-width:1100px;margin:0 auto;padding:40px 40px 80px;}
+.content-grid{
+  display:grid;grid-template-columns:1fr 340px;
+  gap:32px;align-items:start;
+}
+
+/* ── LEFT COL ── */
+.section-title{
+  font-family:var(--fd);font-weight:700;font-size:1.4rem;
+  letter-spacing:-.02em;margin-bottom:14px;color:var(--charcoal);
+}
+.section-title em{font-style:italic;font-weight:300;color:var(--clay);}
+.about-text{
+  font-size:.92rem;color:var(--mid);line-height:1.8;margin-bottom:28px;
+}
+.section-divider{height:1px;background:var(--ls);margin:32px 0;}
+
+/* Animal filter bar */
+.filter-row{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.filter-pill{
+  padding:7px 16px;border-radius:100px;
+  border:1.5px solid var(--ls);background:var(--warm-white);
+  font-size:.8rem;font-weight:400;color:var(--mid);cursor:pointer;
+  transition:all .18s;font-family:var(--fb);
+}
+.filter-pill:hover{border-color:var(--amber);color:var(--clay);}
+.filter-pill.active{background:var(--clay);border-color:var(--clay);color:white;font-weight:500;}
+
+/* Animal grid */
+.animal-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:14px;margin-bottom:8px;
+}
+.acard{
+  background:var(--warm-white);border-radius:16px;overflow:hidden;
+  border:1px solid var(--ls);cursor:pointer;
+  transition:transform .22s,box-shadow .22s;
+}
+.acard:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(30,26,23,.1);}
+.acard-photo{
+  height:120px;display:flex;align-items:center;justify-content:center;
+  font-size:3.2rem;position:relative;overflow:hidden;
+}
+.acard-ribbon{
+  position:absolute;top:8px;left:8px;
+  padding:2px 8px;border-radius:100px;
+  font-size:.58rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+}
+.rbn-urgent{background:var(--clay);color:white;}
+.rbn-new{background:var(--sage);color:white;}
+.rbn-bonded{background:var(--rain);color:white;}
+.acard-body{padding:10px 12px 12px;}
+.acard-org{font-size:.62rem;color:var(--rain);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px;}
+.acard-name{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--charcoal);}
+.acard-meta{font-size:.7rem;color:var(--mid);margin-top:2px;}
+.acard-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px;}
+.at{padding:2px 7px;border-radius:100px;font-size:.6rem;font-weight:500;}
+.at-g{background:var(--sage-pale);color:var(--sage);}
+.at-b{background:var(--rain-pale);color:var(--rain);}
+.at-p{background:var(--blush);color:var(--clay);}
+
+/* Testimonials */
+.testimonial-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.testimonial{
+  background:var(--warm-white);border-radius:16px;padding:20px;
+  border:1px solid var(--ls);position:relative;overflow:hidden;
+}
+.testimonial::before{
+  content:'"';position:absolute;top:-10px;left:14px;
+  font-family:var(--fd);font-size:6rem;color:var(--blush);
+  opacity:.4;line-height:1;pointer-events:none;
+}
+.testi-quote{
+  font-family:var(--fd);font-style:italic;font-weight:300;
+  font-size:.9rem;color:var(--charcoal);line-height:1.7;
+  margin-bottom:14px;position:relative;
+}
+.testi-footer{display:flex;align-items:center;gap:10px;}
+.testi-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--clay);display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:.85rem;color:white;flex-shrink:0;
+}
+.testi-name{font-size:.82rem;font-weight:500;color:var(--charcoal);}
+.testi-animal{font-size:.72rem;color:var(--rain);}
+
+/* ── RIGHT COL (sticky) ── */
+.sticky-col{position:sticky;top:73px;}
+
+/* Contact card */
+.contact-card{
+  background:var(--charcoal);border-radius:20px;overflow:hidden;margin-bottom:16px;
+}
+.contact-map{
+  height:140px;background:var(--charcoal);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.map-grid-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.map-roads-bg{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:84px 84px;
+}
+.map-pin{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.map-pin-dot{
+  width:16px;height:16px;background:var(--amber);border-radius:50%;
+  border:3px solid rgba(253,246,236,.5);
+  box-shadow:0 0 0 6px rgba(232,146,58,.2),0 0 0 12px rgba(232,146,58,.08);
+}
+.map-pin-needle{width:2px;height:12px;background:rgba(232,146,58,.7);}
+.map-label-text{
+  background:var(--cream);color:var(--charcoal);
+  font-size:.65rem;font-weight:600;padding:3px 8px;border-radius:6px;
+  margin-top:6px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(30,26,23,.2);
+}
+.contact-body{padding:18px;}
+.contact-row{
+  display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:.82rem;
+}
+.contact-row:last-child{border-bottom:none;}
+.contact-icon{font-size:.9rem;flex-shrink:0;margin-top:1px;}
+.contact-val{color:rgba(253,246,236,.7);line-height:1.5;}
+.contact-val a{color:var(--amber);text-decoration:none;}
+.contact-val a:hover{text-decoration:underline;}
+
+/* Hours table */
+.hours-card{
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:16px;
+  overflow:hidden;margin-bottom:16px;
+}
+.hours-header{
+  padding:12px 16px;border-bottom:1px solid var(--ls);
+  font-family:var(--fd);font-weight:700;font-size:.9rem;color:var(--charcoal);
+  display:flex;align-items:center;gap:6px;
+}
+.hours-table{width:100%;border-collapse:collapse;}
+.hours-table td{padding:7px 16px;font-size:.8rem;border-bottom:1px solid var(--ls);}
+.hours-table tr:last-child td{border-bottom:none;}
+.hours-day{color:var(--mid);font-weight:400;}
+.hours-time{color:var(--charcoal);font-weight:500;text-align:right;}
+.hours-closed{color:var(--mid-light);font-style:italic;}
+.hours-today{background:rgba(232,146,58,.07);}
+.hours-today .hours-day{color:var(--amber-deep);font-weight:600;}
+.hours-today .hours-time{color:var(--amber-deep);}
+
+/* Fee card */
+.fee-card{
+  background:var(--amber-pale);border:1px solid rgba(232,146,58,.2);
+  border-radius:16px;padding:16px;margin-bottom:16px;
+}
+.fee-title{font-family:var(--fd);font-weight:700;font-size:.92rem;color:var(--charcoal);margin-bottom:10px;}
+.fee-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:.83rem;}
+.fee-species{color:var(--mid);}
+.fee-range{font-weight:600;color:var(--clay);}
+.fee-divider{height:1px;background:rgba(168,78,42,.12);margin:5px 0;}
+
+/* Included checklist */
+.included-card{
+  background:var(--sage-pale);border:1px solid rgba(74,110,92,.15);
+  border-radius:16px;padding:16px;margin-bottom:16px;
+}
+.included-title{font-family:var(--fd);font-weight:700;font-size:.88rem;color:var(--sage);margin-bottom:10px;}
+.included-item{
+  display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--charcoal);
+  padding:4px 0;
+}
+.included-check{
+  width:18px;height:18px;border-radius:5px;background:var(--sage);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;font-weight:700;color:white;flex-shrink:0;
+}
+
+/* Social links */
+.social-row{display:flex;gap:8px;margin-bottom:16px;}
+.social-btn{
+  flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--ls);
+  background:var(--warm-white);display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:.78rem;font-weight:500;color:var(--mid);cursor:pointer;text-decoration:none;
+  transition:all .18s;
+}
+.social-btn:hover{border-color:var(--amber);color:var(--clay);}
+
+/* CTA buttons */
+.cta-row{display:flex;flex-direction:column;gap:8px;margin-bottom:6px;}
+.btn-clay{
+  padding:13px;border-radius:100px;background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.9rem;font-weight:500;cursor:pointer;text-align:center;
+  transition:all .2s;box-shadow:0 3px 14px rgba(168,78,42,.28);text-decoration:none;
+  display:block;
+}
+.btn-clay:hover{background:var(--amber-deep);transform:translateY(-1px);}
+.btn-outline{
+  padding:11px;border-radius:100px;background:transparent;color:var(--clay);
+  border:1.5px solid var(--clay);font-family:var(--fb);font-size:.85rem;font-weight:500;
+  cursor:pointer;text-align:center;transition:all .18s;text-decoration:none;display:block;
+}
+.btn-outline:hover{background:var(--clay);color:white;}
+
+/* ══ NEARBY SHELTERS ══ */
+.nearby-section{margin-top:48px;}
+.nearby-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+.nearby-card{
+  background:var(--warm-white);border-radius:16px;padding:20px;border:1px solid var(--ls);
+  transition:transform .22s,box-shadow .22s;cursor:pointer;text-decoration:none;display:block;
+}
+.nearby-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(30,26,23,.09);}
+.nearby-card-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.nearby-avatar{
+  width:44px;height:44px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:1.1rem;color:white;flex-shrink:0;
+}
+.nearby-name{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--charcoal);}
+.nearby-loc{font-size:.73rem;color:var(--rain);margin-top:2px;}
+.nearby-desc{font-size:.8rem;color:var(--mid);line-height:1.6;margin-bottom:12px;}
+.nearby-footer{display:flex;align-items:center;justify-content:space-between;}
+.nearby-count{font-size:.75rem;color:var(--mid-light);}
+.nearby-link{font-size:.75rem;color:var(--amber);font-weight:500;}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){
+  .content-grid{grid-template-columns:1fr;}
+  .sticky-col{position:static;}
+  .animal-grid{grid-template-columns:repeat(2,1fr);}
+  .testimonial-grid{grid-template-columns:1fr;}
+  .nearby-grid{grid-template-columns:1fr;}
+  .hero-name{font-size:1.8rem;}
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .main{padding:28px 18px 60px;}
+  .nav{padding:12px 18px;}
+  .hero-content{padding:0 18px 24px;}
+  .hero-back{left:18px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="pawswipe-vancouver.html">Paw<span>Swipe</span></a>
+  <div class="nav-links">
+    <a href="app-swipe-screen.html">Discover</a>
+    <a href="shelters-directory.html">Shelters</a>
+    <a href="pawswipe-vancouver.html#how">How it works</a>
+    <a class="nav-cta" href="app-onboarding.html">Find my match →</a>
+  </div>
+</nav>
+
+<!-- HERO BANNER -->
+<section class="hero">
+  <a class="hero-back" href="shelters-directory.html">← All shelters</a>
+  <div class="hero-glow"></div>
+  <div class="hero-paw">🐾</div>
+  <div class="hero-content">
+    <div class="hero-logo">B</div>
+    <div class="hero-info">
+      <div class="hero-badges">
+        <span class="hbadge hb-type">🏥 SPCA</span>
+        <span class="hbadge hb-nokill">♻️ No-kill policy</span>
+        <span class="hbadge hb-verify">✓ Verified partner</span>
+      </div>
+      <div class="hero-name">BC SPCA Vancouver</div>
+      <div class="hero-tagline">British Columbia Society for the Prevention of Cruelty to Animals · Est. 1895</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-tile"><div class="stat-num">248</div><div class="stat-lbl">Animals listed now</div></div>
+  <div class="stat-tile"><div class="stat-num">1895</div><div class="stat-lbl">Established</div></div>
+  <div class="stat-tile"><div class="stat-num">36</div><div class="stat-lbl">BC branches</div></div>
+  <div class="stat-tile"><div class="stat-num">53,000+</div><div class="stat-lbl">Animals helped/year</div></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="content-grid">
+
+    <!-- ═══ LEFT COL ═══ -->
+    <div>
+
+      <!-- About -->
+      <div class="reveal">
+        <div class="section-title">About <em>BC SPCA Vancouver</em></div>
+        <div class="about-text">
+          The BC SPCA is British Columbia's oldest and most trusted animal welfare organisation — and the only one with the authority to investigate and enforce animal cruelty laws under the Prevention of Cruelty to Animals Act. Since 1895, the Vancouver branch has been a cornerstone of the city's relationship with animals, connecting thousands of pets with loving families each year.<br><br>
+          The Vancouver location handles dogs, cats, rabbits, small animals, and occasional exotic species. The site also includes the Dr. Doug Ingstrup Animal Hospital, a non-profit veterinary clinic open to the public — providing quality care at accessible prices. All adoption fees help fund ongoing shelter operations, medical care, and community outreach programs across BC.
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- Available animals -->
+      <div class="reveal">
+        <div class="section-title">Currently <em>available</em></div>
+        <div class="filter-row" id="animalFilters">
+          <button class="filter-pill active" data-filter="all" onclick="filterAnimals(this)">All (7)</button>
+          <button class="filter-pill" data-filter="dog" onclick="filterAnimals(this)">🐶 Dogs (3)</button>
+          <button class="filter-pill" data-filter="cat" onclick="filterAnimals(this)">🐱 Cats (3)</button>
+          <button class="filter-pill" data-filter="small" onclick="filterAnimals(this)">🐰 Small animals (1)</button>
+        </div>
+
+        <div class="animal-grid" id="animalGrid">
+          <!-- Linus & Chester -->
+          <a class="acard" href="animal-detail.html" data-species="dog">
+            <div class="acard-photo" style="background:#EDD5BC;">
+              🐶
+              <span class="acard-ribbon rbn-urgent">🔥 Urgent</span>
+            </div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Linus &amp; Chester</div>
+              <div class="acard-meta">Senior · Havanese / Chihuahua-Dachshund · 34 days</div>
+              <div class="acard-tags">
+                <span class="at at-b">Bonded pair</span>
+                <span class="at at-g">Apartment ok</span>
+              </div>
+            </div>
+          </a>
+          <!-- Snickers -->
+          <a class="acard" href="animal-detail.html" data-species="dog">
+            <div class="acard-photo" style="background:#E0C8B0;">
+              🐕
+              <span class="acard-ribbon rbn-urgent">🔥 Urgent</span>
+            </div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Snickers</div>
+              <div class="acard-meta">Adult · Mixed breed · 41 days</div>
+              <div class="acard-tags">
+                <span class="at at-p">Needs yard</span>
+                <span class="at at-p">High energy</span>
+              </div>
+            </div>
+          </a>
+          <!-- Bruno -->
+          <a class="acard" href="animal-detail.html" data-species="dog">
+            <div class="acard-photo" style="background:#D4C0A8;">🐕‍🦺</div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Bruno</div>
+              <div class="acard-meta">Adult · Labrador mix · 19 days</div>
+              <div class="acard-tags">
+                <span class="at at-g">Dog-friendly</span>
+                <span class="at at-g">Kid-friendly</span>
+              </div>
+            </div>
+          </a>
+          <!-- Marble -->
+          <a class="acard" href="animal-detail.html" data-species="cat">
+            <div class="acard-photo" style="background:#C8D4C8;">
+              🐱
+              <span class="acard-ribbon rbn-new">🌱 New</span>
+            </div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Marble</div>
+              <div class="acard-meta">Young · Tabby mix · 12 days</div>
+              <div class="acard-tags">
+                <span class="at at-g">Apartment ok</span>
+                <span class="at at-g">Playful</span>
+              </div>
+            </div>
+          </a>
+          <!-- Iris -->
+          <a class="acard" href="animal-detail.html" data-species="cat">
+            <div class="acard-photo" style="background:#C8D8D4;">🐈</div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Iris</div>
+              <div class="acard-meta">Senior · DSH · 28 days</div>
+              <div class="acard-tags">
+                <span class="at at-g">Gentle</span>
+                <span class="at at-b">Senior-friendly</span>
+              </div>
+            </div>
+          </a>
+          <!-- Luna -->
+          <a class="acard" href="animal-detail.html" data-species="cat">
+            <div class="acard-photo" style="background:#D4C8DC;">
+              🐈‍⬛
+              <span class="acard-ribbon rbn-new">🌱 New</span>
+            </div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Luna</div>
+              <div class="acard-meta">Adult · Black DSH · 5 days</div>
+              <div class="acard-tags">
+                <span class="at at-g">Indoor only</span>
+              </div>
+            </div>
+          </a>
+          <!-- Pebble -->
+          <a class="acard" href="animal-detail.html" data-species="small">
+            <div class="acard-photo" style="background:#D8C8B0;">🐰</div>
+            <div class="acard-body">
+              <div class="acard-org">BC SPCA Vancouver</div>
+              <div class="acard-name">Pebble</div>
+              <div class="acard-meta">Young · Holland Lop · 7 days</div>
+              <div class="acard-tags">
+                <span class="at at-g">Apartment ok</span>
+                <span class="at at-g">First-timer ok</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div style="text-align:center;margin-top:16px;">
+          <a href="app-swipe-screen.html" style="font-size:.85rem;color:var(--rain);font-weight:500;text-decoration:none;">View all 248 animals on PawSwipe →</a>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- Adoption stories -->
+      <div class="reveal">
+        <div class="section-title">Adoption <em>stories</em></div>
+        <div class="testimonial-grid">
+          <div class="testimonial">
+            <div class="testi-quote">"We weren't sure a senior dog could fit into our busy household, but Biscuit proved us completely wrong. He's the calmest, most loving presence — the kids are obsessed and so are we. The BC SPCA team was incredibly helpful through the whole process."</div>
+            <div class="testi-footer">
+              <div class="testi-avatar">MK</div>
+              <div>
+                <div class="testi-name">Megan K.</div>
+                <div class="testi-animal">Adopted Biscuit — Senior Beagle mix, 2025</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial">
+            <div class="testi-quote">"I went in expecting to look and left with Cleo. The staff really listened to what I needed — I live alone in a condo and they matched me with a cat who actually suits that lifestyle. It's been six months and she's my whole world."</div>
+            <div class="testi-footer">
+              <div class="testi-avatar" style="background:var(--sage);">DP</div>
+              <div>
+                <div class="testi-name">David P.</div>
+                <div class="testi-animal">Adopted Cleo — Adult DSH, 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ RIGHT COL ═══ -->
+    <div class="sticky-col">
+
+      <!-- CTA -->
+      <div class="cta-row" style="margin-bottom:16px;">
+        <a class="btn-clay" href="app-swipe-screen.html">🐾 Browse BC SPCA animals</a>
+        <a class="btn-outline" href="app-messages.html">💬 Message the shelter</a>
+      </div>
+
+      <!-- Contact -->
+      <div class="contact-card">
+        <div class="contact-map">
+          <div class="map-grid-bg"></div>
+          <div class="map-roads-bg"></div>
+          <div class="map-pin">
+            <div class="map-pin-dot"></div>
+            <div class="map-pin-needle"></div>
+            <div class="map-label-text">1205 E 7th Ave</div>
+          </div>
+        </div>
+        <div class="contact-body">
+          <div class="contact-row">
+            <span class="contact-icon">📍</span>
+            <span class="contact-val">1205 E 7th Ave, Vancouver BC V5T 1R1</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">📞</span>
+            <span class="contact-val"><a href="tel:6048797721">(604) 879-7721</a></span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">✉️</span>
+            <span class="contact-val"><a href="mailto:vancouver@spca.bc.ca">vancouver@spca.bc.ca</a></span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">🌐</span>
+            <span class="contact-val"><a href="https://spca.bc.ca" target="_blank">spca.bc.ca</a></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hours -->
+      <div class="hours-card">
+        <div class="hours-header">🕐 Adoption hours</div>
+        <table class="hours-table">
+          <tr><td class="hours-day">Monday</td><td class="hours-time">12:00 – 4:30pm</td></tr>
+          <tr><td class="hours-day">Tuesday</td><td class="hours-time">12:00 – 4:30pm</td></tr>
+          <tr><td class="hours-day">Wednesday</td><td class="hours-time">12:00 – 4:30pm</td></tr>
+          <tr class="hours-today"><td class="hours-day">Thursday</td><td class="hours-time hours-closed">Closed</td></tr>
+          <tr><td class="hours-day">Friday</td><td class="hours-time">12:00 – 4:30pm</td></tr>
+          <tr><td class="hours-day">Saturday</td><td class="hours-time">12:00 – 4:00pm</td></tr>
+          <tr><td class="hours-day">Sunday</td><td class="hours-time">12:00 – 4:00pm</td></tr>
+        </table>
+      </div>
+
+      <!-- Adoption fees -->
+      <div class="fee-card">
+        <div class="fee-title">💰 Adoption fees</div>
+        <div class="fee-row"><span class="fee-species">🐱 Cats &amp; kittens</span><span class="fee-range">$100–$200</span></div>
+        <div class="fee-divider"></div>
+        <div class="fee-row"><span class="fee-species">🐶 Dogs</span><span class="fee-range">$200–$400</span></div>
+        <div class="fee-divider"></div>
+        <div class="fee-row"><span class="fee-species">🐰 Rabbits &amp; small animals</span><span class="fee-range">$50–$100</span></div>
+        <div style="font-size:.7rem;color:var(--mid);margin-top:10px;">Fees vary by age. All fees support BC SPCA operations. Non-profit.</div>
+      </div>
+
+      <!-- What's included -->
+      <div class="included-card">
+        <div class="included-title">✓ Every adoption includes</div>
+        <div class="included-item"><div class="included-check">✓</div>Microchip implantation</div>
+        <div class="included-item"><div class="included-check">✓</div>BC Pet Registry enrollment</div>
+        <div class="included-item"><div class="included-check">✓</div>Age-appropriate vaccinations</div>
+        <div class="included-item"><div class="included-check">✓</div>Spay / neuter (if old enough)</div>
+        <div class="included-item"><div class="included-check">✓</div>Initial veterinary health check</div>
+        <div class="included-item"><div class="included-check">✓</div>Post-adoption support line</div>
+      </div>
+
+      <!-- Social -->
+      <div class="social-row">
+        <a class="social-btn" href="https://facebook.com/bcspca" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Facebook
+        </a>
+        <a class="social-btn" href="https://instagram.com/bcspca" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          Instagram
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NEARBY SHELTERS -->
+  <div class="nearby-section reveal">
+    <div class="section-title">Nearby <em>shelters &amp; rescues</em></div>
+    <div class="nearby-grid">
+      <a class="nearby-card" href="shelters-directory.html">
+        <div class="nearby-card-top">
+          <div class="nearby-avatar" style="background:var(--sage);">V</div>
+          <div>
+            <div class="nearby-name">VOKRA</div>
+            <div class="nearby-loc">📍 Foster-based, Vancouver · 2.1 km</div>
+          </div>
+        </div>
+        <div class="nearby-desc">Vancouver's dedicated cat rescue — 550 foster homes, no-kill, 1,400+ cats placed per year.</div>
+        <div class="nearby-footer">
+          <span class="nearby-count">68 cats available</span>
+          <span class="nearby-link">View shelter →</span>
+        </div>
+      </a>
+      <a class="nearby-card" href="shelters-directory.html">
+        <div class="nearby-card-top">
+          <div class="nearby-avatar" style="background:var(--rain);">R</div>
+          <div>
+            <div class="nearby-name">RAPS</div>
+            <div class="nearby-loc">📍 Richmond · ~12 km</div>
+          </div>
+        </div>
+        <div class="nearby-desc">Canada's largest no-kill cat sanctuary with 370+ resident cats and a full adoption programme.</div>
+        <div class="nearby-footer">
+          <span class="nearby-count">45 animals available</span>
+          <span class="nearby-link">View shelter →</span>
+        </div>
+      </a>
+      <a class="nearby-card" href="shelters-directory.html">
+        <div class="nearby-card-top">
+          <div class="nearby-avatar" style="background:#7D3419;">B</div>
+          <div>
+            <div class="nearby-name">BC SPCA West Vancouver</div>
+            <div class="nearby-loc">📍 1020 Pound Rd · ~9 km</div>
+          </div>
+        </div>
+        <div class="nearby-desc">The quieter North Shore sister location — often has seniors and bonded pairs overlooked at larger shelters.</div>
+        <div class="nearby-footer">
+          <span class="nearby-count">64 animals available</span>
+          <span class="nearby-link">View shelter →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function filterAnimals(btn) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const f = btn.dataset.filter;
+  document.querySelectorAll('.acard').forEach(card => {
+    card.style.display = (f === 'all' || card.dataset.species === f) ? '' : 'none';
+  });
+}
+
+// Scroll reveals
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach((el, i) => {
+  el.style.transitionDelay = (i * 60) + 'ms';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
