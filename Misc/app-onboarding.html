@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawSwipe — Let's find your match</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FDF6EC; --warm-white: #FFFAF4;
+  --amber: #E8923A; --amber-deep: #C97520; --amber-pale: #FBE8D4;
+  --clay: #A84E2A; --clay-deep: #7D3419;
+  --sage: #4A6E5C; --sage-pale: #D6EAE0;
+  --blush: #F2C4A0;
+  --rain: #7B9DB0; --rain-pale: #E8F2F7;
+  --charcoal: #1E1A17; --mid: #6B5E52; --mid-light: #9B8E84;
+  --light-stroke: rgba(232,146,58,0.15);
+  --font-d: 'Fraunces', Georgia, serif;
+  --font-b: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: #E8DDD2; font-family: var(--font-b); color: var(--charcoal); }
+
+/* ── SHELL ── */
+.onb-shell {
+  max-width: 480px; margin: 0 auto;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  background: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+@media (min-width: 480px) { .onb-shell { box-shadow: 0 0 60px rgba(30,26,23,0.18); } }
+
+/* ── TOP BAR ── */
+.top-bar {
+  height: 60px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  position: relative; z-index: 20;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid var(--light-stroke);
+  background: var(--warm-white);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; color: var(--mid);
+  transition: all 0.18s ease;
+  opacity: 0; pointer-events: none;
+}
+.back-btn.visible { opacity: 1; pointer-events: all; }
+.back-btn:hover { background: var(--amber-pale); border-color: var(--amber); color: var(--clay); }
+.top-logo { font-family: var(--font-d); font-weight: 900; font-size: 1.1rem; color: var(--clay); letter-spacing: -0.02em; }
+.top-logo span { color: var(--amber); }
+.top-progress { text-align: right; }
+.progress-text { font-size: 0.7rem; color: var(--mid-light); margin-bottom: 5px; }
+.progress-bar { width: 100px; height: 3px; background: rgba(107,94,82,0.15); border-radius: 100px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--amber); border-radius: 100px; transition: width 0.45s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* ── SCREENS CONTAINER ── */
+.screens-wrap {
+  flex: 1; overflow: hidden;
+  position: relative;
+}
+.screen {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 28px 24px 20px;
+  transform: translateX(100%);
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  scrollbar-width: thin;
+}
+.screen.active { transform: translateX(0); }
+.screen.exited-left { transform: translateX(-100%); }
+
+/* ── TYPOGRAPHY ── */
+.screen-eyebrow { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
+.screen-title { font-family: var(--font-d); font-weight: 900; font-size: 2rem; letter-spacing: -0.03em; line-height: 1.05; color: var(--charcoal); margin-bottom: 6px; }
+.screen-title em { font-style: italic; font-weight: 300; color: var(--clay); }
+.screen-sub { font-size: 0.9rem; color: var(--mid); line-height: 1.65; margin-bottom: 28px; }
+
+/* ── FORM ELEMENTS ── */
+.field { margin-bottom: 18px; }
+.field-label { font-size: 0.82rem; font-weight: 500; color: var(--charcoal); margin-bottom: 7px; display: block; }
+.field-select, .field-input {
+  width: 100%; padding: 12px 14px;
+  border-radius: 12px; border: 1.5px solid var(--light-stroke);
+  background: var(--warm-white); font-family: var(--font-b); font-size: 0.92rem;
+  font-weight: 300; color: var(--charcoal); outline: none; appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field-select { background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B5E52' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+.field-select:focus, .field-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,146,58,0.14); }
+
+/* OPTION CARDS (2×2 grid) */
+.option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.option-card {
+  background: var(--warm-white); border: 2px solid var(--light-stroke); border-radius: 14px;
+  padding: 16px 14px; cursor: pointer; text-align: center;
+  transition: all 0.2s ease; position: relative;
+}
+.option-card:hover { border-color: var(--amber); background: var(--amber-pale); }
+.option-card.selected { border-color: var(--clay); background: var(--amber-pale); }
+.option-card .check {
+  position: absolute; top: 8px; right: 8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--clay); color: white; font-size: 0.6rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0);
+  transition: opacity 0.18s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.option-card.selected .check { opacity: 1; transform: scale(1); }
+.option-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+.option-label { font-size: 0.85rem; font-weight: 500; color: var(--charcoal); }
+.option-sub { font-size: 0.72rem; color: var(--mid); margin-top: 3px; }
+
+/* PILL SELECTORS */
+.pill-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px; }
+.pill {
+  padding: 8px 16px; border-radius: 100px;
+  border: 1.5px solid var(--light-stroke); background: var(--warm-white);
+  font-size: 0.83rem; font-weight: 400; color: var(--mid);
+  cursor: pointer; transition: all 0.18s ease; font-family: var(--font-b);
+}
+.pill:hover { border-color: var(--amber); color: var(--clay); }
+.pill.selected { background: var(--clay); border-color: var(--clay); color: white; font-weight: 500; }
+
+/* SLIDE-IN SUB-QUESTION */
+.sub-q {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.sub-q.visible { max-height: 200px; opacity: 1; }
+
+/* LIFESTYLE CARDS */
+.lifestyle-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.lifestyle-card {
+  background: var(--warm-white); border: 2px solid var(--light-stroke); border-radius: 14px;
+  padding: 16px 18px; cursor: pointer; display: flex; align-items: center; gap: 14px;
+  transition: all 0.2s ease; border-left: 4px solid transparent;
+}
+.lifestyle-card:hover { border-color: var(--amber); background: var(--amber-pale); border-left-color: var(--amber); }
+.lifestyle-card.selected { border-color: var(--blush); background: var(--amber-pale); border-left-color: var(--clay); }
+.lifestyle-emoji { font-size: 1.8rem; flex-shrink: 0; }
+.lifestyle-text {}
+.lifestyle-label { font-size: 0.9rem; font-weight: 500; color: var(--charcoal); }
+.lifestyle-desc { font-size: 0.78rem; color: var(--mid); margin-top: 2px; line-height: 1.4; }
+
+/* SLIDER */
+.slider-wrap { margin-bottom: 20px; }
+.slider-label { font-size: 0.82rem; font-weight: 500; color: var(--charcoal); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.slider-value { font-family: var(--font-d); font-weight: 700; font-size: 1rem; color: var(--clay); }
+input[type=range] { width: 100%; -webkit-appearance: none; height: 6px; border-radius: 3px; background: rgba(107,94,82,0.15); outline: none; cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--amber); box-shadow: 0 2px 8px rgba(232,146,58,0.4); transition: transform 0.15s ease; }
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+/* SPECIES CARDS */
+.species-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.species-card {
+  flex: 1; min-width: 70px;
+  background: var(--warm-white); border: 2px solid var(--light-stroke); border-radius: 14px;
+  padding: 14px 8px; cursor: pointer; text-align: center;
+  transition: all 0.2s ease; position: relative;
+}
+.species-card:hover { border-color: var(--amber); }
+.species-card.selected { border-color: var(--amber); background: var(--amber-pale); }
+.species-card .scheck {
+  position: absolute; top: 6px; right: 6px; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--amber); color: white; font-size: 0.5rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(0); transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.species-card.selected .scheck { opacity: 1; transform: scale(1); }
+.species-emoji { font-size: 1.6rem; display: block; margin-bottom: 4px; }
+.species-label { font-size: 0.72rem; font-weight: 500; color: var(--mid); }
+
+/* CHECKBOX */
+.checkbox-field { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; padding: 12px 0; border-bottom: 1px solid var(--light-stroke); }
+.checkbox-field:last-child { border-bottom: none; }
+.checkbox-box {
+  width: 20px; height: 20px; min-width: 20px; border-radius: 6px;
+  border: 2px solid var(--mid-light); background: white;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s ease; margin-top: 1px;
+}
+.checkbox-box.checked { background: var(--clay); border-color: var(--clay); }
+.checkbox-box.checked::after { content: '✓'; color: white; font-size: 0.72rem; font-weight: 700; }
+.checkbox-text { font-size: 0.88rem; color: var(--charcoal); line-height: 1.45; font-weight: 300; }
+
+/* ── WELCOME SCREEN ── */
+.welcome-art {
+  text-align: center; margin: 16px 0 28px;
+  animation: bob 3s ease-in-out infinite;
+}
+.welcome-art .paw-big { font-size: 6rem; display: block; filter: drop-shadow(0 8px 20px rgba(168,78,42,0.2)); }
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+/* ── FOOTER ── */
+.screen-footer {
+  padding: 14px 24px 20px; flex-shrink: 0;
+  background: var(--cream);
+  border-top: 1px solid var(--light-stroke);
+}
+.continue-btn {
+  width: 100%; padding: 15px;
+  border-radius: 100px; border: none;
+  background: var(--clay); color: white;
+  font-family: var(--font-b); font-size: 0.95rem; font-weight: 500;
+  cursor: pointer; transition: all 0.18s ease;
+  box-shadow: 0 4px 18px rgba(168,78,42,0.28);
+}
+.continue-btn:hover:not(:disabled) { background: var(--amber-deep); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(168,78,42,0.4); }
+.continue-btn:disabled { background: rgba(107,94,82,0.25); color: rgba(107,94,82,0.6); box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* ── COMPLETION SCREEN ── */
+.completion-wrap { text-align: center; padding-bottom: 24px; }
+.completion-count {
+  font-family: var(--font-d); font-size: 5rem; font-weight: 900;
+  color: var(--clay); line-height: 1; margin: 20px 0 4px;
+}
+.completion-unit { font-family: var(--font-d); font-size: 1.4rem; font-weight: 300; font-style: italic; color: var(--mid); }
+.completion-sub { font-size: 0.9rem; color: var(--mid); margin-bottom: 24px; }
+.preview-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.preview-row::-webkit-scrollbar { display: none; }
+.preview-card {
+  min-width: 130px; background: var(--warm-white);
+  border-radius: 14px; overflow: hidden; border: 1px solid var(--light-stroke);
+  flex-shrink: 0;
+  animation: slideUp 0.5s ease both;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.preview-card:nth-child(2) { animation-delay: 0.1s; }
+.preview-card:nth-child(3) { animation-delay: 0.2s; }
+.preview-photo { height: 90px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; }
+.preview-body { padding: 8px 10px 10px; }
+.preview-name { font-family: var(--font-d); font-weight: 700; font-size: 0.9rem; }
+.preview-org { font-size: 0.62rem; color: var(--rain); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+.preview-meta { font-size: 0.68rem; color: var(--mid); }
+
+/* ── PROFILE SUMMARY (DEV VIEW) ── */
+.profile-preview {
+  background: var(--charcoal);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-top: 20px;
+  font-size: 0.72rem;
+  color: rgba(253,246,236,0.6);
+  font-family: 'Courier New', monospace;
+  text-align: left;
+  display: none;
+}
+.profile-preview strong { color: var(--amber); display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="onb-shell">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <button class="back-btn" id="backBtn" onclick="goBack()">←</button>
+    <div class="top-logo">Paw<span>Swipe</span></div>
+    <div class="top-progress" id="progressWrap" style="opacity:0;">
+      <div class="progress-text" id="progressText">Step 1 of 6</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:16.6%;"></div></div>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens-wrap" id="screensWrap">
+
+    <!-- ════════ STEP 0 — WELCOME ════════ -->
+    <div class="screen active" data-step="0">
+      <div class="screen-eyebrow">Welcome to PawSwipe</div>
+      <h1 class="screen-title">Let's find your<br><em>perfect match.</em></h1>
+      <p class="screen-sub">A few quick questions so we can show you animals that actually fit your life — not just cute faces.</p>
+      <div class="welcome-art">
+        <span class="paw-big">🐾</span>
+      </div>
+      <p style="font-size:0.82rem;color:var(--mid);text-align:center;line-height:1.6;">Connecting you with <strong style="color:var(--charcoal);">BC SPCA, VOKRA, RAPS, LAPS</strong><br>and more across the Lower Mainland.</p>
+    </div>
+
+    <!-- ════════ STEP 1 — WHERE DO YOU LIVE? ════════ -->
+    <div class="screen" data-step="1">
+      <div class="screen-eyebrow">Step 1 of 6</div>
+      <h1 class="screen-title">Where's <em>home?</em></h1>
+      <p class="screen-sub">We'll find animals near you and make sure recommendations match where you live.</p>
+
+      <div class="field">
+        <label class="field-label">Your city</label>
+        <select class="field-select" id="s1-city" onchange="s1Check()">
+          <option value="">Select your city…</option>
+          <option>Vancouver</option>
+          <option>Burnaby</option>
+          <option>Richmond</option>
+          <option>North Vancouver</option>
+          <option>West Vancouver</option>
+          <option>Coquitlam</option>
+          <option>Port Moody</option>
+          <option>Surrey</option>
+          <option>Langley</option>
+          <option>New Westminster</option>
+          <option>Maple Ridge</option>
+          <option>Delta</option>
+          <option>Other Lower Mainland</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Your home type</label>
+        <div class="option-grid" id="s1-housing">
+          <div class="option-card" data-val="apartment" onclick="selectOption('s1-housing',this);s1Check()">
+            <div class="check">✓</div>
+            <span class="option-icon">🏢</span>
+            <div class="option-label">Apartment / Condo</div>
+          </div>
+          <div class="option-card" data-val="house" onclick="selectOption('s1-housing',this);s1Check()">
+            <div class="check">✓</div>
+            <span class="option-icon">🏠</span>
+            <div class="option-label">House</div>
+          </div>
+          <div class="option-card" data-val="townhouse" onclick="selectOption('s1-housing',this);s1Check()">
+            <div class="check">✓</div>
+            <span class="option-icon">🏘</span>
+            <div class="option-label">Townhouse</div>
+          </div>
+          <div class="option-card" data-val="other" onclick="selectOption('s1-housing',this);s1Check()">
+            <div class="check">✓</div>
+            <span class="option-icon">🏡</span>
+            <div class="option-label">Other</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-q" id="s1-yard-q">
+        <div class="field">
+          <label class="field-label">Do you have a yard or outdoor space?</label>
+          <div class="pill-row">
+            <button class="pill" data-group="yard" data-val="yes" onclick="selectPill('yard',this);s1Check()">✓ Yes, I have outdoor space</button>
+            <button class="pill" data-group="yard" data-val="no" onclick="selectPill('yard',this);s1Check()">✗ No outdoor space</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ STEP 2 — WHO'S AT HOME? ════════ -->
+    <div class="screen" data-step="2">
+      <div class="screen-eyebrow">Step 2 of 6</div>
+      <h1 class="screen-title">Tell us about your <em>household.</em></h1>
+      <p class="screen-sub">We want to make sure your new pet is a good fit for everyone who shares your home.</p>
+
+      <div class="field">
+        <label class="field-label">Any children at home?</label>
+        <div class="pill-row">
+          <button class="pill" data-group="kids" data-val="yes" onclick="selectPill('kids',this)">👶 Yes</button>
+          <button class="pill" data-group="kids" data-val="no" onclick="selectPill('kids',this)">No children at home</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Any other pets?</label>
+        <div class="pill-row">
+          <button class="pill" data-group="pets" data-val="none" onclick="selectPill('pets',this);s2Check()">No other pets</button>
+          <button class="pill" data-group="pets" data-val="dogs" onclick="selectPill('pets',this);s2Check()">🐶 Dogs</button>
+          <button class="pill" data-group="pets" data-val="cats" onclick="selectPill('pets',this);s2Check()">🐱 Cats</button>
+          <button class="pill" data-group="pets" data-val="both" onclick="selectPill('pets',this);s2Check()">Both</button>
+          <button class="pill" data-group="pets" data-val="other" onclick="selectPill('pets',this);s2Check()">Other</button>
+        </div>
+      </div>
+
+      <div class="sub-q" id="s2-dogsize-q">
+        <div class="field">
+          <label class="field-label">What size are your dogs?</label>
+          <div class="pill-row">
+            <button class="pill" data-group="dogsize" data-val="small" onclick="selectPill('dogsize',this)">Small</button>
+            <button class="pill" data-group="dogsize" data-val="medium" onclick="selectPill('dogsize',this)">Medium</button>
+            <button class="pill" data-group="dogsize" data-val="large" onclick="selectPill('dogsize',this)">Large</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-q" id="s2-catcount-q">
+        <div class="field">
+          <label class="field-label">How many cats?</label>
+          <div class="pill-row">
+            <button class="pill" data-group="catcount" data-val="1" onclick="selectPill('catcount',this)">1 cat</button>
+            <button class="pill" data-group="catcount" data-val="2" onclick="selectPill('catcount',this)">2 cats</button>
+            <button class="pill" data-group="catcount" data-val="3+" onclick="selectPill('catcount',this)">3+ cats</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ STEP 3 — LIFESTYLE ════════ -->
+    <div class="screen" data-step="3">
+      <div class="screen-eyebrow">Step 3 of 6</div>
+      <h1 class="screen-title">How <em>active</em> are you?</h1>
+      <p class="screen-sub">Be honest! A high-energy dog with a couch-loving owner usually doesn't end well for anyone.</p>
+
+      <div class="lifestyle-cards" id="s3-activity">
+        <div class="lifestyle-card" data-val="low" onclick="selectLifestyle(this)">
+          <div class="lifestyle-emoji">🛋</div>
+          <div class="lifestyle-text">
+            <div class="lifestyle-label">Homebody</div>
+            <div class="lifestyle-desc">I prefer relaxed walks and quiet evenings at home</div>
+          </div>
+        </div>
+        <div class="lifestyle-card" data-val="medium" onclick="selectLifestyle(this)">
+          <div class="lifestyle-emoji">🚶</div>
+          <div class="lifestyle-text">
+            <div class="lifestyle-label">Moderate</div>
+            <div class="lifestyle-desc">I walk daily and enjoy outdoor outings on weekends</div>
+          </div>
+        </div>
+        <div class="lifestyle-card" data-val="high" onclick="selectLifestyle(this)">
+          <div class="lifestyle-emoji">🏃</div>
+          <div class="lifestyle-text">
+            <div class="lifestyle-label">Very active</div>
+            <div class="lifestyle-desc">I hike, run, or spend lots of time outdoors — I want an active companion</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-wrap">
+        <div class="slider-label">
+          <span>Hours home per day</span>
+          <span class="slider-value" id="s3-hours-val">~8 hours</span>
+        </div>
+        <input type="range" min="0" max="16" value="8" step="1" id="s3-hours"
+          oninput="document.getElementById('s3-hours-val').textContent = '~' + this.value + (this.value == 1 ? ' hour' : ' hours')">
+        <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--mid-light);margin-top:4px;"><span>Rarely home</span><span>Always home</span></div>
+      </div>
+    </div>
+
+    <!-- ════════ STEP 4 — EXPERIENCE ════════ -->
+    <div class="screen" data-step="4">
+      <div class="screen-eyebrow">Step 4 of 6</div>
+      <h1 class="screen-title">Have you had<br>pets <em>before?</em></h1>
+      <p class="screen-sub">This helps us match you with animals whose needs align with your experience level.</p>
+
+      <div class="lifestyle-cards" id="s4-exp">
+        <div class="lifestyle-card" data-val="first-time" onclick="selectLifestyle(this)">
+          <div class="lifestyle-emoji">🐣</div>
+          <div class="lifestyle-text">
+            <div class="lifestyle-label">First time</div>
+            <div class="lifestyle-desc">This will be my first pet — excited but learning</div>
+          </div>
+        </div>
+        <div class="lifestyle-card" data-val="some" onclick="selectLifestyle(this)">
+          <div class="lifestyle-emoji">🐾</div>
+          <div class="lifestyle-text">
+            <div class="lifestyle-label">Some experience</div>
+            <div class="lifestyle-desc">I've had pets before but it's been a while</div>
+          </div>
+        </div>
+        <div class="lifestyle-card" data-val="experienced" onclick="selectLifestyle(this)">
+          <div class="lifestyle-emoji">⭐</div>
+          <div class="lifestyle-text">
+            <div class="lifestyle-label">Experienced</div>
+            <div class="lifestyle-desc">I've had pets for most of my life and know what I'm doing</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 6px;">
+        <div class="checkbox-field" onclick="toggleCheck('s4-needs')">
+          <div class="checkbox-box" id="s4-needs"></div>
+          <div class="checkbox-text">I'm open to animals with special needs or medical requirements</div>
+        </div>
+        <div class="checkbox-field" onclick="toggleCheck('s4-shy')">
+          <div class="checkbox-box" id="s4-shy"></div>
+          <div class="checkbox-text">I can handle a shy, anxious, or traumatised animal patiently</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ STEP 5 — WHAT ARE YOU LOOKING FOR? ════════ -->
+    <div class="screen" data-step="5">
+      <div class="screen-eyebrow">Step 5 of 6</div>
+      <h1 class="screen-title">What kind of<br><em>companion?</em></h1>
+      <p class="screen-sub">Select everything you're open to. You can always change this later.</p>
+
+      <div class="field">
+        <label class="field-label">Species (select all that interest you)</label>
+        <div class="species-row" id="s5-species">
+          <div class="species-card" data-val="dog" onclick="toggleSpecies(this)">
+            <div class="scheck">✓</div>
+            <span class="species-emoji">🐶</span>
+            <div class="species-label">Dog</div>
+          </div>
+          <div class="species-card" data-val="cat" onclick="toggleSpecies(this)">
+            <div class="scheck">✓</div>
+            <span class="species-emoji">🐱</span>
+            <div class="species-label">Cat</div>
+          </div>
+          <div class="species-card" data-val="rabbit" onclick="toggleSpecies(this)">
+            <div class="scheck">✓</div>
+            <span class="species-emoji">🐰</span>
+            <div class="species-label">Rabbit</div>
+          </div>
+          <div class="species-card" data-val="bird" onclick="toggleSpecies(this)">
+            <div class="scheck">✓</div>
+            <span class="species-emoji">🐦</span>
+            <div class="species-label">Bird</div>
+          </div>
+          <div class="species-card" data-val="small" onclick="toggleSpecies(this)">
+            <div class="scheck">✓</div>
+            <span class="species-emoji">🐹</span>
+            <div class="species-label">Small animal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-q" id="s5-dogsize-q">
+        <div class="field">
+          <label class="field-label">Preferred dog size</label>
+          <div class="pill-row">
+            <button class="pill" data-group="pref-size" data-val="any" onclick="selectPill('pref-size',this)">Any size</button>
+            <button class="pill" data-group="pref-size" data-val="small" onclick="selectPill('pref-size',this)">Small (under 10kg)</button>
+            <button class="pill" data-group="pref-size" data-val="medium" onclick="selectPill('pref-size',this)">Medium (10–25kg)</button>
+            <button class="pill" data-group="pref-size" data-val="large" onclick="selectPill('pref-size',this)">Large (25kg+)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Preferred age</label>
+        <div class="pill-row">
+          <button class="pill selected" data-group="age" data-val="any" onclick="selectPill('age',this)">Any age</button>
+          <button class="pill" data-group="age" data-val="baby" onclick="selectPill('age',this)">Baby / Kitten</button>
+          <button class="pill" data-group="age" data-val="young" onclick="selectPill('age',this)">Young adult</button>
+          <button class="pill" data-group="age" data-val="adult" onclick="selectPill('age',this)">Adult</button>
+          <button class="pill" data-group="age" data-val="senior" onclick="selectPill('age',this)">Senior</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Any allergies we should know about? <span style="font-weight:300;color:var(--mid);">(optional)</span></label>
+        <input class="field-input" type="text" id="s5-allergies" placeholder="e.g. cats, long-haired dogs, feathers, none">
+      </div>
+    </div>
+
+    <!-- ════════ COMPLETION ════════ -->
+    <div class="screen" data-step="6">
+      <div class="completion-wrap">
+        <div style="font-size:2.5rem;margin-bottom:4px;">🎉</div>
+        <div class="screen-eyebrow" style="margin-bottom:4px;">You're all set!</div>
+        <div class="screen-title" style="margin-bottom:8px;">We found <em>matches</em><br>near you.</div>
+        <div class="completion-count" id="matchCount">0</div>
+        <div class="completion-unit">animals nearby</div>
+        <div class="completion-sub" style="margin-top:6px;">tailored to your life in the Lower Mainland</div>
+
+        <div class="preview-row" id="previewRow">
+          <div class="preview-card">
+            <div class="preview-photo" style="background:#edd5bc;">🐶</div>
+            <div class="preview-body">
+              <div class="preview-org">BC SPCA Van</div>
+              <div class="preview-name">Linus & Chester</div>
+              <div class="preview-meta">Senior · Bonded pair</div>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-photo" style="background:#f2d6b0;">🐱</div>
+            <div class="preview-body">
+              <div class="preview-org">VOKRA</div>
+              <div class="preview-name">Apricot</div>
+              <div class="preview-meta">Adult · DSH</div>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-photo" style="background:#c8d4c8;">🐈‍⬛</div>
+            <div class="preview-body">
+              <div class="preview-org">VOKRA</div>
+              <div class="preview-name">Toretto</div>
+              <div class="preview-meta">Young · Tabby</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEV: profile summary -->
+        <div class="profile-preview" id="profilePreview">
+          <strong>userProfile (ready for Supabase)</strong>
+          <span id="profileJson"></span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screens-wrap -->
+
+  <!-- FOOTER -->
+  <div class="screen-footer">
+    <button class="continue-btn" id="continueBtn" onclick="advance()">Let's go →</button>
+  </div>
+
+</div><!-- /onb-shell -->
+
+<script>
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let currentStep = 0;
+const totalSteps = 6;
+
+const userProfile = {
+  city: '', housingType: '', hasYard: null,
+  hasKids: null, otherPets: '', dogSize: '', catCount: '',
+  activityLevel: '', hoursHome: 8,
+  experience: '', openToSpecialNeeds: false, canHandleShy: false,
+  species: [], prefSize: '', prefAge: 'any', allergies: ''
+};
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function advance() {
+  if (currentStep === 0) { goTo(1); return; }
+  if (currentStep < totalSteps) {
+    collectStep(currentStep);
+    goTo(currentStep + 1);
+  } else {
+    // Already on completion
+    window.location.href = 'app-swipe-screen.html';
+  }
+}
+
+function goBack() {
+  if (currentStep > 0) goTo(currentStep - 1, true);
+}
+
+function goTo(step, backward = false) {
+  const screens = document.querySelectorAll('.screen');
+  const from = screens[currentStep];
+  const to = screens[step];
+
+  from.style.transition = 'transform 0.38s cubic-bezier(0.4,0,0.2,1)';
+  to.style.transition = 'transform 0.38s cubic-bezier(0.4,0,0.2,1)';
+
+  if (!backward) {
+    to.style.transform = 'translateX(100%)';
+    requestAnimationFrame(() => {
+      from.classList.remove('active');
+      from.style.transform = 'translateX(-100%)';
+      to.classList.add('active');
+      to.style.transform = 'translateX(0)';
+    });
+  } else {
+    to.style.transform = 'translateX(-100%)';
+    requestAnimationFrame(() => {
+      from.classList.remove('active');
+      from.style.transform = 'translateX(100%)';
+      to.classList.add('active');
+      to.style.transform = 'translateX(0)';
+    });
+  }
+
+  currentStep = step;
+  updateUI();
+
+  // Completion screen animation
+  if (step === 6) {
+    setTimeout(animateCount, 400);
+    setTimeout(() => {
+      document.getElementById('profileJson').textContent = JSON.stringify(userProfile, null, 2);
+      document.getElementById('profilePreview').style.display = 'block';
+    }, 800);
+  }
+}
+
+function updateUI() {
+  const backBtn = document.getElementById('backBtn');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressText = document.getElementById('progressText');
+  const progressFill = document.getElementById('progressFill');
+  const continueBtn = document.getElementById('continueBtn');
+
+  backBtn.classList.toggle('visible', currentStep > 0);
+  progressWrap.style.opacity = currentStep > 0 && currentStep < 6 ? '1' : '0';
+
+  if (currentStep > 0 && currentStep < 6) {
+    progressText.textContent = `Step ${currentStep} of ${totalSteps - 1}`;
+    progressFill.style.width = `${(currentStep / (totalSteps - 1)) * 100}%`;
+  }
+
+  // Button label
+  const labels = ['Let\'s go →', 'Continue →', 'Continue →', 'Continue →', 'Continue →', 'Almost there →', 'Start Swiping 🐾'];
+  continueBtn.textContent = labels[currentStep] || 'Continue →';
+
+  // Validation
+  validateStep(currentStep);
+}
+
+function validateStep(step) {
+  const btn = document.getElementById('continueBtn');
+  let valid = true;
+  if (step === 1) valid = s1Valid();
+  else if (step === 5) valid = s5Valid();
+  btn.disabled = !valid;
+}
+
+// ════════════════════════════════════════════
+// STEP VALIDATION
+// ════════════════════════════════════════════
+function s1Valid() {
+  const city = document.getElementById('s1-city').value;
+  const housing = document.querySelector('#s1-housing .option-card.selected');
+  return city && housing;
+}
+
+function s1Check() {
+  const housing = document.querySelector('#s1-housing .option-card.selected');
+  const yardQ = document.getElementById('s1-yard-q');
+  if (housing) {
+    yardQ.classList.add('visible');
+  }
+  validateStep(1);
+}
+
+function s2Check() {
+  const petsVal = getSelectedPill('pets');
+  const dogQ = document.getElementById('s2-dogsize-q');
+  const catQ = document.getElementById('s2-catcount-q');
+  dogQ.classList.toggle('visible', ['dogs','both'].includes(petsVal));
+  catQ.classList.toggle('visible', ['cats','both'].includes(petsVal));
+}
+
+function s5Valid() {
+  return document.querySelectorAll('#s5-species .species-card.selected').length > 0;
+}
+
+// ════════════════════════════════════════════
+// DATA COLLECTION
+// ════════════════════════════════════════════
+function collectStep(step) {
+  if (step === 1) {
+    userProfile.city = document.getElementById('s1-city').value;
+    userProfile.housingType = getSelectedOption('s1-housing');
+    userProfile.hasYard = getSelectedPill('yard') === 'yes';
+  }
+  if (step === 2) {
+    userProfile.hasKids = getSelectedPill('kids') === 'yes';
+    userProfile.otherPets = getSelectedPill('pets');
+    userProfile.dogSize = getSelectedPill('dogsize');
+    userProfile.catCount = getSelectedPill('catcount');
+  }
+  if (step === 3) {
+    userProfile.activityLevel = getSelectedLifestyle('s3-activity');
+    userProfile.hoursHome = parseInt(document.getElementById('s3-hours').value);
+  }
+  if (step === 4) {
+    userProfile.experience = getSelectedLifestyle('s4-exp');
+    userProfile.openToSpecialNeeds = document.getElementById('s4-needs').classList.contains('checked');
+    userProfile.canHandleShy = document.getElementById('s4-shy').classList.contains('checked');
+  }
+  if (step === 5) {
+    userProfile.species = Array.from(document.querySelectorAll('#s5-species .species-card.selected')).map(c => c.dataset.val);
+    userProfile.prefSize = getSelectedPill('pref-size');
+    userProfile.prefAge = getSelectedPill('age') || 'any';
+    userProfile.allergies = document.getElementById('s5-allergies').value;
+  }
+}
+
+// ════════════════════════════════════════════
+// INTERACTION HELPERS
+// ════════════════════════════════════════════
+function selectOption(groupId, el) {
+  document.querySelectorAll(`#${groupId} .option-card`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectPill(group, el) {
+  document.querySelectorAll(`.pill[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectLifestyle(el) {
+  el.closest('.lifestyle-cards').querySelectorAll('.lifestyle-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  validateStep(currentStep);
+}
+
+function toggleSpecies(el) {
+  el.classList.toggle('selected');
+  // Show dog size if dog selected
+  const dogSelected = !!document.querySelector('#s5-species .species-card[data-val="dog"].selected');
+  document.getElementById('s5-dogsize-q').classList.toggle('visible', dogSelected);
+  validateStep(5);
+}
+
+function toggleCheck(id) {
+  document.getElementById(id).classList.toggle('checked');
+}
+
+function getSelectedOption(groupId) {
+  const el = document.querySelector(`#${groupId} .option-card.selected`);
+  return el ? el.dataset.val : '';
+}
+
+function getSelectedPill(group) {
+  const el = document.querySelector(`.pill[data-group="${group}"].selected`);
+  return el ? el.dataset.val : '';
+}
+
+function getSelectedLifestyle(containerId) {
+  const el = document.querySelector(`#${containerId} .lifestyle-card.selected`);
+  return el ? el.dataset.val : '';
+}
+
+// ════════════════════════════════════════════
+// COMPLETION COUNT ANIMATION
+// ════════════════════════════════════════════
+function animateCount() {
+  const target = Math.floor(Math.random() * 16) + 14; // 14-30
+  const el = document.getElementById('matchCount');
+  let current = 0;
+  const step = Math.ceil(target / 25);
+  const interval = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current;
+    if (current >= target) clearInterval(interval);
+  }, 40);
+}
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+updateUI();
+
+// Step 3: slider already has value; Step 5: age 'any' pre-selected (done in HTML)
+// Steps 3 & 4 don't require validation — all fields are optional beyond lifestyle card
+document.querySelectorAll('.screen[data-step="3"] .lifestyle-card').forEach(c => {
+  c.addEventListener('click', () => validateStep(3));
+});
+document.querySelectorAll('.screen[data-step="4"] .lifestyle-card').forEach(c => {
+  c.addEventListener('click', () => validateStep(4));
+});
+
+// Disable continue on steps that need validation, enable freely on optional steps
+[0, 2, 3, 4].forEach(s => {
+  // These steps always allow continue (0 = welcome, 2/3/4 = optional fields)
+});
+
+// Override: steps 3 and 4 require a lifestyle selection
+const origValidate = validateStep;
+validateStep = function(step) {
+  const btn = document.getElementById('continueBtn');
+  if (step === 3) {
+    btn.disabled = !getSelectedLifestyle('s3-activity');
+  } else if (step === 4) {
+    btn.disabled = !getSelectedLifestyle('s4-exp');
+  } else {
+    origValidate(step);
+  }
+};
+</script>
+</body>
+</html>

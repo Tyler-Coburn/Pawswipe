@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" width="360" height="80" role="img" aria-label="PawSwipe logo">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,900;1,900&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- ── ICON MARK ── -->
+  <!-- Paw pads -->
+  <!-- Central pad (large, teardrop) — replaced with swipe arrow shape -->
+  <ellipse cx="36" cy="48" rx="12" ry="14" fill="#A84E2A"/>
+  <!-- Toe pads -->
+  <ellipse cx="18" cy="34" rx="6.5" ry="7.5" fill="#A84E2A"/>
+  <ellipse cx="30" cy="26" rx="6.5" ry="7.5" fill="#A84E2A"/>
+  <ellipse cx="42" cy="26" rx="6.5" ry="7.5" fill="#A84E2A"/>
+  <ellipse cx="54" cy="34" rx="6.5" ry="7.5" fill="#A84E2A"/>
+  <!-- Swipe arrow overlaid on central pad -->
+  <path d="M27 46 L37 40 L47 46" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M37 40 L37 56" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+  <!-- ── WORDMARK ── -->
+  <!-- "Paw" italic clay -->
+  <text x="76" y="58" font-family="Fraunces, Georgia, serif" font-weight="900" font-style="italic" font-size="46" fill="#A84E2A" letter-spacing="-1">Paw</text>
+  <!-- "Swipe" upright amber -->
+  <text x="183" y="58" font-family="Fraunces, Georgia, serif" font-weight="900" font-style="normal" font-size="46" fill="#E8923A" letter-spacing="-1">Swipe</text>
+</svg>

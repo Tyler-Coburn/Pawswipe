@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shelters & Rescues — PawSwipe Vancouver</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;--sage-light:#7EA88E;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-light:#B8D0DC;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);font-family:var(--fb);font-weight:300;color:var(--charcoal);}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(253,246,236,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--ls);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 48px;
+}
+.nav-logo{font-family:var(--fd);font-weight:900;font-size:1.25rem;color:var(--clay);letter-spacing:-.02em;text-decoration:none;}
+.nav-logo span{color:var(--amber);}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{font-size:.875rem;font-weight:400;color:var(--mid);text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--clay);font-weight:500;}
+.nav-cta{
+  padding:9px 20px;border-radius:100px;
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.85rem;font-weight:500;
+  cursor:pointer;text-decoration:none;
+  transition:background .2s,transform .15s;
+  box-shadow:0 3px 14px rgba(168,78,42,.25);
+}
+.nav-cta:hover{background:var(--amber-deep);transform:translateY(-1px);}
+
+/* HERO */
+.hero{
+  background:var(--charcoal);
+  padding:56px 48px 44px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 70% at 60% 50%,rgba(232,146,58,.1) 0%,transparent 70%);
+}
+.hero-inner{position:relative;z-index:2;max-width:1100px;margin:0 auto;}
+.hero-eyebrow{
+  font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--amber);}
+.hero-title{
+  font-family:var(--fd);font-weight:900;font-size:2.8rem;
+  letter-spacing:-.03em;color:var(--cream);line-height:1.05;margin-bottom:6px;
+}
+.hero-title em{font-style:italic;font-weight:300;color:var(--blush);}
+.hero-sub{font-size:.92rem;color:rgba(253,246,236,.55);margin-bottom:28px;max-width:520px;}
+
+/* Search bar */
+.search-row{display:flex;gap:10px;flex-wrap:wrap;max-width:640px;}
+.search-wrap{
+  flex:1;min-width:280px;
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:100px;
+  padding:11px 18px;
+  transition:border-color .2s,background .2s;
+}
+.search-wrap:focus-within{border-color:rgba(232,146,58,.5);background:rgba(255,255,255,.11);}
+.search-icon{font-size:1rem;color:rgba(253,246,236,.4);}
+.search-input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--fb);font-size:.9rem;font-weight:300;
+  color:var(--cream);
+}
+.search-input::placeholder{color:rgba(253,246,236,.35);}
+.search-btn{
+  padding:11px 22px;border-radius:100px;
+  background:var(--amber);color:white;border:none;
+  font-family:var(--fb);font-size:.85rem;font-weight:500;
+  cursor:pointer;transition:background .18s,transform .15s;
+  white-space:nowrap;
+}
+.search-btn:hover{background:var(--amber-deep);transform:translateY(-1px);}
+
+/* Region filters */
+.region-row{
+  display:flex;gap:7px;flex-wrap:wrap;margin-top:18px;
+}
+.region-pill{
+  padding:7px 15px;border-radius:100px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);
+  font-size:.78rem;font-weight:400;
+  color:rgba(253,246,236,.6);
+  cursor:pointer;transition:all .18s;font-family:var(--fb);
+}
+.region-pill:hover{background:rgba(255,255,255,.12);color:var(--cream);}
+.region-pill.active{background:rgba(232,146,58,.2);border-color:rgba(232,146,58,.4);color:var(--amber);}
+
+/* STAT BAR */
+.stat-bar{
+  background:var(--warm-white);
+  border-bottom:1px solid var(--ls);
+  display:flex;gap:0;
+}
+.stat-bar-item{
+  flex:1;padding:16px 24px;text-align:center;
+  border-right:1px solid var(--ls);
+}
+.stat-bar-item:last-child{border-right:none;}
+.stat-num{font-family:var(--fd);font-weight:900;font-size:1.6rem;color:var(--clay);line-height:1;}
+.stat-lbl{font-size:.72rem;color:var(--mid);margin-top:3px;}
+
+/* MAP PLACEHOLDER */
+.map-section{
+  background:var(--charcoal);
+  height:360px;
+  position:relative;overflow:hidden;
+}
+/* Grid overlay */
+.map-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.map-roads{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:160px 160px;
+}
+.map-label{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;
+}
+.map-label-title{
+  font-family:var(--fd);font-weight:700;font-size:1.4rem;
+  color:rgba(253,246,236,.25);
+  margin-bottom:6px;
+}
+.map-label-sub{font-size:.78rem;color:rgba(253,246,236,.18);}
+
+/* Map markers */
+.map-marker{
+  position:absolute;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  cursor:pointer;
+  transform:translate(-50%,-100%);
+}
+.marker-dot{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--amber);
+  border:2px solid rgba(253,246,236,.4);
+  box-shadow:0 0 0 4px rgba(232,146,58,.2);
+  transition:transform .2s,box-shadow .2s;
+}
+.map-marker:hover .marker-dot{
+  transform:scale(1.3);
+  box-shadow:0 0 0 8px rgba(232,146,58,.15);
+}
+.marker-needle{
+  width:2px;height:10px;
+  background:rgba(232,146,58,.6);
+}
+.marker-tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--cream);color:var(--charcoal);
+  font-size:.7rem;font-weight:500;padding:5px 10px;border-radius:8px;
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 4px 14px rgba(30,26,23,.2);
+  opacity:0;transition:opacity .18s;
+}
+.marker-tooltip::after{
+  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--cream);
+}
+.map-marker:hover .marker-tooltip{opacity:1;}
+.map-tag{
+  position:absolute;top:14px;right:14px;
+  background:rgba(253,246,236,.08);
+  border:1px solid rgba(255,255,255,.1);
+  color:rgba(253,246,236,.4);font-size:.68rem;font-weight:500;
+  padding:5px 12px;border-radius:100px;letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+/* MAIN CONTENT */
+.main{max-width:1100px;margin:0 auto;padding:48px 48px 80px;}
+
+.section-header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin-bottom:24px;flex-wrap:wrap;gap:10px;
+}
+.section-title{
+  font-family:var(--fd);font-weight:900;font-size:1.6rem;
+  letter-spacing:-.02em;
+}
+.section-title em{font-style:italic;font-weight:300;color:var(--clay);}
+.section-count{font-size:.82rem;color:var(--mid);}
+
+/* Shelter grid */
+.shelter-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+
+/* Shelter card */
+.shelter-card{
+  background:var(--warm-white);
+  border-radius:20px;
+  border:1px solid var(--ls);
+  padding:24px;
+  transition:transform .25s,box-shadow .25s;
+  display:flex;flex-direction:column;
+}
+.shelter-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(30,26,23,.1);}
+
+.shelter-card-top{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.shelter-avatar{
+  width:58px;height:58px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:1.3rem;color:var(--cream);
+  flex-shrink:0;
+}
+.shelter-card-info{flex:1;}
+.shelter-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px;}
+.badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 9px;border-radius:100px;
+  font-size:.62rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+}
+.badge-spca{background:rgba(168,78,42,.1);color:var(--clay);}
+.badge-rescue{background:rgba(74,110,92,.1);color:var(--sage);}
+.badge-foster{background:var(--rain-pale);color:var(--rain);}
+.badge-muni{background:rgba(107,94,82,.1);color:var(--mid);}
+.badge-nokill{background:var(--sage-pale);color:var(--sage);font-weight:700;}
+.badge-verify{background:var(--amber-pale);color:var(--amber-deep);}
+
+.shelter-name{
+  font-family:var(--fd);font-weight:700;font-size:1.1rem;
+  color:var(--charcoal);margin-bottom:2px;
+}
+.shelter-loc{font-size:.78rem;color:var(--rain);font-weight:500;display:flex;align-items:center;gap:4px;}
+
+.shelter-desc{
+  font-size:.84rem;color:var(--mid);line-height:1.65;margin-bottom:14px;flex:1;
+}
+
+.shelter-stats{
+  display:flex;gap:16px;margin-bottom:14px;
+  padding:10px 14px;background:var(--cream);border-radius:10px;
+  flex-wrap:wrap;
+}
+.sstat{text-align:center;}
+.sstat-num{font-family:var(--fd);font-weight:900;font-size:1.1rem;color:var(--clay);}
+.sstat-lbl{font-size:.65rem;color:var(--mid-light);margin-top:1px;}
+
+.shelter-hours{
+  font-size:.78rem;color:var(--mid);
+  padding:8px 12px;background:var(--rain-pale);
+  border-radius:8px;margin-bottom:14px;
+  display:flex;align-items:flex-start;gap:6px;line-height:1.5;
+}
+.hours-icon{flex-shrink:0;margin-top:1px;}
+
+.shelter-actions{display:flex;gap:8px;margin-top:auto;}
+.btn-primary{
+  flex:1;padding:10px 16px;border-radius:100px;
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.82rem;font-weight:500;
+  cursor:pointer;transition:all .18s;text-decoration:none;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 12px rgba(168,78,42,.22);
+}
+.btn-primary:hover{background:var(--amber-deep);transform:translateY(-1px);}
+.btn-ghost{
+  padding:10px 16px;border-radius:100px;
+  background:transparent;color:var(--mid);
+  border:1.5px solid var(--ls);
+  font-family:var(--fb);font-size:.82rem;font-weight:400;
+  cursor:pointer;transition:all .18s;text-decoration:none;
+  display:flex;align-items:center;gap:4px;
+  white-space:nowrap;
+}
+.btn-ghost:hover{border-color:var(--mid);color:var(--charcoal);}
+
+/* PARTNER CTA */
+.partner-section{
+  background:var(--sage);
+  border-radius:24px;
+  padding:48px;
+  margin-top:48px;
+  display:flex;align-items:center;gap:40px;
+  position:relative;overflow:hidden;
+}
+.partner-section::before{
+  content:'🐾';
+  position:absolute;right:-10px;bottom:-20px;
+  font-size:8rem;opacity:.12;
+  transform:rotate(-15deg);
+}
+.partner-text{flex:1;}
+.partner-eyebrow{
+  font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);margin-bottom:8px;
+}
+.partner-title{
+  font-family:var(--fd);font-weight:900;font-size:1.8rem;
+  color:white;letter-spacing:-.02em;line-height:1.1;margin-bottom:8px;
+}
+.partner-title em{font-style:italic;font-weight:300;}
+.partner-sub{font-size:.88rem;color:rgba(255,255,255,.7);line-height:1.65;max-width:420px;}
+.partner-form{display:flex;flex-direction:column;gap:10px;min-width:280px;}
+.partner-input{
+  padding:12px 16px;border-radius:100px;
+  border:none;background:rgba(255,255,255,.15);
+  font-family:var(--fb);font-size:.88rem;color:white;
+  outline:none;transition:background .2s;
+}
+.partner-input::placeholder{color:rgba(255,255,255,.5);}
+.partner-input:focus{background:rgba(255,255,255,.22);}
+.partner-btn{
+  padding:12px 20px;border-radius:100px;
+  background:white;color:var(--sage);border:none;
+  font-family:var(--fb);font-size:.88rem;font-weight:600;
+  cursor:pointer;transition:all .18s;
+  box-shadow:0 4px 16px rgba(0,0,0,.12);
+}
+.partner-btn:hover{background:var(--cream);transform:translateY(-1px);}
+.partner-note{font-size:.7rem;color:rgba(255,255,255,.5);text-align:center;}
+
+@media(max-width:768px){
+  nav{padding:12px 18px;}
+  .hero{padding:36px 18px 32px;}
+  .hero-title{font-size:1.9rem;}
+  .stat-bar{overflow-x:auto;}
+  .main{padding:28px 18px 60px;}
+  .shelter-grid{grid-template-columns:1fr;}
+  .partner-section{flex-direction:column;gap:24px;padding:28px;}
+  .partner-form{min-width:auto;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="pawswipe-vancouver.html">Paw<span>Swipe</span></a>
+  <div class="nav-links">
+    <a href="app-swipe-screen.html">Discover</a>
+    <a href="shelters-directory.html" class="active">Shelters</a>
+    <a href="pawswipe-vancouver.html#how">How it works</a>
+    <a class="nav-cta" href="app-onboarding.html">Find my match →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Lower Mainland · 6 Partners</div>
+    <h1 class="hero-title">Find shelters &amp; rescues<br><em>near you.</em></h1>
+    <p class="hero-sub">Every partner on PawSwipe is verified, ethical, and committed to finding the right home — not just any home.</p>
+    <div class="search-row">
+      <div class="search-wrap">
+        <span class="search-icon">📍</span>
+        <input class="search-input" type="text" placeholder="Search by name, city, or postal code…" id="searchInput" oninput="filterShelters()">
+      </div>
+      <button class="search-btn">Search</button>
+    </div>
+    <div class="region-row">
+      <button class="region-pill active" data-region="all" onclick="setRegion(this)">All regions</button>
+      <button class="region-pill" data-region="vancouver" onclick="setRegion(this)">Vancouver</button>
+      <button class="region-pill" data-region="northshore" onclick="setRegion(this)">North Shore</button>
+      <button class="region-pill" data-region="richmond" onclick="setRegion(this)">Richmond</button>
+      <button class="region-pill" data-region="langley" onclick="setRegion(this)">Langley</button>
+      <button class="region-pill" data-region="burnaby" onclick="setRegion(this)">Burnaby &amp; Tri-Cities</button>
+    </div>
+  </div>
+</section>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-bar-item"><div class="stat-num">6</div><div class="stat-lbl">Partner shelters</div></div>
+  <div class="stat-bar-item"><div class="stat-num">400+</div><div class="stat-lbl">Animals available now</div></div>
+  <div class="stat-bar-item"><div class="stat-num">2,400+</div><div class="stat-lbl">Adopted via PawSwipe</div></div>
+  <div class="stat-bar-item"><div class="stat-num">Free</div><div class="stat-lbl">Always for shelters</div></div>
+</div>
+
+<!-- MAP PLACEHOLDER -->
+<div class="map-section">
+  <div class="map-grid"></div>
+  <div class="map-roads"></div>
+  <div class="map-label">
+    <div class="map-label-title">Interactive Map</div>
+    <div class="map-label-sub">Mapbox integration coming soon · Hover markers to preview</div>
+  </div>
+  <span class="map-tag">🗺 Map Preview</span>
+
+  <!-- Real approximate positions on a 1100×360 canvas -->
+  <!-- BC SPCA Vancouver ~ E 7th Ave, Van -->
+  <div class="map-marker" style="left:38%;top:52%;">
+    <div class="marker-tooltip">BC SPCA Vancouver · E 7th Ave</div>
+    <div class="marker-dot"></div>
+    <div class="marker-needle"></div>
+  </div>
+  <!-- BC SPCA West Vancouver ~ Pound Rd, W.Van -->
+  <div class="map-marker" style="left:22%;top:32%;">
+    <div class="marker-tooltip">BC SPCA West Vancouver</div>
+    <div class="marker-dot" style="background:#F2C4A0;"></div>
+    <div class="marker-needle" style="background:rgba(242,196,160,.6);"></div>
+  </div>
+  <!-- VOKRA ~ Wall St, East Van -->
+  <div class="map-marker" style="left:44%;top:44%;">
+    <div class="marker-tooltip">VOKRA · Wall St, Vancouver</div>
+    <div class="marker-dot" style="background:#7EA88E;"></div>
+    <div class="marker-needle" style="background:rgba(74,110,92,.5);"></div>
+  </div>
+  <!-- RAPS ~ Richmond -->
+  <div class="map-marker" style="left:36%;top:72%;">
+    <div class="marker-tooltip">RAPS · Richmond</div>
+    <div class="marker-dot" style="background:#B8D0DC;"></div>
+    <div class="marker-needle" style="background:rgba(123,157,176,.5);"></div>
+  </div>
+  <!-- LAPS ~ Langley -->
+  <div class="map-marker" style="left:72%;top:65%;">
+    <div class="marker-tooltip">LAPS · Langley</div>
+    <div class="marker-dot" style="background:#D9956A;"></div>
+    <div class="marker-needle" style="background:rgba(217,149,106,.5);"></div>
+  </div>
+  <!-- City of Van Animal Services -->
+  <div class="map-marker" style="left:34%;top:48%;">
+    <div class="marker-tooltip">City of Vancouver Animal Services</div>
+    <div class="marker-dot" style="background:#9B8E84;border-color:rgba(253,246,236,.3);"></div>
+    <div class="marker-needle" style="background:rgba(155,142,132,.5);"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="section-header">
+    <h2 class="section-title">Our <em>partner</em> shelters</h2>
+    <span class="section-count" id="shelterCount">Showing 6 shelters</span>
+  </div>
+
+  <div class="shelter-grid" id="shelterGrid">
+
+    <!-- 1. BC SPCA Vancouver -->
+    <div class="shelter-card" data-region="vancouver" data-name="bc spca vancouver">
+      <div class="shelter-card-top">
+        <div class="shelter-avatar" style="background:var(--clay);">B</div>
+        <div class="shelter-card-info">
+          <div class="shelter-badges">
+            <span class="badge badge-spca">SPCA</span>
+            <span class="badge badge-nokill">♻️ No-kill</span>
+            <span class="badge badge-verify">✓ Verified</span>
+          </div>
+          <div class="shelter-name">BC SPCA Vancouver</div>
+          <div class="shelter-loc">📍 1205 E 7th Ave · <strong>0.0 km</strong></div>
+        </div>
+      </div>
+      <p class="shelter-desc">BC's largest animal welfare organisation and the only one with authority to enforce cruelty laws. The Vancouver branch handles dogs, cats, and small animals — and includes a non-profit veterinary hospital on site.</p>
+      <div class="shelter-stats">
+        <div class="sstat"><div class="sstat-num">127</div><div class="sstat-lbl">Dogs available</div></div>
+        <div class="sstat"><div class="sstat-num">89</div><div class="sstat-lbl">Cats available</div></div>
+        <div class="sstat"><div class="sstat-num">32</div><div class="sstat-lbl">Small animals</div></div>
+      </div>
+      <div class="shelter-hours">
+        <span class="hours-icon">🕐</span>
+        <span>Mon–Wed &amp; Fri: 12–4:30pm · Sat–Sun: 12–4pm · <strong>Closed Thu</strong> · (604) 879-7721</span>
+      </div>
+      <div class="shelter-actions">
+        <a class="btn-primary" href="shelter-profile-bcspca.html">See animals →</a>
+        <a class="btn-ghost" href="https://spca.bc.ca" target="_blank">Website ↗</a>
+      </div>
+    </div>
+
+    <!-- 2. VOKRA -->
+    <div class="shelter-card" data-region="vancouver" data-name="vokra vancouver orphan kitten rescue">
+      <div class="shelter-card-top">
+        <div class="shelter-avatar" style="background:var(--sage);">V</div>
+        <div class="shelter-card-info">
+          <div class="shelter-badges">
+            <span class="badge badge-foster">Foster Network</span>
+            <span class="badge badge-nokill">♻️ No-kill</span>
+            <span class="badge badge-verify">✓ Verified</span>
+          </div>
+          <div class="shelter-name">VOKRA</div>
+          <div class="shelter-loc">📍 2028 Wall St, Vancouver · <strong>Foster-based</strong></div>
+        </div>
+      </div>
+      <p class="shelter-desc">Vancouver Orphan Kitten Rescue Association — the city's dedicated cat rescue with 550 active foster homes. VOKRA places over 1,400 cats and kittens per year and operates a strict no-kill, foster-only model.</p>
+      <div class="shelter-stats">
+        <div class="sstat"><div class="sstat-num">550</div><div class="sstat-lbl">Foster homes</div></div>
+        <div class="sstat"><div class="sstat-num">1,400+</div><div class="sstat-lbl">Cats placed/yr</div></div>
+        <div class="sstat"><div class="sstat-num">68</div><div class="sstat-lbl">Available now</div></div>
+      </div>
+      <div class="shelter-hours">
+        <span class="hours-icon">🕐</span>
+        <span>Foster-based adoption · By appointment · (778) 874-1486 · <a href="https://vokra.ca" target="_blank" style="color:var(--rain);">vokra.ca</a></span>
+      </div>
+      <div class="shelter-actions">
+        <button class="btn-primary" onclick="showToast('VOKRA profile coming in Sprint 3')">See animals →</button>
+        <a class="btn-ghost" href="https://vokra.ca" target="_blank">Website ↗</a>
+      </div>
+    </div>
+
+    <!-- 3. RAPS -->
+    <div class="shelter-card" data-region="richmond" data-name="raps richmond animal protection society">
+      <div class="shelter-card-top">
+        <div class="shelter-avatar" style="background:var(--rain);">R</div>
+        <div class="shelter-card-info">
+          <div class="shelter-badges">
+            <span class="badge badge-rescue">Rescue</span>
+            <span class="badge badge-nokill">♻️ No-kill</span>
+          </div>
+          <div class="shelter-name">RAPS</div>
+          <div class="shelter-loc">📍 Richmond, BC · <strong>~12 km</strong></div>
+        </div>
+      </div>
+      <p class="shelter-desc">The Richmond Animal Protection Society operates Canada's largest no-kill cat sanctuary with over 370 resident cats. Their shelter also houses dogs, rabbits, and small animals — all surrendered, never bought. No animal is ever euthanised for space.</p>
+      <div class="shelter-stats">
+        <div class="sstat"><div class="sstat-num">370+</div><div class="sstat-lbl">Sanctuary cats</div></div>
+        <div class="sstat"><div class="sstat-num">45</div><div class="sstat-lbl">Adoptable now</div></div>
+        <div class="sstat"><div class="sstat-num">1985</div><div class="sstat-lbl">Est.</div></div>
+      </div>
+      <div class="shelter-hours">
+        <span class="hours-icon">🕐</span>
+        <span>Adoptions: Sat–Sun 12–4pm · <a href="https://rapsbc.com" target="_blank" style="color:var(--rain);">rapsbc.com</a></span>
+      </div>
+      <div class="shelter-actions">
+        <button class="btn-primary" onclick="showToast('RAPS profile coming in Sprint 3')">See animals →</button>
+        <a class="btn-ghost" href="https://rapsbc.com" target="_blank">Website ↗</a>
+      </div>
+    </div>
+
+    <!-- 4. BC SPCA West Vancouver -->
+    <div class="shelter-card" data-region="northshore" data-name="bc spca west vancouver">
+      <div class="shelter-card-top">
+        <div class="shelter-avatar" style="background:#7D3419;">B</div>
+        <div class="shelter-card-info">
+          <div class="shelter-badges">
+            <span class="badge badge-spca">SPCA</span>
+            <span class="badge badge-nokill">♻️ No-kill</span>
+          </div>
+          <div class="shelter-name">BC SPCA West Vancouver</div>
+          <div class="shelter-loc">📍 1020 Pound Rd, West Vancouver · <strong>~9 km</strong></div>
+        </div>
+      </div>
+      <p class="shelter-desc">The North Shore branch of the BC SPCA serving West and North Vancouver. A quieter, community-focused location that often has animals overlooked at larger shelters — including bonded pairs and seniors.</p>
+      <div class="shelter-stats">
+        <div class="sstat"><div class="sstat-num">34</div><div class="sstat-lbl">Dogs available</div></div>
+        <div class="sstat"><div class="sstat-num">22</div><div class="sstat-lbl">Cats available</div></div>
+        <div class="sstat"><div class="sstat-num">8</div><div class="sstat-lbl">Small animals</div></div>
+      </div>
+      <div class="shelter-hours">
+        <span class="hours-icon">🕐</span>
+        <span>Tue–Sun 10–5pm (admin) · Adoptions: 12–3pm · (604) 922-4622</span>
+      </div>
+      <div class="shelter-actions">
+        <button class="btn-primary" onclick="showToast('West Van profile coming in Sprint 3')">See animals →</button>
+        <a class="btn-ghost" href="https://spca.bc.ca" target="_blank">Website ↗</a>
+      </div>
+    </div>
+
+    <!-- 5. LAPS -->
+    <div class="shelter-card" data-region="langley" data-name="laps langley animal protection society">
+      <div class="shelter-card-top">
+        <div class="shelter-avatar" style="background:var(--amber-deep);">L</div>
+        <div class="shelter-card-info">
+          <div class="shelter-badges">
+            <span class="badge badge-rescue">Rescue</span>
+          </div>
+          <div class="shelter-name">LAPS</div>
+          <div class="shelter-loc">📍 Patti Dale Animal Shelter, Langley · <strong>~45 km</strong></div>
+        </div>
+      </div>
+      <p class="shelter-desc">Langley Animal Protection Society serves both Langley City and Langley Township from the Patti Dale Animal Shelter. The facility expanded significantly in 2025 and now handles all stray and surrendered animals for the region.</p>
+      <div class="shelter-stats">
+        <div class="sstat"><div class="sstat-num">52</div><div class="sstat-lbl">Dogs available</div></div>
+        <div class="sstat"><div class="sstat-num">38</div><div class="sstat-lbl">Cats available</div></div>
+        <div class="sstat"><div class="sstat-num">15</div><div class="sstat-lbl">Small animals</div></div>
+      </div>
+      <div class="shelter-hours">
+        <span class="hours-icon">🕐</span>
+        <span>Mon–Fri 10–5pm · Sat 10–4pm · Sun: Closed · <a href="https://lapsbc.ca" target="_blank" style="color:var(--rain);">lapsbc.ca</a></span>
+      </div>
+      <div class="shelter-actions">
+        <button class="btn-primary" onclick="showToast('LAPS profile coming in Sprint 3')">See animals →</button>
+        <a class="btn-ghost" href="https://lapsbc.ca" target="_blank">Website ↗</a>
+      </div>
+    </div>
+
+    <!-- 6. City of Vancouver Animal Services -->
+    <div class="shelter-card" data-region="vancouver" data-name="city of vancouver animal services">
+      <div class="shelter-card-top">
+        <div class="shelter-avatar" style="background:var(--mid);">C</div>
+        <div class="shelter-card-info">
+          <div class="shelter-badges">
+            <span class="badge badge-muni">Municipal</span>
+          </div>
+          <div class="shelter-name">City of Vancouver Animal Services</div>
+          <div class="shelter-loc">📍 Vancouver, BC · <strong>By appointment</strong></div>
+        </div>
+      </div>
+      <p class="shelter-desc">The City of Vancouver's official animal control and adoption service. Handles dogs and small animals — not cats (refer to VOKRA or BC SPCA for cats). Primarily serves stray and surrendered animals within Vancouver city limits.</p>
+      <div class="shelter-stats">
+        <div class="sstat"><div class="sstat-num">Dogs</div><div class="sstat-lbl">& small animals</div></div>
+        <div class="sstat"><div class="sstat-num">Appt.</div><div class="sstat-lbl">Required</div></div>
+        <div class="sstat"><div class="sstat-num">Free</div><div class="sstat-lbl">City service</div></div>
+      </div>
+      <div class="shelter-hours">
+        <span class="hours-icon">🕐</span>
+        <span>By appointment only · <a href="mailto:animalshelter@vancouver.ca" style="color:var(--rain);">animalshelter@vancouver.ca</a></span>
+      </div>
+      <div class="shelter-actions">
+        <button class="btn-primary" onclick="showToast('City profile coming in Sprint 3')">See animals →</button>
+        <a class="btn-ghost" href="https://vancouver.ca/animal-control" target="_blank">Website ↗</a>
+      </div>
+    </div>
+
+  </div><!-- /shelter-grid -->
+
+  <!-- PARTNER CTA -->
+  <div class="partner-section">
+    <div class="partner-text">
+      <div class="partner-eyebrow">For shelters &amp; rescues</div>
+      <h2 class="partner-title">Is your rescue<br><em>not listed?</em></h2>
+      <p class="partner-sub">PawSwipe is free for shelters and rescues — always. We handle the tech so you can focus on the animals. Apply to be a listed partner and reach thousands of Lower Mainland adopters.</p>
+    </div>
+    <div class="partner-form">
+      <input class="partner-input" type="text" placeholder="Your organisation name">
+      <input class="partner-input" type="email" placeholder="Your email address">
+      <button class="partner-btn" onclick="partnerSubmit()">Apply to partner →</button>
+      <div class="partner-note">Free forever for BC shelters &amp; rescues · Response within 3 business days</div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast" style="position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--charcoal);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:.83rem;font-weight:400;z-index:200;opacity:0;transition:all .3s;white-space:nowrap;"></div>
+
+<script>
+let currentRegion = 'all';
+
+function setRegion(btn) {
+  document.querySelectorAll('.region-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  currentRegion = btn.dataset.region;
+  filterShelters();
+}
+
+function filterShelters() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.shelter-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const regionMatch = currentRegion === 'all' || card.dataset.region === currentRegion;
+    const nameMatch = !query || card.dataset.name.includes(query);
+    const show = regionMatch && nameMatch;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('shelterCount').textContent = `Showing ${visible} shelter${visible !== 1 ? 's' : ''}`;
+}
+
+function partnerSubmit() {
+  showToast('✓ Application received — we\'ll be in touch within 3 business days!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 3200);
+}
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.shelter-card');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = `opacity .55s ease ${i * 80}ms, transform .55s ease ${i * 80}ms, box-shadow .25s`;
+  obs.observe(el);
+});
+</script>
+</body>
+</html>

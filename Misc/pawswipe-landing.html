@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawSwipe — Find Your Perfect Match</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FDF6EC;
+    --warm-white: #FFFAF4;
+    --amber: #E8923A;
+    --amber-deep: #C97520;
+    --clay: #A84E2A;
+    --sage: #5C7A5E;
+    --sage-light: #8CAE8E;
+    --blush: #F2C4A0;
+    --blush-deep: #D9956A;
+    --charcoal: #1E1A17;
+    --mid: #6B5E52;
+    --light-stroke: rgba(232,146,58,0.15);
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--charcoal);
+    font-family: var(--font-body);
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--amber);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--amber);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease-out, width 0.2s, height 0.2s, opacity 0.2s;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 48px;
+    z-index: 100;
+    background: rgba(253,246,236,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--light-stroke);
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: var(--clay);
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--amber); }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--mid);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--clay); }
+  .nav-cta {
+    background: var(--clay) !important;
+    color: var(--cream) !important;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-weight: 500 !important;
+    transition: background 0.2s, transform 0.15s !important;
+  }
+  .nav-cta:hover { background: var(--amber-deep) !important; transform: scale(1.03); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 120px 48px 80px;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .blob-1 { width: 500px; height: 500px; background: var(--blush); top: -100px; right: -100px; }
+  .blob-2 { width: 350px; height: 350px; background: var(--sage-light); bottom: 0; left: -80px; }
+  .blob-3 { width: 200px; height: 200px; background: var(--amber); top: 50%; left: 40%; }
+
+  .hero-text { position: relative; z-index: 2; }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blush);
+    color: var(--clay);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .hero-eyebrow::before { content: '🐾'; font-size: 0.9rem; }
+
+  .hero-h1 {
+    font-family: var(--font-display);
+    font-size: clamp(3.2rem, 5vw, 5.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--charcoal);
+    margin-bottom: 32px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .hero-h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--clay);
+  }
+  .hero-h1 .line-accent {
+    color: var(--amber);
+    position: relative;
+    display: inline-block;
+  }
+  .hero-h1 .line-accent::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 0; right: 0;
+    height: 3px;
+    background: var(--amber);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: lineReveal 0.6s 0.9s ease forwards;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--mid);
+    line-height: 1.7;
+    max-width: 420px;
+    margin-bottom: 44px;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 16px; align-items: center;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--clay);
+    color: var(--cream);
+    padding: 16px 36px;
+    border-radius: 100px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 24px rgba(168,78,42,0.25);
+  }
+  .btn-primary:hover {
+    background: var(--amber-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(168,78,42,0.35);
+  }
+  .btn-secondary {
+    color: var(--mid);
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--clay); }
+  .btn-secondary::before { content: '▶'; font-size: 0.7rem; }
+
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 56px;
+    animation: fadeUp 0.7s 0.4s ease both;
+  }
+  .stat-item { }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--clay);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.8rem; color: var(--mid); margin-top: 4px; letter-spacing: 0.03em; }
+
+  /* CARD STACK */
+  .hero-cards {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 520px;
+    animation: fadeIn 0.8s 0.3s ease both;
+  }
+
+  .pet-card {
+    position: absolute;
+    width: 300px;
+    background: var(--warm-white);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30,26,23,0.12);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+    cursor: none;
+  }
+  .pet-card:nth-child(1) {
+    transform: rotate(6deg) translate(60px, 20px) scale(0.9);
+    z-index: 1;
+    opacity: 0.7;
+  }
+  .pet-card:nth-child(2) {
+    transform: rotate(-3deg) translate(-20px, 10px) scale(0.95);
+    z-index: 2;
+    opacity: 0.85;
+  }
+  .pet-card:nth-child(3) {
+    transform: rotate(0deg) translate(0,0) scale(1);
+    z-index: 3;
+  }
+  .pet-card:nth-child(3):hover {
+    transform: rotate(0deg) translate(0,-8px) scale(1.02);
+    box-shadow: 0 32px 80px rgba(30,26,23,0.18);
+  }
+
+  .card-img {
+    width: 100%; height: 220px;
+    object-fit: cover;
+    display: block;
+    background: var(--blush);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img-placeholder {
+    width: 100%; height: 220px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+  }
+  .card-body { padding: 20px 22px 22px; }
+  .card-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--charcoal);
+  }
+  .card-meta { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--blush);
+    color: var(--clay);
+  }
+  .tag.green { background: rgba(92,122,94,0.15); color: var(--sage); }
+  .card-actions {
+    display: flex; gap: 10px; margin-top: 16px;
+  }
+  .card-btn {
+    flex: 1; height: 44px;
+    border: none; border-radius: 12px;
+    font-size: 1.2rem;
+    cursor: none;
+    transition: transform 0.15s, background 0.15s;
+    font-weight: 600;
+  }
+  .card-btn.pass { background: rgba(107,94,82,0.1); color: var(--mid); }
+  .card-btn.like { background: var(--clay); color: white; box-shadow: 0 4px 16px rgba(168,78,42,0.3); }
+  .card-btn:hover { transform: scale(1.06); }
+
+  .card-urgency {
+    position: absolute;
+    top: 14px; left: 14px;
+    background: var(--clay);
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* HOW IT WORKS */
+  .section-how {
+    padding: 100px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .section-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--charcoal);
+    margin-bottom: 64px;
+  }
+  .section-h2 em { font-style: italic; font-weight: 300; color: var(--clay); }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .step-card {
+    background: var(--warm-white);
+    border-radius: 20px;
+    padding: 36px 32px;
+    border: 1px solid var(--light-stroke);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .step-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(30,26,23,0.09);
+  }
+  .step-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .step-card:hover::before { transform: scaleX(1); }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--blush);
+    line-height: 1;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .step-icon { font-size: 2rem; margin-bottom: 12px; display: block; }
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+  }
+  .step-desc { font-size: 0.9rem; color: var(--mid); line-height: 1.7; }
+
+  /* PSYCHOLOGY SECTION */
+  .section-psych {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 100px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-psych::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,146,58,0.15) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    border-radius: 50%;
+  }
+  .psych-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .psych-text .section-label { color: var(--amber); }
+  .psych-text .section-h2 { color: var(--cream); margin-bottom: 32px; }
+  .psych-text p { font-size: 1rem; color: rgba(253,246,236,0.7); line-height: 1.8; }
+
+  .psych-compare {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 20px;
+  }
+  .compare-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+  }
+  .compare-box.new {
+    border-color: rgba(232,146,58,0.4);
+    background: rgba(232,146,58,0.07);
+  }
+  .compare-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    color: rgba(253,246,236,0.5);
+  }
+  .compare-box.new .compare-label { color: var(--amber); }
+  .compare-flow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    color: rgba(253,246,236,0.8);
+  }
+  .compare-box.new .flow-step { background: rgba(232,146,58,0.15); color: var(--cream); }
+  .flow-arrow { color: rgba(253,246,236,0.3); font-size: 0.8rem; }
+  .compare-box.new .flow-arrow { color: var(--amber); }
+  .flow-step.highlight { background: var(--clay); color: white; font-weight: 500; }
+
+  /* FEATURES */
+  .section-features {
+    padding: 100px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .features-header { margin-bottom: 64px; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .feature-card {
+    padding: 32px;
+    border-radius: 18px;
+    border: 1px solid var(--light-stroke);
+    background: var(--warm-white);
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(30,26,23,0.07); }
+  .feature-card.large {
+    grid-column: 1/-1;
+    background: linear-gradient(135deg, var(--clay) 0%, var(--amber-deep) 100%);
+    color: var(--cream);
+    border-color: transparent;
+  }
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--blush);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .feature-card.large .feature-icon { background: rgba(255,255,255,0.2); }
+  .feature-content {}
+  .feature-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .feature-card.large .feature-title { color: var(--cream); }
+  .feature-desc { font-size: 0.88rem; color: var(--mid); line-height: 1.6; }
+  .feature-card.large .feature-desc { color: rgba(253,246,236,0.8); }
+
+  /* SHELTER */
+  .section-shelter {
+    background: var(--sage);
+    padding: 100px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-shelter::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .shelter-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .shelter-inner .section-label { color: rgba(253,246,236,0.7); }
+  .shelter-inner .section-h2 { color: var(--cream); }
+  .shelter-inner p { color: rgba(253,246,236,0.8); font-size: 1rem; line-height: 1.8; margin-bottom: 32px; }
+  .shelter-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .shelter-stat {
+    background: rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .shelter-stat-num {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1;
+  }
+  .shelter-stat-label { font-size: 0.8rem; color: rgba(253,246,236,0.65); margin-top: 4px; }
+
+  .shelter-features-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .shelter-features-list li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.88rem;
+    color: rgba(253,246,236,0.85);
+  }
+  .shelter-features-list li::before {
+    content: '✓';
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  /* CTA */
+  .section-cta {
+    padding: 120px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(232,146,58,0.12) 0%, transparent 70%);
+  }
+  .section-cta .section-h2 { margin-bottom: 20px; }
+  .cta-sub {
+    font-size: 1.1rem;
+    color: var(--mid);
+    margin-bottom: 44px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-actions { display: flex; gap: 16px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .btn-outline {
+    border: 1.5px solid var(--clay);
+    color: var(--clay);
+    padding: 16px 36px;
+    border-radius: 100px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+  .btn-outline:hover { background: var(--clay); color: white; transform: translateY(-2px); }
+
+  .paw-print-bg {
+    position: absolute;
+    font-size: 12rem;
+    opacity: 0.04;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--charcoal);
+    color: rgba(253,246,236,0.5);
+    padding: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: var(--cream);
+  }
+  .footer-logo span { color: var(--amber); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes lineReveal {
+    to { transform: scaleX(1); }
+  }
+  @keyframes float {
+    0%, 100% { transform: rotate(0deg) translate(0,0) scale(1); }
+    33% { transform: rotate(0deg) translate(0,-10px) scale(1); }
+    66% { transform: rotate(0deg) translate(0, 4px) scale(1); }
+  }
+  .pet-card:nth-child(3) { animation: float 4s ease-in-out infinite; }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    nav { padding: 18px 24px; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 60px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .psych-inner { grid-template-columns: 1fr; gap: 48px; }
+    .shelter-inner { grid-template-columns: 1fr; gap: 48px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .section-how, .section-features { padding: 80px 24px; }
+    .section-psych, .section-shelter, .section-cta { padding: 80px 24px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .hero-cards { height: 400px; }
+    .pet-card { width: 260px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Paw<span>Swipe</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#shelters">For Shelters</a>
+    <a href="#" class="nav-cta">Download App</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-blob blob-1"></div>
+  <div class="hero-bg-blob blob-2"></div>
+  <div class="hero-bg-blob blob-3"></div>
+
+  <div class="hero-text">
+    <div class="hero-eyebrow">Animal Adoption, Reimagined</div>
+    <h1 class="hero-h1">
+      Find your<br>
+      <em>perfect</em><br>
+      <span class="line-accent">furry match.</span>
+    </h1>
+    <p class="hero-sub">
+      Swipe through thousands of pets from local shelters and fosters. Fall in love first. Handle the paperwork second.
+    </p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">🐾 Start Swiping</a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">2.4M</div>
+        <div class="stat-label">Pets available</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">180K</div>
+        <div class="stat-label">Happy adoptions</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">6,200+</div>
+        <div class="stat-label">Partner shelters</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD STACK -->
+  <div class="hero-cards">
+    <!-- Card 3 (back) -->
+    <div class="pet-card">
+      <div class="card-img-placeholder" style="background:#e8c4a0;">🐈</div>
+      <div class="card-body">
+        <div class="card-name">Noodle</div>
+        <div class="card-meta">3 yrs • Tabby Mix • Seattle, WA</div>
+        <div class="card-tags">
+          <span class="tag">Indoor cat</span>
+          <span class="tag green">Good with kids</span>
+        </div>
+      </div>
+    </div>
+    <!-- Card 2 (middle) -->
+    <div class="pet-card">
+      <div class="card-img-placeholder" style="background:#c5d4c6;">🐕</div>
+      <div class="card-body">
+        <div class="card-name">Biscuit</div>
+        <div class="card-meta">5 yrs • Golden Mix • Portland, OR</div>
+        <div class="card-tags">
+          <span class="tag">Apartment ok</span>
+          <span class="tag green">Low energy</span>
+        </div>
+      </div>
+    </div>
+    <!-- Card 1 (front) -->
+    <div class="pet-card">
+      <div class="card-urgency">🔥 Urgent</div>
+      <div class="card-img-placeholder" style="background:#f5c4a0; font-size: 6rem;">🐶</div>
+      <div class="card-body">
+        <div class="card-name">Mango</div>
+        <div class="card-meta">2 yrs • Beagle • 3.2 miles away</div>
+        <div class="card-tags">
+          <span class="tag">High energy</span>
+          <span class="tag green">Dog friendly</span>
+          <span class="tag">Needs yard</span>
+        </div>
+        <div class="card-actions">
+          <button class="card-btn pass">✕</button>
+          <button class="card-btn like">♥</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section-how" id="how">
+  <span class="section-label reveal">The Process</span>
+  <h2 class="section-h2 reveal">Three steps to <em>forever friends</em></h2>
+  <div class="steps-grid">
+    <div class="step-card reveal">
+      <span class="step-num">01</span>
+      <span class="step-icon">🏠</span>
+      <div class="step-title">Build your profile</div>
+      <p class="step-desc">Tell us about your home, lifestyle, activity level, and what you're looking for. Our system uses this to surface truly compatible matches — not just cute faces.</p>
+    </div>
+    <div class="step-card reveal">
+      <span class="step-num">02</span>
+      <span class="step-icon">✨</span>
+      <div class="step-title">Swipe & connect</div>
+      <p class="step-desc">Browse pet cards tuned to your life. Swipe right to express interest, super-like urgent rescues, and save favorites to revisit. Every swipe teaches the system.</p>
+    </div>
+    <div class="step-card reveal">
+      <span class="step-num">03</span>
+      <span class="step-icon">🎉</span>
+      <div class="step-title">Meet & adopt</div>
+      <p class="step-desc">Once matched, message the shelter directly, schedule a virtual meet-and-greet, and complete the adoption — all without leaving the app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PSYCHOLOGY -->
+<section class="section-psych">
+  <div class="psych-inner">
+    <div class="psych-text">
+      <span class="section-label">Why it works</span>
+      <h2 class="section-h2 reveal">Emotion first,<br><em>paperwork</em> second</h2>
+      <p>Traditional adoption platforms put bureaucracy before connection — leaving potential adopters cold before they ever fall in love. PawSwipe flips this entirely. By the time a user encounters a form, they've already said "that's my dog."</p>
+    </div>
+    <div class="psych-compare reveal">
+      <div class="compare-box">
+        <div class="compare-label">Traditional Adoption</div>
+        <div class="compare-flow">
+          <div class="flow-step">Browse directory</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step highlight">Paperwork</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Call shelter</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Wait</div>
+        </div>
+        <p style="margin-top:14px; font-size:0.8rem; color:rgba(253,246,236,0.4);">68% of users abandon before completing an application</p>
+      </div>
+      <div class="compare-box new">
+        <div class="compare-label">PawSwipe</div>
+        <div class="compare-flow">
+          <div class="flow-step highlight">Fall in love</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Match</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Apply</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Meet</div>
+        </div>
+        <p style="margin-top:14px; font-size:0.8rem; color:rgba(232,146,58,0.8);">3× higher application completion rate</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section-features" id="features">
+  <div class="features-header">
+    <span class="section-label reveal">Built for connection</span>
+    <h2 class="section-h2 reveal">Every feature is<br><em>purpose-built</em></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card large reveal">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-content">
+        <div class="feature-title">AI Compatibility Matching</div>
+        <p class="feature-desc">Our behavioral engine goes beyond breed filters. It maps your lifestyle — work schedule, activity level, housing, household members — to a pet's actual temperament. A high-energy husky won't appear for a studio apartment dweller who works 12-hour days. Smarter matches mean fewer returns and happier animals.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">📍</div>
+      <div class="feature-content">
+        <div class="feature-title">Geo-aware Discovery</div>
+        <p class="feature-desc">Browse pets within your radius. Drive distance, not just zip code — because you'll want to visit.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">📹</div>
+      <div class="feature-content">
+        <div class="feature-title">Virtual Meet-and-Greets</div>
+        <p class="feature-desc">Schedule live video sessions with shelters so you can meet your potential pet before committing to a visit.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🔔</div>
+      <div class="feature-content">
+        <div class="feature-title">Urgent Rescue Alerts</div>
+        <p class="feature-desc">Animals near capacity get a "super-like" boost so motivated adopters find them first.</p>
+      </div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">💬</div>
+      <div class="feature-content">
+        <div class="feature-title">Direct Shelter Messaging</div>
+        <p class="feature-desc">No phone tag. Message shelters and fosters in-app, track your application status in real time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR SHELTERS -->
+<section class="section-shelter" id="shelters">
+  <div class="shelter-inner">
+    <div>
+      <span class="section-label reveal">For shelters & fosters</span>
+      <h2 class="section-h2 reveal">Modern tools for<br><em>rescue heroes</em></h2>
+      <p>PawSwipe gives shelters a full management dashboard — no more spreadsheets, inconsistent intake forms, or cold inquiry emails from strangers.</p>
+      <ul class="shelter-features-list reveal">
+        <li>Shelter dashboard & analytics</li>
+        <li>Application management</li>
+        <li>Medical & vaccine tracking</li>
+        <li>Foster network tools</li>
+        <li>Priority boosts for urgent pets</li>
+        <li>Adoption outcome reporting</li>
+        <li>In-app messaging & scheduling</li>
+        <li>Multi-location support</li>
+      </ul>
+    </div>
+    <div class="shelter-stats reveal">
+      <div class="shelter-stat">
+        <div class="shelter-stat-num">↓ 41%</div>
+        <div class="shelter-stat-label">Reduction in no-shows</div>
+      </div>
+      <div class="shelter-stat">
+        <div class="shelter-stat-num">3.2×</div>
+        <div class="shelter-stat-label">More qualified applicants</div>
+      </div>
+      <div class="shelter-stat">
+        <div class="shelter-stat-num">↑ 70%</div>
+        <div class="shelter-stat-label">Application completion</div>
+      </div>
+      <div class="shelter-stat">
+        <div class="shelter-stat-num">↓ 28%</div>
+        <div class="shelter-stat-label">Return rate improvement</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-cta">
+  <div class="cta-bg"></div>
+  <div class="paw-print-bg" style="top:-40px; left:-60px;">🐾</div>
+  <div class="paw-print-bg" style="bottom:-40px; right:-40px;">🐾</div>
+  <div style="position:relative; z-index:2;">
+    <span class="section-label" style="display:block; margin-bottom:16px;">Ready to meet them?</span>
+    <h2 class="section-h2">Your next best friend<br>is one swipe <em>away.</em></h2>
+    <p class="cta-sub">Join thousands of adopters who found their perfect match — and the shelters that trust PawSwipe to tell their stories.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary">🐾 Download PawSwipe</a>
+      <a href="#" class="btn-outline">Partner with us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Paw<span>Swipe</span></div>
+  <div>Every swipe saves a life.</div>
+  <div>© 2026 PawSwipe Inc.</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animateCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+  document.querySelectorAll('a, button, .step-card, .feature-card, .pet-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+      ring.style.opacity = '0';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.opacity = '0.5';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

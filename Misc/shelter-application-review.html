@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Review — BC SPCA Vancouver · PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.12);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --sidebar:220px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;font-size:14px;}
+body{background:#F0E8DE;font-family:var(--fb);font-weight:300;color:var(--charcoal);display:flex;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--charcoal);display:flex;flex-direction:column;height:100vh;overflow-y:auto;z-index:40;flex-shrink:0;}
+.sidebar-top{padding:20px 16px 14px;}
+.sidebar-logo{font-family:var(--fd);font-weight:900;font-size:1.05rem;color:var(--cream);letter-spacing:-.02em;}
+.sidebar-logo span{color:var(--amber);}
+.sidebar-portal{font-size:.58rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-top:2px;}
+.sidebar-divider{height:1px;background:rgba(255,255,255,.07);margin:10px 0;}
+.sidebar-shelter{padding:10px 16px;display:flex;align-items:center;gap:9px;}
+.sidebar-shelter-avatar{width:32px;height:32px;border-radius:9px;background:var(--clay);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:900;font-size:.8rem;color:var(--cream);flex-shrink:0;}
+.sidebar-shelter-name{font-size:.76rem;font-weight:500;color:var(--cream);}
+.nav-section{font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(253,246,236,.22);padding:12px 16px 4px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:.78rem;color:rgba(253,246,236,.5);cursor:pointer;border-left:2px solid transparent;transition:all .15s;text-decoration:none;}
+.nav-item:hover{color:var(--cream);background:rgba(255,255,255,.04);border-left-color:rgba(232,146,58,.4);}
+.nav-item.active{color:var(--cream);background:rgba(232,146,58,.1);border-left-color:var(--amber);}
+.nav-icon{font-size:.95rem;width:16px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;min-width:16px;height:16px;background:var(--clay);border-radius:100px;font-size:.58rem;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+.sidebar-bottom{margin-top:auto;padding:10px 0;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+
+/* TOP BAR */
+.topbar{background:var(--cream);border-bottom:1px solid var(--ls);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.topbar-title{font-family:var(--fd);font-weight:700;font-size:.98rem;color:var(--charcoal);}
+.topbar-sub{font-size:.72rem;color:var(--mid);}
+.back-link{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--mid);text-decoration:none;transition:color .18s;}
+.back-link:hover{color:var(--clay);}
+
+/* 3-COL */
+.three-col{flex:1;display:flex;overflow:hidden;}
+
+/* LEFT — APP LIST */
+.app-list-panel{width:268px;min-width:268px;border-right:1px solid var(--ls);background:var(--warm-white);display:flex;flex-direction:column;overflow:hidden;}
+.app-list-header{padding:14px 14px 10px;border-bottom:1px solid var(--ls);flex-shrink:0;}
+.app-list-title{font-family:var(--fd);font-weight:700;font-size:.98rem;margin-bottom:10px;}
+.filter-tabs{display:flex;gap:0;background:var(--cream);border-radius:8px;padding:2px;}
+.filter-tab{
+  flex:1;padding:5px 8px;border-radius:7px;border:none;
+  font-family:var(--fb);font-size:.7rem;font-weight:400;color:var(--mid);cursor:pointer;
+  transition:all .15s;background:transparent;text-align:center;
+}
+.filter-tab.active{background:var(--warm-white);color:var(--clay);font-weight:600;box-shadow:0 1px 4px rgba(30,26,23,.08);}
+.app-list{flex:1;overflow-y:auto;scrollbar-width:thin;}
+
+/* App list item */
+.app-item{
+  padding:12px 14px;border-bottom:1px solid var(--ls);cursor:pointer;
+  border-left:3px solid transparent;transition:all .15s;
+  position:relative;
+}
+.app-item:last-child{border-bottom:none;}
+.app-item:hover{background:rgba(253,246,236,.6);}
+.app-item.active{background:rgba(168,78,42,.06);border-left-color:var(--clay);}
+.app-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px;}
+.app-item-name{font-size:.83rem;font-weight:500;color:var(--charcoal);}
+.app-item-time{font-size:.68rem;color:var(--mid-light);}
+.app-item-animal{font-size:.73rem;color:var(--rain);margin-bottom:5px;}
+.app-item-bottom{display:flex;align-items:center;justify-content:space-between;}
+.status-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:100px;font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+.sp-new{background:var(--amber-pale);color:var(--amber-deep);}
+.sp-reviewing{background:var(--rain-pale);color:var(--rain);}
+.sp-approved{background:var(--sage-pale);color:var(--sage);}
+.sp-rejected{border:1px solid rgba(107,94,82,.2);color:var(--mid);}
+.app-days-overdue{font-size:.66rem;color:var(--clay);font-weight:500;}
+
+/* CENTRE — DETAIL */
+.app-detail-panel{flex:1;overflow-y:auto;scrollbar-width:thin;min-width:0;}
+.app-detail-header{
+  padding:16px 20px;border-bottom:1px solid var(--ls);
+  background:var(--cream);position:sticky;top:0;z-index:5;
+}
+.app-detail-title{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.app-detail-name{font-family:var(--fd);font-weight:700;font-size:1.15rem;color:var(--charcoal);}
+.app-detail-arrow{color:var(--mid-light);}
+.app-detail-animal{font-family:var(--fd);font-weight:700;font-size:1.15rem;color:var(--clay);}
+.app-detail-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.act-btn{padding:7px 16px;border-radius:8px;font-family:var(--fb);font-size:.78rem;font-weight:500;cursor:pointer;transition:all .18s;border:1.5px solid;}
+.act-approve{background:var(--sage);color:white;border-color:var(--sage);}
+.act-approve:hover{background:#3A5E4C;}
+.act-reject{background:transparent;color:var(--clay);border-color:var(--clay);}
+.act-reject:hover{background:var(--clay);color:white;}
+.act-info{background:transparent;color:var(--mid);border-color:var(--ls);}
+.act-info:hover{border-color:var(--mid);color:var(--charcoal);}
+.app-submitted{font-size:.72rem;color:var(--mid-light);margin-top:6px;}
+
+.detail-body{padding:18px 20px;}
+
+/* Answer cards */
+.answer-section{margin-bottom:16px;}
+.answer-header{
+  font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid-light);margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.answer-card{
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:12px;padding:14px 16px;
+}
+.answer-row{
+  display:flex;gap:12px;justify-content:space-between;
+  font-size:.82rem;padding:5px 0;border-bottom:1px solid var(--ls);
+}
+.answer-row:last-child{border-bottom:none;}
+.ans-key{color:var(--mid);font-weight:400;min-width:120px;}
+.ans-val{color:var(--charcoal);font-weight:500;text-align:right;}
+
+/* Quote block */
+.quote-block{
+  background:var(--amber-pale);border-left:3px solid var(--amber);
+  border-radius:0 10px 10px 0;padding:14px 16px;
+}
+.quote-text{
+  font-family:var(--fd);font-style:italic;font-weight:300;
+  font-size:.92rem;color:var(--charcoal);line-height:1.7;
+}
+.quote-attr{font-size:.7rem;color:var(--mid-light);margin-top:8px;}
+
+/* COMPATIBILITY */
+.compat-card{background:var(--warm-white);border:1px solid var(--ls);border-radius:12px;overflow:hidden;}
+.compat-row-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 14px;border-bottom:1px solid var(--ls);font-size:.82rem;
+}
+.compat-row-item:last-child{border-bottom:none;}
+.compat-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+.compat-text{flex:1;}
+.compat-label{font-weight:500;color:var(--charcoal);}
+.compat-sub{font-size:.75rem;color:var(--mid);margin-top:2px;}
+
+/* NOTES */
+.notes-card{background:var(--warm-white);border:1px solid var(--ls);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.notes-header{padding:11px 14px;border-bottom:1px solid var(--ls);font-size:.78rem;font-weight:600;color:var(--charcoal);}
+.note-log{padding:0;}
+.note-entry{padding:10px 14px;border-bottom:1px solid var(--ls);font-size:.8rem;}
+.note-entry:last-child{border-bottom:none;}
+.note-meta{font-size:.68rem;color:var(--mid-light);margin-bottom:3px;}
+.note-text{color:var(--charcoal);}
+.notes-input-area{padding:12px 14px;border-top:1px solid var(--ls);}
+.notes-textarea{
+  width:100%;padding:9px 12px;border-radius:9px;
+  border:1.5px solid var(--ls);background:var(--cream);
+  font-family:var(--fb);font-size:.83rem;font-weight:300;color:var(--charcoal);
+  outline:none;resize:none;min-height:64px;line-height:1.5;
+  transition:border-color .2s;
+}
+.notes-textarea:focus{border-color:var(--amber);}
+.notes-save-btn{
+  margin-top:7px;padding:6px 16px;border-radius:7px;
+  background:var(--clay);color:white;border:none;font-family:var(--fb);
+  font-size:.75rem;font-weight:500;cursor:pointer;transition:background .18s;
+}
+.notes-save-btn:hover{background:var(--amber-deep);}
+
+/* DECISION */
+.decision-card{
+  background:var(--charcoal);border-radius:12px;padding:18px;margin-bottom:16px;
+}
+.decision-title{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--cream);margin-bottom:12px;}
+.decision-select{
+  width:100%;padding:9px 12px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);
+  font-family:var(--fb);font-size:.83rem;color:var(--cream);
+  outline:none;cursor:pointer;margin-bottom:12px;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='7' viewBox='0 0 10 7' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:auto;
+  padding-right:30px;
+}
+.decision-select option{background:var(--charcoal);}
+.decision-textarea{
+  width:100%;padding:10px 12px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);
+  font-family:var(--fb);font-size:.82rem;font-weight:300;color:var(--cream);
+  outline:none;resize:none;min-height:90px;line-height:1.6;margin-bottom:12px;
+  transition:border-color .2s;
+}
+.decision-textarea:focus{border-color:rgba(232,146,58,.5);}
+.decision-btn{
+  width:100%;padding:11px;border-radius:100px;
+  background:var(--sage);color:white;border:none;
+  font-family:var(--fb);font-size:.85rem;font-weight:600;cursor:pointer;
+  transition:all .18s;
+}
+.decision-btn:hover{background:#3A5E4C;transform:translateY(-1px);}
+
+/* RIGHT — HISTORY */
+.app-history-panel{width:240px;min-width:240px;border-left:1px solid var(--ls);background:var(--warm-white);overflow-y:auto;scrollbar-width:thin;}
+.history-header{padding:14px 14px 10px;border-bottom:1px solid var(--ls);font-family:var(--fd);font-weight:700;font-size:.9rem;color:var(--charcoal);}
+.history-section{padding:12px 14px;border-bottom:1px solid var(--ls);}
+.history-section-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid-light);margin-bottom:8px;}
+.history-stat{display:flex;justify-content:space-between;font-size:.78rem;padding:4px 0;}
+.hist-key{color:var(--mid);}
+.hist-val{color:var(--charcoal);font-weight:500;}
+.hist-val.good{color:var(--sage);}
+.hist-val.warn{color:var(--amber-deep);}
+
+/* Profile completeness */
+.completeness-bar{height:5px;background:rgba(107,94,82,.12);border-radius:3px;overflow:hidden;margin-top:4px;}
+.completeness-fill{height:100%;background:var(--sage);border-radius:3px;}
+
+/* Previous applications */
+.prev-app{padding:10px 14px;border-bottom:1px solid var(--ls);}
+.prev-app-name{font-size:.8rem;font-weight:500;color:var(--charcoal);}
+.prev-app-date{font-size:.68rem;color:var(--mid-light);}
+.prev-app-status{margin-top:3px;}
+
+.view-profile-btn{
+  display:block;margin:12px 14px;padding:8px 14px;border-radius:8px;
+  border:1.5px solid var(--ls);background:transparent;
+  font-family:var(--fb);font-size:.75rem;font-weight:500;color:var(--mid);
+  cursor:pointer;text-align:center;transition:all .18s;text-decoration:none;
+}
+.view-profile-btn:hover{border-color:var(--amber);color:var(--clay);}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo">Paw<span>Swipe</span></div>
+    <div class="sidebar-portal">Shelter Portal</div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-shelter">
+    <div class="sidebar-shelter-avatar">B</div>
+    <div><div class="sidebar-shelter-name">BC SPCA Vancouver</div></div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="nav-section">Navigation</div>
+  <a class="nav-item" href="shelter-dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+  <a class="nav-item" href="shelter-add-animal.html"><span class="nav-icon">🐾</span> Animals</a>
+  <a class="nav-item active" href="shelter-application-review.html"><span class="nav-icon">📋</span> Applications<span class="nav-badge">7</span></a>
+  <a class="nav-item" href="app-messages.html"><span class="nav-icon">💬</span> Messages<span class="nav-badge" style="background:var(--amber);">2</span></a>
+  <a class="nav-item" href="#"><span class="nav-icon">📈</span> Analytics</a>
+  <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Settings</a>
+  <div class="sidebar-bottom">
+    <div class="sidebar-divider"></div>
+    <a class="nav-item" href="#" style="color:rgba(253,246,236,.35);"><span class="nav-icon">🚪</span> Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="shelter-dashboard.html">← Dashboard</a>
+      <div style="color:var(--mid-light);">›</div>
+      <div>
+        <div class="topbar-title">Application Review</div>
+        <div class="topbar-sub">7 applications · 3 need response</div>
+      </div>
+    </div>
+    <div style="font-size:.75rem;color:var(--amber-deep);font-weight:500;">⚠ 3 overdue responses</div>
+  </div>
+
+  <div class="three-col">
+
+    <!-- ═══ LEFT: APP LIST ═══ -->
+    <div class="app-list-panel">
+      <div class="app-list-header">
+        <div class="app-list-title">7 Applications</div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="filterApps(this,'all')">All</button>
+          <button class="filter-tab" onclick="filterApps(this,'new')">New</button>
+          <button class="filter-tab" onclick="filterApps(this,'reviewing')">Open</button>
+          <button class="filter-tab" onclick="filterApps(this,'decided')">Decided</button>
+        </div>
+      </div>
+      <div class="app-list" id="appList">
+
+        <div class="app-item active" data-status="reviewing" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">Sarah Chen</div>
+            <div class="app-item-time">8 days ago</div>
+          </div>
+          <div class="app-item-animal">Linus &amp; Chester</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-reviewing">● Reviewing</span>
+            <span class="app-days-overdue">⚠ Overdue</span>
+          </div>
+        </div>
+
+        <div class="app-item" data-status="new" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">James Park</div>
+            <div class="app-item-time">4 days ago</div>
+          </div>
+          <div class="app-item-animal">Snickers</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-new">● New</span>
+          </div>
+        </div>
+
+        <div class="app-item" data-status="new" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">Elena Voronova</div>
+            <div class="app-item-time">2 days ago</div>
+          </div>
+          <div class="app-item-animal">Marble</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-new">● New</span>
+          </div>
+        </div>
+
+        <div class="app-item" data-status="reviewing" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">Marcus Williams</div>
+            <div class="app-item-time">6 days ago</div>
+          </div>
+          <div class="app-item-animal">Bruno</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-approved">● Approved</span>
+          </div>
+        </div>
+
+        <div class="app-item" data-status="decided" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">Priya Nair</div>
+            <div class="app-item-time">11 days ago</div>
+          </div>
+          <div class="app-item-animal">Linus &amp; Chester</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-rejected">Not proceeding</span>
+          </div>
+        </div>
+
+        <div class="app-item" data-status="new" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">Tom Nguyen</div>
+            <div class="app-item-time">1 day ago</div>
+          </div>
+          <div class="app-item-animal">Iris</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-new">● New</span>
+          </div>
+        </div>
+
+        <div class="app-item" data-status="decided" onclick="selectApp(this)">
+          <div class="app-item-top">
+            <div class="app-item-name">Wei Zhang</div>
+            <div class="app-item-time">9 days ago</div>
+          </div>
+          <div class="app-item-animal">Linus &amp; Chester</div>
+          <div class="app-item-bottom">
+            <span class="status-pill sp-rejected">Withdrawn</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ CENTRE: DETAIL ═══ -->
+    <div class="app-detail-panel">
+      <div class="app-detail-header">
+        <div class="app-detail-title">
+          <span class="app-detail-name">Sarah Chen</span>
+          <span class="app-detail-arrow">→</span>
+          <span class="app-detail-animal">Linus &amp; Chester</span>
+          <span class="status-pill sp-reviewing" style="font-size:.68rem;padding:3px 10px;">● Reviewing</span>
+        </div>
+        <div class="app-detail-actions">
+          <button class="act-btn act-approve" onclick="approve()">✓ Approve</button>
+          <button class="act-btn act-reject" onclick="reject()">✗ Decline</button>
+          <button class="act-btn act-info" onclick="requestInfo()">Request more info →</button>
+        </div>
+        <div class="app-submitted">Submitted May 10, 2026 at 2:47pm · 8 days ago</div>
+      </div>
+
+      <div class="detail-body">
+
+        <!-- About them -->
+        <div class="answer-section">
+          <div class="answer-header">👤 About the applicant</div>
+          <div class="answer-card">
+            <div class="answer-row"><span class="ans-key">Full name</span><span class="ans-val">Sarah Chen</span></div>
+            <div class="answer-row"><span class="ans-key">Location</span><span class="ans-val">Kitsilano, Vancouver BC</span></div>
+            <div class="answer-row"><span class="ans-key">Phone</span><span class="ans-val">(604) 555-0187</span></div>
+            <div class="answer-row"><span class="ans-key">Email</span><span class="ans-val">sarah.chen@gmail.com</span></div>
+            <div class="answer-row"><span class="ans-key">Housing tenure</span><span class="ans-val">Own — 1–2 years</span></div>
+          </div>
+        </div>
+
+        <!-- Their home -->
+        <div class="answer-section">
+          <div class="answer-header">🏢 Their home</div>
+          <div class="answer-card">
+            <div class="answer-row"><span class="ans-key">Housing type</span><span class="ans-val">Apartment / Condo</span></div>
+            <div class="answer-row"><span class="ans-key">Yard / outdoor access</span><span class="ans-val">No outdoor space</span></div>
+            <div class="answer-row"><span class="ans-key">Time arrangement</span><span class="ans-val">Mostly indoors</span></div>
+            <div class="answer-row"><span class="ans-key">Where they'll sleep</span><span class="ans-val">My bed</span></div>
+            <div class="answer-row"><span class="ans-key">Alone time per day</span><span class="ans-val">~4 hours</span></div>
+          </div>
+        </div>
+
+        <!-- Their experience -->
+        <div class="answer-section">
+          <div class="answer-header">🐾 Their experience</div>
+          <div class="answer-card">
+            <div class="answer-row"><span class="ans-key">Experience level</span><span class="ans-val">Experienced (lifelong pet owner)</span></div>
+            <div class="answer-row"><span class="ans-key">Current pets</span><span class="ans-val">Mochi — cat, 4 yrs, spayed</span></div>
+            <div class="answer-row"><span class="ans-key">Ever given up a pet</span><span class="ans-val">No</span></div>
+          </div>
+        </div>
+
+        <!-- Why these animals -->
+        <div class="answer-section">
+          <div class="answer-header">💬 Why Linus &amp; Chester?</div>
+          <div class="quote-block">
+            <div class="quote-text">"I've been following their story on the BC SPCA site for three weeks now. I live alone in a 2-bedroom in Kitsilano and the apartment feels too quiet — especially since my tabby Mochi passed last year. Something about seeing two old boys who've kept each other company their whole lives really got to me. I want to give them the quiet, comfortable retirement they deserve."</div>
+            <div class="quote-attr">— Sarah Chen, May 10, 2026</div>
+          </div>
+        </div>
+
+        <!-- What they're hoping for -->
+        <div class="answer-section">
+          <div class="answer-header">✨ What they're hoping this will bring</div>
+          <div class="quote-block" style="background:var(--rain-pale);border-left-color:var(--rain);">
+            <div class="quote-text">"Routine. Companionship. A reason to take slow walks in the morning and come home to something warm. After Mochi, the apartment feels too still. Two sleepy dogs watching the world go by from the window sounds like exactly what I need."</div>
+          </div>
+        </div>
+
+        <!-- Compatibility -->
+        <div class="answer-section">
+          <div class="answer-header">📊 Auto-compatibility assessment</div>
+          <div class="compat-card">
+            <div class="compat-row-item">
+              <span class="compat-icon">🟢</span>
+              <div class="compat-text">
+                <div class="compat-label">Housing match</div>
+                <div class="compat-sub">Linus &amp; Chester are apartment-friendly — applicant has apartment ✓</div>
+              </div>
+            </div>
+            <div class="compat-row-item">
+              <span class="compat-icon">🟢</span>
+              <div class="compat-text">
+                <div class="compat-label">Experience level</div>
+                <div class="compat-sub">Experienced owner — this bonded pair needs confidence, not guidance ✓</div>
+              </div>
+            </div>
+            <div class="compat-row-item">
+              <span class="compat-icon">🟡</span>
+              <div class="compat-text">
+                <div class="compat-label">Cat compatibility</div>
+                <div class="compat-sub">Applicant has a cat (Mochi). Linus &amp; Chester are listed as cat-friendly — verify in person</div>
+              </div>
+            </div>
+            <div class="compat-row-item">
+              <span class="compat-icon">🟢</span>
+              <div class="compat-text">
+                <div class="compat-label">Alone time</div>
+                <div class="compat-sub">~4 hours alone daily. Bonded pairs self-soothe — well within recommended limits ✓</div>
+              </div>
+            </div>
+            <div class="compat-row-item">
+              <span class="compat-icon">🟢</span>
+              <div class="compat-text">
+                <div class="compat-label">Activity level</div>
+                <div class="compat-sub">Low-energy dogs, applicant prefers relaxed lifestyle — strong match ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Internal notes -->
+        <div class="notes-card">
+          <div class="notes-header">🔒 Internal notes (visible to your team only)</div>
+          <div class="note-log">
+            <div class="note-entry">
+              <div class="note-meta">Sarah B. · May 13, 2:14pm</div>
+              <div class="note-text">Called to confirm Kitsilano address — correct. Spoke for 5 min, applicant seems calm and thoughtful. Cat compatibility worth discussing in meet &amp; greet.</div>
+            </div>
+          </div>
+          <div class="notes-input-area">
+            <textarea class="notes-textarea" placeholder="Add internal note… (only visible to your team, never shown to applicant)" id="noteInput"></textarea>
+            <button class="notes-save-btn" onclick="saveNote()">Save note</button>
+          </div>
+        </div>
+
+        <!-- Decision -->
+        <div class="decision-card">
+          <div class="decision-title">Make a decision</div>
+          <select class="decision-select" id="nextStepSelect">
+            <option value="">Select next step…</option>
+            <option>Invite to meet &amp; greet at the shelter</option>
+            <option>Request a home visit</option>
+            <option>Schedule a phone interview</option>
+            <option>Proceed to adoption agreement</option>
+          </select>
+          <textarea class="decision-textarea" id="decisionMsg"
+>Hi Sarah,
+
+Thank you so much for your application for Linus and Chester. We've reviewed it carefully and we'd love to invite you to a meet and greet at our shelter — this is a great opportunity for you and the boys to get acquainted in person.
+
+We're available: Saturday May 23, 12–4pm · Sunday May 24, 12–4pm
+
+Please reply to confirm a time that works for you. We recommend bringing any household members who will be living with them.
+
+We look forward to meeting you!</textarea>
+          <button class="decision-btn" onclick="sendDecision()">✓ Send &amp; Approve</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT: HISTORY ═══ -->
+    <div class="app-history-panel">
+      <div class="history-header">Applicant Profile</div>
+
+      <div class="history-section">
+        <div class="history-section-label">Account details</div>
+        <div class="history-stat"><span class="hist-key">Member since</span><span class="hist-val">March 2026</span></div>
+        <div class="history-stat"><span class="hist-key">Applications sent</span><span class="hist-val">1 (this one)</span></div>
+        <div class="history-stat"><span class="hist-key">Previous adoptions</span><span class="hist-val">0 via PawSwipe</span></div>
+        <div class="history-stat"><span class="hist-key">Profile verified</span><span class="hist-val good">Email ✓</span></div>
+      </div>
+
+      <div class="history-section">
+        <div class="history-section-label">Profile completeness</div>
+        <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px;">
+          <span style="color:var(--mid);">Completeness</span>
+          <span style="color:var(--sage);font-weight:600;">92%</span>
+        </div>
+        <div class="completeness-bar"><div class="completeness-fill" style="width:92%;"></div></div>
+        <div style="font-size:.68rem;color:var(--mid-light);margin-top:5px;">Missing: profile photo</div>
+      </div>
+
+      <div class="history-section">
+        <div class="history-section-label">Onboarding profile</div>
+        <div class="history-stat"><span class="hist-key">City</span><span class="hist-val">Vancouver</span></div>
+        <div class="history-stat"><span class="hist-key">Housing</span><span class="hist-val">Apartment</span></div>
+        <div class="history-stat"><span class="hist-key">Yard</span><span class="hist-val warn">No</span></div>
+        <div class="history-stat"><span class="hist-key">Other pets</span><span class="hist-val">1 cat (spayed)</span></div>
+        <div class="history-stat"><span class="hist-key">Activity</span><span class="hist-val">Moderate</span></div>
+        <div class="history-stat"><span class="hist-key">Experience</span><span class="hist-val good">Experienced</span></div>
+        <div class="history-stat"><span class="hist-key">Hours home</span><span class="hist-val">~8 hrs/day</span></div>
+      </div>
+
+      <div class="history-section">
+        <div class="history-section-label">Previous applications</div>
+        <div style="font-size:.78rem;color:var(--mid-light);padding:4px 0;">No other applications found</div>
+      </div>
+
+      <a class="view-profile-btn" href="#">View full profile (admin) →</a>
+
+      <!-- Quick actions -->
+      <div class="history-section">
+        <div class="history-section-label">Quick actions</div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
+          <button style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--ls);background:transparent;font-family:var(--fb);font-size:.75rem;color:var(--mid);cursor:pointer;text-align:left;transition:all .15s;" onclick="showToast('Opening message thread…')">💬 Send message</button>
+          <button style="padding:7px 12px;border-radius:8px;border:1.5px solid var(--ls);background:transparent;font-family:var(--fb);font-size:.75rem;color:var(--mid);cursor:pointer;text-align:left;transition:all .15s;" onclick="showToast('Flag added')">🚩 Flag for review</button>
+          <button style="padding:7px 12px;border-radius:8px;border:1.5px solid rgba(192,57,43,.2);background:transparent;font-family:var(--fb);font-size:.75rem;color:#c0392b;cursor:pointer;text-align:left;transition:all .15s;" onclick="reject()">✗ Mark as declined</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast" style="position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--charcoal);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:.82rem;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;"></div>
+
+<script>
+function selectApp(el) {
+  document.querySelectorAll('.app-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function filterApps(btn, filter) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.app-item').forEach(item => {
+    if (filter === 'all') { item.style.display = ''; return; }
+    if (filter === 'new') { item.style.display = item.dataset.status === 'new' ? '' : 'none'; return; }
+    if (filter === 'reviewing') { item.style.display = item.dataset.status === 'reviewing' ? '' : 'none'; return; }
+    if (filter === 'decided') { item.style.display = item.dataset.status === 'decided' ? '' : 'none'; return; }
+  });
+}
+
+function approve() {
+  const step = document.getElementById('nextStepSelect').value;
+  if (!step) { showToast('Please select a next step before approving.'); return; }
+  showToast('✅ Application approved — message sent to Sarah Chen');
+}
+
+function reject() {
+  showToast('Application marked as not proceeding. Applicant will be notified.');
+}
+
+function requestInfo() {
+  showToast('📝 Request sent — Sarah will receive a notification to add more info.');
+}
+
+function saveNote() {
+  const note = document.getElementById('noteInput').value.trim();
+  if (!note) return;
+  showToast('🔒 Internal note saved');
+  document.getElementById('noteInput').value = '';
+}
+
+function sendDecision() {
+  approve();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 3200);
+}
+</script>
+</body>
+</html>

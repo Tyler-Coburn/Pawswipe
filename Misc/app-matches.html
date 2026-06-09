@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Matches — PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#E8DDD2;font-family:var(--fb);font-weight:300;color:var(--charcoal);}
+
+/* SHELL */
+.app-shell{
+  max-width:480px;margin:0 auto;height:100vh;
+  display:flex;flex-direction:column;
+  background:var(--cream);
+  position:relative;overflow:hidden;
+}
+@media(min-width:480px){
+  .app-shell{box-shadow:0 0 60px rgba(30,26,23,.18);}
+}
+
+/* HEADER */
+.app-header{
+  flex-shrink:0;
+  padding:20px 20px 0;
+  background:var(--cream);
+}
+.header-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.header-logo{font-family:var(--fd);font-weight:900;font-size:1.15rem;color:var(--clay);letter-spacing:-.02em;}
+.header-logo span{color:var(--amber);}
+.header-title{font-family:var(--fd);font-weight:900;font-size:1.6rem;letter-spacing:-.02em;color:var(--charcoal);}
+.header-sub{font-size:.8rem;color:var(--mid);margin-top:2px;}
+.header-actions{display:flex;gap:8px;}
+.hdr-btn{
+  width:36px;height:36px;border-radius:50%;border:none;
+  background:var(--warm-white);color:var(--mid);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;cursor:pointer;border:1px solid var(--ls);
+  transition:all .18s;
+}
+.hdr-btn:hover{background:var(--amber-pale);color:var(--clay);}
+
+/* TAB ROW */
+.tab-row{
+  display:flex;gap:0;
+  padding:0 20px;
+  border-bottom:1px solid var(--ls);
+  background:var(--cream);
+  flex-shrink:0;
+}
+.tab-item{
+  padding:11px 16px;
+  font-size:.83rem;font-weight:400;color:var(--mid);
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:color .18s,border-color .18s;
+  white-space:nowrap;
+  background:none;border-top:none;border-left:none;border-right:none;
+  font-family:var(--fb);
+}
+.tab-item.active{color:var(--clay);border-bottom-color:var(--clay);font-weight:500;}
+.tab-item:hover:not(.active){color:var(--charcoal);}
+
+/* CONTENT AREA */
+.content{flex:1;overflow-y:auto;padding:14px 0 8px;}
+.content::-webkit-scrollbar{width:4px;}
+.content::-webkit-scrollbar-track{background:transparent;}
+.content::-webkit-scrollbar-thumb{background:var(--blush);border-radius:2px;}
+
+/* MATCH CARD */
+.match-card{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 20px;
+  border-left:3px solid transparent;
+  background:var(--cream);
+  transition:background .18s;
+  cursor:pointer;
+  position:relative;
+}
+.match-card::after{
+  content:'';position:absolute;bottom:0;left:20px;right:20px;
+  height:1px;background:var(--ls);
+}
+.match-card:last-child::after{display:none;}
+.match-card:hover{background:var(--warm-white);}
+
+/* Status border colours */
+.match-card.status-new     {border-left-color:var(--amber);}
+.match-card.status-contacted{border-left-color:var(--rain);}
+.match-card.status-applied  {border-left-color:var(--sage);}
+.match-card.status-interview{border-left-color:var(--clay);}
+
+/* Avatar */
+.match-avatar{
+  width:64px;height:64px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;flex-shrink:0;
+  position:relative;overflow:hidden;
+}
+.match-new-dot{
+  position:absolute;top:5px;right:5px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--amber);border:2px solid var(--cream);
+}
+
+/* Card body */
+.match-body{flex:1;min-width:0;}
+.match-name{
+  font-family:var(--fd);font-weight:700;font-size:1rem;
+  color:var(--charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.match-breed{font-size:.75rem;color:var(--mid);margin-top:1px;}
+.match-meta{
+  display:flex;align-items:center;gap:6px;margin-top:5px;
+  flex-wrap:wrap;
+}
+.match-org{font-size:.72rem;color:var(--rain);font-weight:500;}
+.meta-sep{font-size:.6rem;color:var(--mid-light);}
+.match-time{font-size:.7rem;color:var(--mid-light);}
+
+/* Status pill */
+.status-pill{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 9px;border-radius:100px;
+  font-size:.62rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+}
+.sp-new      {background:var(--amber-pale);color:var(--amber-deep);}
+.sp-contacted{background:var(--rain-pale);color:var(--rain);}
+.sp-applied  {background:var(--sage-pale);color:var(--sage);}
+.sp-interview{background:rgba(168,78,42,.1);color:var(--clay);}
+
+/* Card right */
+.match-right{
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+  flex-shrink:0;
+}
+.match-msg-btn{
+  padding:7px 14px;border-radius:100px;
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.75rem;font-weight:500;
+  cursor:pointer;transition:all .18s;
+  box-shadow:0 2px 10px rgba(168,78,42,.22);
+  white-space:nowrap;
+}
+.match-msg-btn:hover{background:var(--amber-deep);transform:translateY(-1px);}
+.match-view-link{
+  font-size:.72rem;color:var(--rain);font-weight:500;
+  cursor:pointer;text-decoration:none;
+  transition:color .18s;
+}
+.match-view-link:hover{color:var(--clay);}
+
+/* SECTION LABEL */
+.section-label{
+  padding:10px 20px 6px;
+  font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mid-light);
+}
+
+/* EMPTY STATE */
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:48px 32px;gap:10px;height:100%;
+}
+.empty-icon{font-size:3.5rem;}
+.empty-title{font-family:var(--fd);font-weight:700;font-size:1.3rem;color:var(--charcoal);}
+.empty-desc{font-size:.86rem;color:var(--mid);line-height:1.6;max-width:240px;}
+.empty-btn{
+  margin-top:8px;padding:11px 24px;border-radius:100px;
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.85rem;font-weight:500;cursor:pointer;
+  transition:all .18s;box-shadow:0 3px 14px rgba(168,78,42,.25);
+}
+.empty-btn:hover{background:var(--amber-deep);transform:translateY(-1px);}
+
+/* TAB BAR */
+.tab-bar{
+  height:60px;display:flex;border-top:1px solid var(--ls);
+  background:var(--warm-white);flex-shrink:0;
+}
+.tab-nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;cursor:pointer;
+  color:var(--mid-light);transition:color .18s;
+  border:none;background:none;font-family:var(--fb);padding:6px 0 10px;
+  position:relative;
+}
+.tab-nav-item.active{color:var(--amber);}
+.tab-nav-item:hover:not(.active){color:var(--clay);}
+.tnav-icon{font-size:1.2rem;line-height:1;}
+.tnav-label{font-size:.57rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;}
+.tnav-badge::after{
+  content:attr(data-count);
+  position:absolute;top:4px;right:calc(50% - 18px);
+  min-width:16px;height:16px;
+  background:var(--clay);border-radius:100px;
+  font-size:.55rem;font-weight:700;color:white;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 3px;border:2px solid var(--warm-white);
+}
+
+/* TOAST NOTIFICATION */
+.match-toast{
+  position:fixed;top:-80px;left:0;right:0;
+  z-index:200;padding:0 16px;
+  transition:top .4s cubic-bezier(.34,1.56,.64,1);
+}
+.match-toast.show{top:8px;}
+.match-toast-inner{
+  background:var(--warm-white);
+  border:1px solid var(--ls);
+  border-radius:18px;
+  padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 32px rgba(30,26,23,.16);
+  max-width:460px;margin:0 auto;
+}
+.toast-photo{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+  background:#DCCFB8;
+}
+.toast-text{flex:1;min-width:0;}
+.toast-title{font-size:.85rem;font-weight:500;color:var(--charcoal);}
+.toast-sub{font-size:.75rem;color:var(--mid);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.toast-progress{
+  height:2px;border-radius:1px;
+  background:var(--ls);margin-top:8px;overflow:hidden;
+}
+.toast-progress-fill{
+  height:100%;background:var(--amber);border-radius:1px;
+  width:100%;animation:drain 5s linear forwards;
+}
+@keyframes drain{from{width:100%}to{width:0%}}
+.toast-actions{display:flex;gap:6px;flex-shrink:0;}
+.toast-btn{
+  padding:7px 13px;border-radius:100px;border:none;
+  font-family:var(--fb);font-size:.73rem;font-weight:500;cursor:pointer;
+  transition:all .18s;
+}
+.toast-btn-msg{background:var(--clay);color:white;}
+.toast-btn-msg:hover{background:var(--amber-deep);}
+.toast-btn-dismiss{background:var(--cream);color:var(--mid);border:1px solid var(--ls);}
+.toast-btn-dismiss:hover{color:var(--charcoal);}
+</style>
+</head>
+<body>
+
+<!-- MATCH TOAST -->
+<div class="match-toast" id="matchToast">
+  <div class="match-toast-inner">
+    <div class="toast-photo">🐕</div>
+    <div class="toast-text">
+      <div class="toast-title">🎉 New match! Queso is waiting for you.</div>
+      <div class="toast-sub">BC SPCA West Vancouver · Adult Mixed breed</div>
+      <div class="toast-progress"><div class="toast-progress-fill" id="toastProgress"></div></div>
+    </div>
+    <div class="toast-actions">
+      <button class="toast-btn toast-btn-msg" onclick="dismissToast('message')">Message</button>
+      <button class="toast-btn toast-btn-dismiss" onclick="dismissToast('dismiss')">✕</button>
+    </div>
+  </div>
+</div>
+
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <div class="app-header">
+    <div class="header-top">
+      <div>
+        <div class="header-title">Your Matches</div>
+        <div class="header-sub">3 active · 2 applications · 1 adopted</div>
+      </div>
+      <div class="header-actions">
+        <button class="hdr-btn" title="Filter">⚙️</button>
+        <button class="hdr-btn" title="Sort">↕️</button>
+      </div>
+    </div>
+
+    <!-- SUB TABS -->
+    <div class="tab-row">
+      <button class="tab-item active" data-tab="active" onclick="switchTab(this)">Active (3)</button>
+      <button class="tab-item" data-tab="applications" onclick="switchTab(this)">Applications (2)</button>
+      <button class="tab-item" data-tab="adopted" onclick="switchTab(this)">Adopted (1)</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="content">
+
+    <!-- ─── ACTIVE TAB ─── -->
+    <div id="tab-active">
+      <div class="section-label">New matches</div>
+
+      <!-- Match 1: Linus & Chester — New -->
+      <div class="match-card status-new" onclick="openMatch('messages')">
+        <div class="match-avatar" style="background:#EDD5BC;">
+          🐶
+          <div class="match-new-dot"></div>
+        </div>
+        <div class="match-body">
+          <div class="match-name">Linus &amp; Chester</div>
+          <div class="match-breed">Senior · Havanese mix / Chihuahua-Dachshund</div>
+          <div class="match-meta">
+            <span class="match-org">BC SPCA Vancouver</span>
+            <span class="meta-sep">·</span>
+            <span class="match-time">Matched today</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill sp-new">● New</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn" onclick="event.stopPropagation();openMatch('messages')">Message →</button>
+          <a class="match-view-link" href="animal-detail.html" onclick="event.stopPropagation()">View animal</a>
+        </div>
+      </div>
+
+      <!-- Match 2: Apricot — Contacted -->
+      <div class="match-card status-contacted" onclick="openMatch('messages')">
+        <div class="match-avatar" style="background:#F2D6B0;">🐱</div>
+        <div class="match-body">
+          <div class="match-name">Apricot</div>
+          <div class="match-breed">Adult · Domestic Short Hair</div>
+          <div class="match-meta">
+            <span class="match-org">VOKRA</span>
+            <span class="meta-sep">·</span>
+            <span class="match-time">Matched 3 days ago</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill sp-contacted">● Contacted</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn" onclick="event.stopPropagation();openMatch('messages')">Message →</button>
+          <a class="match-view-link" href="animal-detail.html" onclick="event.stopPropagation()">View animal</a>
+        </div>
+      </div>
+
+      <!-- Match 3: Queso — New (just matched) -->
+      <div class="match-card status-new" onclick="openMatch('messages')">
+        <div class="match-avatar" style="background:#DCCFB8;">
+          🐕
+          <div class="match-new-dot"></div>
+        </div>
+        <div class="match-body">
+          <div class="match-name">Queso</div>
+          <div class="match-breed">Adult · Mixed breed</div>
+          <div class="match-meta">
+            <span class="match-org">BC SPCA West Vancouver</span>
+            <span class="meta-sep">·</span>
+            <span class="match-time">Just now</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill sp-new">● New</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn" onclick="event.stopPropagation();openMatch('messages')">Message →</button>
+          <a class="match-view-link" href="animal-detail.html" onclick="event.stopPropagation()">View animal</a>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="section-label" style="margin-top:10px;">Earlier matches</div>
+
+      <!-- Match 4: Leona — Applied -->
+      <div class="match-card status-applied" onclick="openMatch('messages')">
+        <div class="match-avatar" style="background:#D4C8DC;">🐈</div>
+        <div class="match-body">
+          <div class="match-name">Leona</div>
+          <div class="match-breed">Adult · Domestic Short Hair</div>
+          <div class="match-meta">
+            <span class="match-org">VOKRA</span>
+            <span class="meta-sep">·</span>
+            <span class="match-time">Matched 8 days ago</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill sp-applied">● Applied</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn" onclick="event.stopPropagation();openMatch('messages')">Message →</button>
+          <a class="match-view-link" href="animal-detail.html" onclick="event.stopPropagation()">View animal</a>
+        </div>
+      </div>
+
+    </div><!-- /tab-active -->
+
+    <!-- ─── APPLICATIONS TAB ─── -->
+    <div id="tab-applications" style="display:none;">
+      <div class="section-label">Submitted applications</div>
+
+      <!-- Application 1: Leona — Under Review -->
+      <div class="match-card status-applied">
+        <div class="match-avatar" style="background:#D4C8DC;">🐈</div>
+        <div class="match-body">
+          <div class="match-name">Leona</div>
+          <div class="match-breed">Adult · DSH · VOKRA</div>
+          <div class="match-meta">
+            <span class="match-org">Submitted May 12, 2026</span>
+            <span class="meta-sep">·</span>
+            <span class="match-time">Day 6</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill sp-applied">● Under Review</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn">Message →</button>
+          <a class="match-view-link">View status</a>
+        </div>
+      </div>
+
+      <!-- Application 2: Linus — Interview Scheduled -->
+      <div class="match-card status-interview">
+        <div class="match-avatar" style="background:#EDD5BC;">🐶</div>
+        <div class="match-body">
+          <div class="match-name">Linus &amp; Chester</div>
+          <div class="match-breed">Senior · Bonded pair · BC SPCA</div>
+          <div class="match-meta">
+            <span class="match-org">Submitted May 10, 2026</span>
+            <span class="meta-sep">·</span>
+            <span class="match-time">Day 8</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill sp-interview">● Meet &amp; Greet Sat 1pm</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn">Message →</button>
+          <a class="match-view-link">View status</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ADOPTED TAB ─── -->
+    <div id="tab-adopted" style="display:none;">
+      <div style="padding:24px 20px 0;">
+        <div style="background:var(--sage-pale);border-radius:16px;padding:20px;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:8px;">🎉</div>
+          <div style="font-family:var(--fd);font-weight:700;font-size:1.1rem;color:var(--sage);margin-bottom:4px;">Congratulations on your adoption!</div>
+          <div style="font-size:.82rem;color:var(--sage);opacity:.8;line-height:1.6;">You gave Toretto a forever home on April 28, 2026. We'd love to hear how you're both doing.</div>
+          <button style="margin-top:14px;padding:9px 20px;border-radius:100px;background:var(--sage);color:white;border:none;font-family:var(--fb);font-size:.82rem;font-weight:500;cursor:pointer;">Share your story →</button>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px;">Your adopted pets</div>
+
+      <!-- Adopted: Toretto -->
+      <div class="match-card" style="border-left:3px solid var(--sage);">
+        <div class="match-avatar" style="background:#C8D4C8;">🐈‍⬛</div>
+        <div class="match-body">
+          <div class="match-name">Toretto</div>
+          <div class="match-breed">Young · Tabby Mix · VOKRA</div>
+          <div class="match-meta">
+            <span class="match-org">Adopted April 28, 2026</span>
+          </div>
+          <div style="margin-top:6px;"><span class="status-pill" style="background:var(--sage-pale);color:var(--sage);font-size:.62rem;font-weight:600;padding:3px 9px;border-radius:100px;letter-spacing:.04em;text-transform:uppercase;">❤️ Adopted</span></div>
+        </div>
+        <div class="match-right">
+          <button class="match-msg-btn" style="background:var(--sage);">View journey</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-nav-item" onclick="goTo('app-swipe-screen.html')">
+      <div class="tnav-icon">🐾</div><div class="tnav-label">Discover</div>
+    </button>
+    <button class="tab-nav-item active">
+      <div class="tnav-icon tnav-badge" data-count="3">♥</div><div class="tnav-label">Matches</div>
+    </button>
+    <button class="tab-nav-item" onclick="goTo('app-application.html')">
+      <div class="tnav-icon">📋</div><div class="tnav-label">Apply</div>
+    </button>
+    <button class="tab-nav-item" onclick="goTo('app-messages.html')">
+      <div class="tnav-icon tnav-badge" data-count="2">💬</div><div class="tnav-label">Messages</div>
+    </button>
+    <button class="tab-nav-item" onclick="goTo('app-profile.html')">
+      <div class="tnav-icon">👤</div><div class="tnav-label">Profile</div>
+    </button>
+  </nav>
+
+</div><!-- /shell -->
+
+<script>
+// Tab switching
+function switchTab(btn) {
+  document.querySelectorAll('.tab-row .tab-item').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['active','applications','adopted'].forEach(id => {
+    const el = document.getElementById('tab-' + id);
+    if (el) el.style.display = 'none';
+  });
+  const panel = document.getElementById('tab-' + btn.dataset.tab);
+  if (panel) panel.style.display = 'block';
+}
+
+// Match toast — show after 1.5s
+setTimeout(() => {
+  document.getElementById('matchToast').classList.add('show');
+  // Auto-dismiss after 5s
+  setTimeout(() => dismissToast('auto'), 5200);
+}, 1500);
+
+function dismissToast(action) {
+  document.getElementById('matchToast').classList.remove('show');
+  if (action === 'message') goTo('app-messages.html');
+}
+
+function openMatch(dest) {
+  goTo('app-messages.html');
+}
+
+function goTo(url) {
+  // In a real app this would navigate. For demo, just show a toast.
+  const msg = url === 'app-messages.html' ? '💬 Opening messages…' :
+              url === 'app-swipe-screen.html' ? '🐾 Back to swiping!' :
+              '📋 Opening application…';
+  // Temporarily show indicator
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--charcoal);color:var(--cream);padding:9px 18px;border-radius:100px;font-size:.8rem;font-weight:400;z-index:300;opacity:1;transition:opacity .3s;white-space:nowrap;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 1800);
+  if (url !== 'app-messages.html' || action === 'dismiss') return;
+  window.location.href = url;
+}
+</script>
+</body>
+</html>

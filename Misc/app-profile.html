@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Profile — PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#E8DDD2;font-family:var(--fb);font-weight:300;color:var(--charcoal);}
+
+.shell{max-width:480px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--cream);position:relative;}
+@media(min-width:480px){.shell{box-shadow:0 0 60px rgba(30,26,23,.18);}}
+
+/* HEADER */
+.page-header{
+  flex-shrink:0;background:var(--cream);
+  padding:14px 20px 0;border-bottom:1px solid var(--ls);
+}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.header-logo{font-family:var(--fd);font-weight:900;font-size:1.1rem;color:var(--clay);letter-spacing:-.02em;}
+.header-logo span{color:var(--amber);}
+.edit-btn{
+  padding:7px 14px;border-radius:100px;border:1.5px solid var(--ls);
+  background:var(--warm-white);font-family:var(--fb);font-size:.76rem;font-weight:500;
+  color:var(--mid);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:5px;
+}
+.edit-btn:hover{border-color:var(--amber);color:var(--clay);}
+
+/* SCROLLABLE CONTENT */
+.scroll-content{flex:1;overflow-y:auto;scrollbar-width:thin;}
+.scroll-content::-webkit-scrollbar{width:3px;}
+.scroll-content::-webkit-scrollbar-thumb{background:var(--blush);border-radius:2px;}
+
+/* PROFILE HERO */
+.profile-hero{
+  background:linear-gradient(160deg,var(--charcoal) 0%,#2E2922 100%);
+  padding:22px 20px 24px;
+  position:relative;overflow:hidden;
+}
+.profile-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 100% at 30% 50%,rgba(168,78,42,.2) 0%,transparent 65%);
+}
+.profile-content{position:relative;z-index:2;display:flex;align-items:center;gap:16px;}
+.profile-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--charcoal);border:2px solid rgba(232,146,58,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:1.8rem;color:var(--amber);
+  flex-shrink:0;box-shadow:0 6px 20px rgba(0,0,0,.3);
+}
+.profile-info{}
+.profile-name{font-family:var(--fd);font-weight:700;font-size:1.3rem;color:var(--cream);letter-spacing:-.02em;}
+.profile-loc{font-size:.78rem;color:rgba(253,246,236,.55);margin-top:3px;display:flex;align-items:center;gap:5px;}
+.profile-since{font-size:.7rem;color:rgba(253,246,236,.35);margin-top:2px;}
+
+/* SECTION */
+.section{padding:18px 20px 0;}
+.section-label{
+  font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+.section-label::before{content:'';width:18px;height:1px;background:var(--amber);}
+
+/* PREFERENCES CARD */
+.pref-card{
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:16px;
+  overflow:hidden;margin-bottom:16px;
+}
+.pref-card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;cursor:pointer;border-bottom:1px solid transparent;
+  transition:border-color .2s;
+}
+.pref-card-header.open{border-bottom-color:var(--ls);}
+.pref-card-title{font-size:.88rem;font-weight:500;color:var(--charcoal);display:flex;align-items:center;gap:7px;}
+.pref-toggle-icon{font-size:.8rem;color:var(--mid-light);transition:transform .2s;}
+.pref-toggle-icon.open{transform:rotate(90deg);}
+.pref-card-body{padding:14px 16px;display:none;}
+.pref-card-body.open{display:block;}
+.pref-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{
+  padding:4px 11px;border-radius:100px;
+  font-size:.74rem;font-weight:500;background:var(--cream);
+  border:1px solid var(--ls);color:var(--mid);
+}
+.chip.highlight{background:var(--amber-pale);border-color:rgba(232,146,58,.25);color:var(--amber-deep);}
+.chip.sage{background:var(--sage-pale);border-color:rgba(74,110,92,.2);color:var(--sage);}
+.edit-prefs-link{
+  font-size:.78rem;color:var(--rain);font-weight:500;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;
+}
+.edit-prefs-link:hover{color:var(--clay);}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.stat-card{
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:14px;
+  padding:14px;text-align:center;
+}
+.stat-num{font-family:var(--fd);font-weight:900;font-size:1.8rem;color:var(--clay);line-height:1;}
+.stat-lbl{font-size:.72rem;color:var(--mid);margin-top:3px;}
+.stat-card.full{grid-column:span 2;display:flex;align-items:center;gap:0;}
+.stat-item{flex:1;text-align:center;padding:12px;}
+.stat-item+.stat-item{border-left:1px solid var(--ls);}
+
+/* CHART */
+.chart-wrap{
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:16px;
+  padding:16px;margin-bottom:16px;
+}
+.chart-title{font-size:.78rem;font-weight:500;color:var(--charcoal);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.chart-total{font-family:var(--fd);font-size:.9rem;font-weight:700;color:var(--amber-deep);}
+.chart-bars{display:flex;align-items:flex-end;gap:5px;height:48px;}
+.cbar{
+  flex:1;border-radius:4px 4px 0 0;background:var(--amber);
+  opacity:.65;transition:opacity .15s;cursor:pointer;position:relative;
+}
+.cbar:hover{opacity:1;}
+.cbar.today{opacity:1;background:var(--clay);}
+.chart-day-labels{display:flex;gap:5px;margin-top:5px;}
+.cdl{flex:1;text-align:center;font-size:.58rem;color:var(--mid-light);}
+.cdl.today{color:var(--clay);font-weight:600;}
+
+/* SAVED */
+.saved-scroll{
+  display:flex;gap:10px;overflow-x:auto;
+  padding-bottom:4px;scrollbar-width:none;
+  margin:0 -20px;padding:0 20px 4px;
+}
+.saved-scroll::-webkit-scrollbar{display:none;}
+.saved-card{
+  min-width:110px;background:var(--warm-white);border-radius:12px;
+  border:1px solid var(--ls);flex-shrink:0;overflow:hidden;
+  cursor:pointer;transition:transform .2s;
+}
+.saved-card:hover{transform:translateY(-2px);}
+.saved-photo{height:76px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;}
+.saved-body{padding:7px 8px 9px;}
+.saved-org{font-size:.58rem;color:var(--rain);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px;}
+.saved-name{font-family:var(--fd);font-weight:700;font-size:.82rem;color:var(--charcoal);}
+.saved-meta{font-size:.62rem;color:var(--mid);}
+.empty-saved{
+  width:100%;background:var(--warm-white);border:1.5px dashed var(--ls);
+  border-radius:12px;padding:20px;text-align:center;
+  font-size:.82rem;color:var(--mid-light);
+}
+
+/* SETTINGS */
+.settings-list{margin-bottom:16px;}
+.settings-group{
+  background:var(--warm-white);border:1px solid var(--ls);
+  border-radius:16px;overflow:hidden;margin-bottom:10px;
+}
+.settings-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;border-bottom:1px solid var(--ls);
+  cursor:pointer;transition:background .15s;
+}
+.settings-item:last-child{border-bottom:none;}
+.settings-item:hover{background:rgba(253,246,236,.7);}
+.settings-left{display:flex;align-items:center;gap:10px;}
+.settings-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0;}
+.settings-text{}
+.settings-label{font-size:.85rem;font-weight:400;color:var(--charcoal);}
+.settings-sub{font-size:.72rem;color:var(--mid-light);margin-top:1px;}
+.settings-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.chevron{font-size:.75rem;color:var(--mid-light);}
+
+/* TOGGLE */
+.tog{
+  width:38px;height:21px;background:rgba(107,94,82,.2);border-radius:100px;
+  position:relative;transition:background .18s;flex-shrink:0;cursor:pointer;
+}
+.tog.on{background:var(--amber);}
+.tog::after{
+  content:'';position:absolute;width:15px;height:15px;background:white;border-radius:50%;
+  top:3px;left:3px;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.tog.on::after{transform:translateX(17px);}
+
+/* DANGER ZONE */
+.danger-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;cursor:pointer;
+}
+.danger-label{font-size:.85rem;color:#c0392b;font-weight:400;}
+.sign-out-label{font-size:.85rem;color:var(--clay);font-weight:400;}
+
+/* TAB BAR */
+.tab-bar{height:58px;display:flex;border-top:1px solid var(--ls);background:var(--warm-white);flex-shrink:0;}
+.tab-nav{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;color:var(--mid-light);transition:color .18s;
+  border:none;background:none;font-family:var(--fb);padding:6px 0 10px;position:relative;
+}
+.tab-nav.active{color:var(--amber);}
+.tab-nav:hover:not(.active){color:var(--clay);}
+.tnav-icon{font-size:1.2rem;line-height:1;}
+.tnav-label{font-size:.57rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-top">
+      <div class="header-logo">Paw<span>Swipe</span></div>
+      <button class="edit-btn" onclick="showToast('Opening profile editor…')">✏️ Edit profile</button>
+    </div>
+  </div>
+
+  <!-- SCROLL CONTENT -->
+  <div class="scroll-content">
+
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <div class="profile-content">
+        <div class="profile-avatar">S</div>
+        <div class="profile-info">
+          <div class="profile-name">Sarah Chen</div>
+          <div class="profile-loc">📍 Vancouver, BC</div>
+          <div class="profile-since">Member since May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREFERENCES -->
+    <div class="section">
+      <div class="section-label">Preferences</div>
+      <div class="pref-card">
+        <div class="pref-card-header open" onclick="togglePref(this)">
+          <span class="pref-card-title">🐾 Your pet preferences</span>
+          <span class="pref-toggle-icon open">›</span>
+        </div>
+        <div class="pref-card-body open">
+          <div class="pref-chips">
+            <span class="chip highlight">🏢 Apartment</span>
+            <span class="chip">No yard</span>
+            <span class="chip highlight">🐱 1 cat</span>
+            <span class="chip">Moderate activity</span>
+            <span class="chip sage">⭐ Experienced</span>
+            <span class="chip highlight">🐶 Dogs</span>
+            <span class="chip highlight">🐱 Cats</span>
+            <span class="chip">Medium size</span>
+            <span class="chip">Any age</span>
+            <span class="chip sage">Open to special needs</span>
+          </div>
+          <a class="edit-prefs-link" href="app-onboarding.html">✏️ Edit preferences</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY STATS -->
+    <div class="section">
+      <div class="section-label">Activity</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num">47</div>
+          <div class="stat-lbl">Profiles viewed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">12</div>
+          <div class="stat-lbl">Animals liked ♥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3</div>
+          <div class="stat-lbl">Applications sent</div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(74,110,92,.2);background:var(--sage-pale);">
+          <div class="stat-num" style="color:var(--sage);">1</div>
+          <div class="stat-lbl" style="color:var(--sage);">Adopted 🎉</div>
+        </div>
+      </div>
+
+      <!-- Swipe chart -->
+      <div class="chart-wrap">
+        <div class="chart-title">
+          Swipe activity — last 7 days
+          <span class="chart-total">47 total</span>
+        </div>
+        <div class="chart-bars">
+          <div class="cbar" style="height:45%;" title="Mon: 4 swipes"></div>
+          <div class="cbar" style="height:70%;" title="Tue: 8 swipes"></div>
+          <div class="cbar" style="height:55%;" title="Wed: 6 swipes"></div>
+          <div class="cbar" style="height:90%;" title="Thu: 11 swipes"></div>
+          <div class="cbar" style="height:40%;" title="Fri: 5 swipes"></div>
+          <div class="cbar" style="height:100%;" title="Sat: 12 swipes"></div>
+          <div class="cbar today" style="height:65%;" title="Today: 1 swipe so far"></div>
+        </div>
+        <div class="chart-day-labels">
+          <span class="cdl">Mon</span><span class="cdl">Tue</span><span class="cdl">Wed</span>
+          <span class="cdl">Thu</span><span class="cdl">Fri</span><span class="cdl">Sat</span>
+          <span class="cdl today">Today</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVED ANIMALS -->
+    <div class="section">
+      <div class="section-label">Saved animals</div>
+      <div class="saved-scroll" style="margin-bottom:18px;">
+        <div class="saved-card" onclick="window.location='animal-detail.html'">
+          <div class="saved-photo" style="background:#EDD5BC;">🐶</div>
+          <div class="saved-body">
+            <div class="saved-org">BC SPCA Van</div>
+            <div class="saved-name">Linus &amp; Chester</div>
+            <div class="saved-meta">Senior · Bonded</div>
+          </div>
+        </div>
+        <div class="saved-card" onclick="window.location='animal-detail.html'">
+          <div class="saved-photo" style="background:#F2D6B0;">🐱</div>
+          <div class="saved-body">
+            <div class="saved-org">VOKRA</div>
+            <div class="saved-name">Apricot</div>
+            <div class="saved-meta">Adult · DSH</div>
+          </div>
+        </div>
+        <div class="saved-card" onclick="window.location='animal-detail.html'">
+          <div class="saved-photo" style="background:#C8D4C8;">🐈‍⬛</div>
+          <div class="saved-body">
+            <div class="saved-org">VOKRA</div>
+            <div class="saved-name">Toretto</div>
+            <div class="saved-meta">Young · Tabby</div>
+          </div>
+        </div>
+        <div class="saved-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;min-width:80px;" onclick="window.location='app-swipe-screen.html'">
+          <div style="text-align:center;padding:10px;">
+            <div style="font-size:1.5rem;">+</div>
+            <div style="font-size:.65rem;color:var(--mid-light);margin-top:2px;">Swipe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="section">
+      <div class="section-label">Settings</div>
+
+      <!-- Notifications -->
+      <div class="settings-group">
+        <div class="settings-item" onclick="toggleTog('tog-matches')">
+          <div class="settings-left">
+            <span class="settings-icon">🔔</span>
+            <div class="settings-text">
+              <div class="settings-label">New matches</div>
+              <div class="settings-sub">When a shelter responds to your interest</div>
+            </div>
+          </div>
+          <div class="tog on" id="tog-matches"></div>
+        </div>
+        <div class="settings-item" onclick="toggleTog('tog-apps')">
+          <div class="settings-left">
+            <span class="settings-icon">📋</span>
+            <div class="settings-text">
+              <div class="settings-label">Application updates</div>
+              <div class="settings-sub">Status changes on your applications</div>
+            </div>
+          </div>
+          <div class="tog on" id="tog-apps"></div>
+        </div>
+        <div class="settings-item" onclick="toggleTog('tog-shelter')">
+          <div class="settings-left">
+            <span class="settings-icon">🏥</span>
+            <div class="settings-text">
+              <div class="settings-label">Shelter news</div>
+              <div class="settings-sub">New animals from your saved shelters</div>
+            </div>
+          </div>
+          <div class="tog" id="tog-shelter"></div>
+        </div>
+      </div>
+
+      <!-- Location & account -->
+      <div class="settings-group">
+        <div class="settings-item" onclick="showToast('Location: Vancouver, BC')">
+          <div class="settings-left">
+            <span class="settings-icon">📍</span>
+            <div class="settings-text">
+              <div class="settings-label">Location</div>
+              <div class="settings-sub">Vancouver, BC</div>
+            </div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-item" onclick="showToast('Opening privacy settings…')">
+          <div class="settings-left">
+            <span class="settings-icon">🔒</span>
+            <div class="settings-text"><div class="settings-label">Privacy</div></div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="settings-item" onclick="showToast('Opening Terms of Service…')">
+          <div class="settings-left">
+            <span class="settings-icon">📄</span>
+            <div class="settings-text"><div class="settings-label">Terms &amp; Privacy Policy</div></div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="settings-group">
+        <div class="settings-item danger-item" onclick="showToast('Signing out…')">
+          <div class="settings-left">
+            <span class="settings-icon">🚪</span>
+            <span class="sign-out-label">Sign out</span>
+          </div>
+        </div>
+        <div class="settings-item danger-item" onclick="confirmDelete()">
+          <div class="settings-left">
+            <span class="settings-icon" style="color:#c0392b;">🗑</span>
+            <span class="danger-label">Delete account</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:16px 0 24px;font-size:.7rem;color:var(--mid-light);">
+        PawSwipe Vancouver · v1.0.0 · Made with ♥ for the Lower Mainland
+      </div>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-nav" onclick="window.location='app-swipe-screen.html'">
+      <div class="tnav-icon">🐾</div><div class="tnav-label">Discover</div>
+    </button>
+    <button class="tab-nav" onclick="window.location='app-matches.html'">
+      <div class="tnav-icon">♥</div><div class="tnav-label">Matches</div>
+    </button>
+    <button class="tab-nav" onclick="window.location='app-application.html'">
+      <div class="tnav-icon">📋</div><div class="tnav-label">Apply</div>
+    </button>
+    <button class="tab-nav" onclick="window.location='app-messages.html'">
+      <div class="tnav-icon">💬</div><div class="tnav-label">Messages</div>
+    </button>
+    <button class="tab-nav active">
+      <div class="tnav-icon">👤</div><div class="tnav-label">Profile</div>
+    </button>
+  </nav>
+
+</div>
+
+<div id="toast" style="position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--charcoal);color:var(--cream);padding:9px 18px;border-radius:100px;font-size:.82rem;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;"></div>
+
+<script>
+function togglePref(header) {
+  const body = header.nextElementSibling;
+  const icon = header.querySelector('.pref-toggle-icon');
+  const open = body.classList.toggle('open');
+  icon.classList.toggle('open', open);
+  header.classList.toggle('open', open);
+}
+
+function toggleTog(id) {
+  document.getElementById(id).classList.toggle('on');
+}
+
+function confirmDelete() {
+  if (confirm('Delete your PawSwipe account? This cannot be undone.')) {
+    showToast('Account deletion requested — you\'ll receive a confirmation email.');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 2800);
+}
+</script>
+</body>
+</html>

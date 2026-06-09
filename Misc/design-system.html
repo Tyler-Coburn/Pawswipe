@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawSwipe — Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PAWSWIPE DESIGN SYSTEM — MASTER TOKENS
+   All components in the app derive from these variables.
+   Never hardcode a colour — always reference a token.
+============================================================ */
+:root {
+  /* Colour Palette */
+  --cream:        #FDF6EC;
+  --warm-white:   #FFFAF4;
+  --amber:        #E8923A;
+  --amber-deep:   #C97520;
+  --amber-pale:   #FBE8D4;
+  --clay:         #A84E2A;
+  --clay-deep:    #7D3419;
+  --sage:         #4A6E5C;
+  --sage-light:   #7EA88E;
+  --sage-pale:    #D6EAE0;
+  --blush:        #F2C4A0;
+  --blush-deep:   #D9956A;
+  --rain:         #7B9DB0;
+  --rain-light:   #B8D0DC;
+  --rain-pale:    #E8F2F7;
+  --charcoal:     #1E1A17;
+  --charcoal-mid: #2E2922;
+  --mid:          #6B5E52;
+  --mid-light:    #9B8E84;
+  --light-stroke: rgba(232,146,58,0.15);
+  --shadow-card:  0 18px 55px rgba(30,26,23,0.12);
+  --shadow-cta:   0 4px 22px rgba(168,78,42,0.25);
+  --shadow-hover: 0 8px 30px rgba(168,78,42,0.35);
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Border radius */
+  --r-pill: 100px;
+  --r-card: 20px;
+  --r-inner: 12px;
+  --r-btn: 10px;
+  --r-input: 10px;
+
+  /* Transitions */
+  --t-fast: 0.15s ease;
+  --t-base: 0.2s ease;
+  --t-slow: 0.35s ease;
+  --t-spring: 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #F5EEE4;
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  font-weight: 300;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR NAV ── */
+.ds-sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--charcoal);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 0;
+  z-index: 50;
+}
+.ds-sidebar-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--cream);
+  padding: 0 20px 4px;
+  letter-spacing: -0.02em;
+}
+.ds-sidebar-logo span { color: var(--amber); }
+.ds-sidebar-sub {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid-light);
+  padding: 0 20px 20px;
+}
+.ds-sidebar-section {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mid-light);
+  padding: 16px 20px 6px;
+}
+.ds-sidebar a {
+  display: block;
+  padding: 7px 20px;
+  font-size: 0.82rem;
+  color: rgba(253,246,236,0.65);
+  text-decoration: none;
+  transition: color var(--t-base), background var(--t-base);
+  border-left: 2px solid transparent;
+}
+.ds-sidebar a:hover {
+  color: var(--cream);
+  background: rgba(255,255,255,0.05);
+  border-left-color: var(--amber);
+}
+
+/* ── MAIN CONTENT ── */
+.ds-main {
+  flex: 1;
+  padding: 48px 56px;
+  max-width: 960px;
+}
+
+/* ── SECTION HEADERS ── */
+.ds-section {
+  margin-bottom: 72px;
+  scroll-margin-top: 24px;
+}
+.ds-section-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--light-stroke);
+}
+.ds-section-title span { color: var(--clay); font-style: italic; font-weight: 300; }
+.ds-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+.ds-row.single { grid-template-columns: 1fr; }
+.ds-row.thirds { grid-template-columns: 1fr 1fr 1fr; }
+.ds-row.fourths { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.ds-item { }
+.ds-item-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid-light);
+  margin-bottom: 8px;
+}
+.ds-item-spec {
+  font-size: 0.72rem;
+  color: var(--mid);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.ds-demo {
+  background: var(--warm-white);
+  border-radius: var(--r-inner);
+  padding: 20px;
+  border: 1px solid var(--light-stroke);
+}
+.ds-demo.dark {
+  background: var(--charcoal);
+  border-color: rgba(255,255,255,0.1);
+}
+.ds-demo.tight { padding: 12px; }
+
+/* ============================================================
+   COLOUR SWATCHES
+============================================================ */
+.swatch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.swatch {
+  border-radius: var(--r-inner);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.swatch-color {
+  height: 56px;
+  width: 100%;
+}
+.swatch-info {
+  background: white;
+  padding: 8px 10px;
+}
+.swatch-name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  display: block;
+}
+.swatch-hex {
+  font-size: 0.65rem;
+  color: var(--mid);
+  font-family: 'Courier New', monospace;
+}
+.swatch-use {
+  font-size: 0.6rem;
+  color: var(--mid-light);
+  display: block;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   TYPOGRAPHY SCALE
+============================================================ */
+.type-row {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--light-stroke);
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+.type-row:last-child { border-bottom: none; }
+.type-meta { min-width: 160px; }
+.type-label { font-size: 0.7rem; font-weight: 600; color: var(--mid); text-transform: uppercase; letter-spacing: 0.08em; }
+.type-spec { font-size: 0.65rem; color: var(--mid-light); margin-top: 2px; font-family: 'Courier New', monospace; }
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background var(--t-base), transform var(--t-fast), box-shadow var(--t-base), color var(--t-base), border-color var(--t-base);
+  text-decoration: none;
+  line-height: 1;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--clay);
+  color: var(--cream);
+  box-shadow: var(--shadow-cta);
+}
+.btn-primary:hover {
+  background: var(--amber-deep);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--clay);
+  border: 1.5px solid var(--clay);
+}
+.btn-secondary:hover {
+  background: var(--clay);
+  color: var(--cream);
+  transform: translateY(-2px);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--mid);
+  border: none;
+  box-shadow: none;
+}
+.btn-ghost:hover { color: var(--clay); background: var(--amber-pale); }
+.btn-danger {
+  background: transparent;
+  color: #C0392B;
+  border: 1.5px solid #C0392B;
+}
+.btn-danger:hover { background: #C0392B; color: white; transform: translateY(-2px); }
+.btn-icon {
+  width: 42px; height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+  font-size: 1rem;
+}
+.btn-sm { padding: 8px 16px; font-size: 0.78rem; }
+.btn-lg { padding: 16px 36px; font-size: 1rem; }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ============================================================
+   TAGS & BADGES
+============================================================ */
+.tag, .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.tag-blush    { background: var(--blush);     color: var(--clay); }
+.tag-green    { background: var(--sage-pale);  color: var(--sage); }
+.tag-blue     { background: var(--rain-pale);  color: var(--rain); }
+.tag-charcoal { background: var(--charcoal);   color: var(--cream); }
+.badge-urgent { background: var(--clay);       color: white; font-size: 0.65rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.badge-new    { background: var(--sage);       color: white; font-size: 0.65rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.badge-bonded { background: var(--rain);       color: white; font-size: 0.65rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.badge-nokill { background: var(--sage-pale);  color: var(--sage); font-weight: 600; }
+.badge-verified { background: var(--amber-pale); color: var(--amber-deep); font-weight: 600; }
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ============================================================
+   ANIMAL CARD — FULL
+============================================================ */
+.animal-card-full {
+  width: 300px;
+  background: var(--warm-white);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--t-slow), box-shadow var(--t-slow);
+  cursor: pointer;
+}
+.animal-card-full:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 70px rgba(30,26,23,0.18);
+}
+.animal-card-photo {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  position: relative;
+  overflow: hidden;
+}
+.animal-card-photo .photo-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(transparent, rgba(30,26,23,0.7));
+}
+.animal-card-photo .photo-name {
+  position: absolute;
+  bottom: 10px; left: 14px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: white;
+  line-height: 1;
+}
+.animal-card-photo .photo-meta {
+  position: absolute;
+  bottom: -2px; left: 14px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.8);
+  margin-top: 2px;
+  padding-bottom: 8px;
+}
+.animal-card-photo .ribbon {
+  position: absolute;
+  top: 10px; left: 10px;
+}
+.animal-card-photo .shelter-badge {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: rgba(123,157,176,0.85);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  letter-spacing: 0.03em;
+}
+.animal-card-body {
+  padding: 14px 16px 16px;
+}
+.animal-card-compat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+.compat-row {
+  font-size: 0.72rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.compat-yes { color: var(--sage); }
+.compat-no  { color: var(--clay); }
+.animal-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--light-stroke);
+}
+.days-badge {
+  font-size: 0.65rem;
+  color: var(--mid-light);
+}
+.card-actions-mini {
+  display: flex;
+  gap: 6px;
+}
+.card-btn-mini {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  transition: transform var(--t-fast), background var(--t-base);
+}
+.card-btn-mini:hover { transform: scale(1.1); }
+.card-btn-pass { background: rgba(107,94,82,0.12); color: var(--mid); }
+.card-btn-like { background: var(--clay); color: white; box-shadow: 0 2px 10px rgba(168,78,42,0.3); }
+
+/* COMPACT GRID CARD */
+.animal-card-compact {
+  background: var(--warm-white);
+  border-radius: var(--r-inner);
+  overflow: hidden;
+  border: 1px solid var(--light-stroke);
+  transition: transform var(--t-slow), box-shadow var(--t-slow);
+  cursor: pointer;
+}
+.animal-card-compact:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(30,26,23,0.08); }
+.compact-photo {
+  height: 120px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+}
+.compact-body { padding: 10px 12px 12px; }
+.compact-name { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--charcoal); }
+.compact-meta { font-size: 0.72rem; color: var(--mid); margin-top: 2px; }
+.compact-org  { font-size: 0.65rem; color: var(--rain); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+
+/* ============================================================
+   SHELTER PILL
+============================================================ */
+.shelter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-pill);
+  padding: 10px 18px;
+  transition: background var(--t-base), border-color var(--t-base);
+  cursor: pointer;
+}
+.shelter-pill:hover {
+  background: rgba(232,146,58,0.12);
+  border-color: rgba(232,146,58,0.35);
+}
+.shelter-pill-icon { font-size: 1rem; }
+.shelter-pill-name { font-size: 0.85rem; font-weight: 500; color: rgba(253,246,236,0.85); }
+.shelter-pill-loc  { font-size: 0.7rem; color: rgba(253,246,236,0.4); }
+
+/* ORG PROFILE CARD */
+.org-card {
+  background: var(--warm-white);
+  border-radius: var(--r-card);
+  padding: 24px;
+  border: 1px solid var(--light-stroke);
+  transition: transform var(--t-slow), box-shadow var(--t-slow);
+}
+.org-card:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(30,26,23,0.08); }
+.org-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.org-avatar {
+  width: 56px; height: 56px;
+  background: var(--clay);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--cream);
+  flex-shrink: 0;
+}
+.org-name { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--charcoal); }
+.org-loc { font-size: 0.78rem; color: var(--mid); margin-top: 2px; }
+.org-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.6; margin-bottom: 14px; }
+.org-stats-row { display: flex; gap: 20px; }
+.org-stat-num { font-family: var(--font-display); font-size: 1.3rem; font-weight: 900; color: var(--clay); line-height: 1; }
+.org-stat-lbl { font-size: 0.68rem; color: var(--mid); margin-top: 2px; }
+
+/* STAT CARD */
+.stat-card {
+  background: var(--warm-white);
+  border-radius: var(--r-inner);
+  padding: 20px;
+  border: 1px solid var(--light-stroke);
+  text-align: center;
+}
+.stat-card-num { font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; color: var(--clay); line-height: 1; }
+.stat-card-lbl { font-size: 0.78rem; color: var(--mid); margin-top: 4px; }
+.stat-card-trend { font-size: 0.7rem; color: var(--sage); font-weight: 500; margin-top: 4px; }
+
+/* ============================================================
+   FORM ELEMENTS
+============================================================ */
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--charcoal);
+  margin-bottom: 6px;
+}
+.form-label .required { color: var(--clay); margin-left: 2px; }
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--r-input);
+  border: 1.5px solid var(--light-stroke);
+  background: var(--warm-white);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--charcoal);
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  outline: none;
+  appearance: none;
+}
+.form-input:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(232,146,58,0.15);
+}
+.form-input.error {
+  border-color: #C0392B;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+}
+.form-error { font-size: 0.75rem; color: #C0392B; margin-top: 5px; }
+.form-hint  { font-size: 0.75rem; color: var(--mid-light); margin-top: 5px; }
+.form-textarea { min-height: 90px; resize: vertical; }
+.form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236B5E52' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+/* TOGGLE SWITCH */
+.toggle-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.toggle {
+  width: 44px; height: 24px;
+  background: var(--mid-light);
+  border-radius: 100px;
+  position: relative;
+  transition: background var(--t-base);
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--amber); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform var(--t-base);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle.on::after { transform: translateX(20px); }
+.toggle-label { font-size: 0.88rem; color: var(--charcoal); font-weight: 400; }
+
+/* CHECKBOX */
+.checkbox-wrap { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.checkbox {
+  width: 18px; height: 18px; min-width: 18px;
+  border: 1.5px solid var(--mid-light);
+  border-radius: 5px;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--t-base), border-color var(--t-base);
+  margin-top: 1px;
+}
+.checkbox.checked { background: var(--clay); border-color: var(--clay); }
+.checkbox.checked::after { content: '✓'; color: white; font-size: 0.7rem; font-weight: 700; }
+.checkbox-text { font-size: 0.88rem; color: var(--charcoal); font-weight: 300; line-height: 1.4; }
+
+/* RADIO GROUP */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-item { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px 14px; border-radius: var(--r-btn); border: 1.5px solid var(--light-stroke); background: var(--warm-white); transition: border-color var(--t-base), background var(--t-base); }
+.radio-item:hover { border-color: var(--amber); }
+.radio-item.selected { border-color: var(--clay); background: var(--amber-pale); }
+.radio-dot { width: 16px; height: 16px; min-width: 16px; border-radius: 50%; border: 1.5px solid var(--mid-light); display: flex; align-items: center; justify-content: center; transition: border-color var(--t-base); }
+.radio-item.selected .radio-dot { border-color: var(--clay); }
+.radio-item.selected .radio-dot::after { content: ''; width: 8px; height: 8px; background: var(--clay); border-radius: 50%; }
+.radio-item-text { font-size: 0.88rem; font-weight: 400; color: var(--charcoal); }
+
+/* PILL SELECTOR */
+.pill-select-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill-select {
+  padding: 7px 16px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--light-stroke);
+  background: var(--warm-white);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all var(--t-base);
+  font-family: var(--font-body);
+}
+.pill-select:hover { border-color: var(--amber); color: var(--clay); }
+.pill-select.selected { background: var(--clay); border-color: var(--clay); color: white; }
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+.app-nav {
+  background: rgba(253,246,236,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--light-stroke);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-radius: var(--r-inner);
+}
+.nav-logo-ds { font-family: var(--font-display); font-weight: 900; font-size: 1.3rem; color: var(--clay); letter-spacing: -0.02em; }
+.nav-logo-ds span { color: var(--amber); }
+.nav-links-ds { display: flex; gap: 24px; align-items: center; }
+.nav-link-ds { font-size: 0.85rem; color: var(--mid); text-decoration: none; transition: color var(--t-base); }
+.nav-link-ds:hover { color: var(--clay); }
+.nav-link-ds.active { color: var(--clay); font-weight: 500; }
+.nav-actions { display: flex; gap: 10px; align-items: center; }
+.nav-bell { font-size: 1.1rem; cursor: pointer; color: var(--mid); transition: color var(--t-base); }
+.nav-bell:hover { color: var(--clay); }
+.nav-avatar {
+  width: 34px; height: 34px;
+  background: var(--clay);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+}
+
+/* BOTTOM TAB BAR */
+.tab-bar {
+  background: var(--warm-white);
+  border-top: 1px solid var(--light-stroke);
+  display: flex;
+  border-radius: 0 0 var(--r-inner) var(--r-inner);
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px 12px;
+  cursor: pointer;
+  transition: color var(--t-base);
+  color: var(--mid-light);
+}
+.tab-item.active { color: var(--amber); }
+.tab-icon { font-size: 1.2rem; line-height: 1; }
+.tab-label { font-size: 0.58rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+.tab-badge {
+  position: relative;
+}
+.tab-badge::after {
+  content: '3';
+  position: absolute;
+  top: -4px; right: -8px;
+  width: 16px; height: 16px;
+  background: var(--clay);
+  border-radius: 50%;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ============================================================
+   MODALS
+============================================================ */
+.modal-overlay {
+  background: rgba(30,26,23,0.7);
+  border-radius: var(--r-inner);
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: var(--warm-white);
+  border-radius: var(--r-card);
+  padding: 28px;
+  width: 100%;
+  box-shadow: 0 24px 80px rgba(30,26,23,0.25);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.modal-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; }
+.modal-close { font-size: 1.2rem; cursor: pointer; color: var(--mid); line-height: 1; }
+.modal-body { font-size: 0.88rem; color: var(--mid); line-height: 1.6; margin-bottom: 20px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* MATCH MODAL */
+.match-modal {
+  background: var(--charcoal);
+  border-radius: var(--r-card);
+  padding: 40px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.match-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(232,146,58,0.15) 0%, transparent 70%);
+}
+.match-emoji { font-size: 3rem; display: block; margin-bottom: 12px; position: relative; }
+.match-title { font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--cream); position: relative; margin-bottom: 6px; }
+.match-sub { font-size: 0.88rem; color: rgba(253,246,236,0.7); position: relative; margin-bottom: 20px; }
+
+/* ============================================================
+   EMPTY STATES
+============================================================ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 10px;
+}
+.empty-icon { font-size: 3.5rem; line-height: 1; }
+.empty-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--charcoal); }
+.empty-desc { font-size: 0.85rem; color: var(--mid); max-width: 260px; line-height: 1.6; }
+
+/* ============================================================
+   LOADING SKELETONS
+============================================================ */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, rgba(107,94,82,0.08) 25%, rgba(107,94,82,0.15) 50%, rgba(107,94,82,0.08) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 6px;
+}
+.skeleton-card {
+  background: var(--warm-white);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  border: 1px solid var(--light-stroke);
+}
+.skeleton-photo { height: 160px; }
+.skeleton-body { padding: 14px 16px; }
+.skeleton-line { height: 12px; margin-bottom: 8px; border-radius: 6px; }
+.skeleton-line.wide { width: 80%; }
+.skeleton-line.medium { width: 55%; }
+.skeleton-line.short { width: 35%; }
+
+/* ============================================================
+   ALERTS
+============================================================ */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-inner);
+  border: 1px solid;
+  margin-bottom: 0;
+}
+.alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.alert-content { flex: 1; }
+.alert-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 2px; }
+.alert-desc  { font-size: 0.78rem; line-height: 1.5; }
+.alert-dismiss { font-size: 0.9rem; cursor: pointer; opacity: 0.5; transition: opacity var(--t-base); flex-shrink: 0; }
+.alert-dismiss:hover { opacity: 1; }
+.alert-success { background: var(--sage-pale); border-color: rgba(74,110,92,0.2); }
+.alert-success .alert-title { color: var(--sage); }
+.alert-success .alert-desc  { color: var(--sage); opacity: 0.8; }
+.alert-warning { background: var(--amber-pale); border-color: rgba(232,146,58,0.25); }
+.alert-warning .alert-title { color: var(--amber-deep); }
+.alert-warning .alert-desc  { color: var(--amber-deep); opacity: 0.8; }
+.alert-error { background: rgba(192,57,43,0.08); border-color: rgba(192,57,43,0.2); }
+.alert-error .alert-title { color: #C0392B; }
+.alert-error .alert-desc  { color: #C0392B; opacity: 0.8; }
+.alert-info { background: var(--rain-pale); border-color: rgba(123,157,176,0.25); }
+.alert-info .alert-title { color: var(--rain); }
+.alert-info .alert-desc  { color: var(--rain); opacity: 0.8; }
+
+/* ============================================================
+   AVATARS
+============================================================ */
+.avatar {
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: white;
+  flex-shrink: 0;
+}
+.avatar-sm  { width: 32px;  height: 32px;  font-size: 0.7rem;  }
+.avatar-md  { width: 48px;  height: 48px;  font-size: 1rem;    }
+.avatar-lg  { width: 80px;  height: 80px;  font-size: 1.6rem;  }
+.avatar-xl  { width: 96px;  height: 96px;  font-size: 2rem;    }
+.avatar-user    { background: var(--clay); }
+.avatar-shelter { background: var(--charcoal); font-size: 0.9em; border-radius: 14px; }
+
+/* PROGRESS BAR */
+.progress-wrap { background: rgba(107,94,82,0.12); border-radius: 100px; height: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--amber); border-radius: 100px; transition: width 0.4s ease; }
+.progress-label { font-size: 0.72rem; color: var(--mid); margin-top: 6px; }
+
+/* ============================================================
+   MISC UTILITIES
+============================================================ */
+.divider { height: 1px; background: var(--light-stroke); margin: 20px 0; }
+.spacer-8  { height: 8px; }
+.spacer-12 { height: 12px; }
+.spacer-16 { height: 16px; }
+.spacer-24 { height: 24px; }
+.flex-row  { display: flex; gap: 12px; align-items: center; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="ds-sidebar">
+  <div class="ds-sidebar-logo">Paw<span>Swipe</span></div>
+  <div class="ds-sidebar-sub">Design System v1.0</div>
+
+  <div class="ds-sidebar-section">Foundation</div>
+  <a href="#colours">Colours</a>
+  <a href="#typography">Typography</a>
+  <a href="#spacing">Spacing & Radius</a>
+
+  <div class="ds-sidebar-section">Components</div>
+  <a href="#buttons">Buttons</a>
+  <a href="#tags">Tags & Badges</a>
+  <a href="#cards">Cards</a>
+  <a href="#forms">Form Elements</a>
+  <a href="#nav">Navigation</a>
+  <a href="#modals">Modals</a>
+  <a href="#empty">Empty States</a>
+  <a href="#loading">Loading States</a>
+  <a href="#alerts">Alerts</a>
+  <a href="#avatars">Avatars</a>
+  <a href="#progress">Progress</a>
+</nav>
+
+<!-- MAIN -->
+<main class="ds-main">
+
+  <div style="margin-bottom:40px;">
+    <div style="font-family:var(--font-display);font-size:3rem;font-weight:900;letter-spacing:-0.03em;color:var(--charcoal);">Design <span style="font-style:italic;font-weight:300;color:var(--clay);">System</span></div>
+    <div style="font-size:0.92rem;color:var(--mid);margin-top:8px;max-width:520px;line-height:1.6;">The single source of truth for all PawSwipe UI. Every component, colour, and pattern used across the app is defined here. Never hardcode — always reference a token.</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COLOURS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="colours">
+    <div class="ds-section-title">Colour <span>Palette</span></div>
+
+    <div class="swatch-grid" style="margin-top:24px;">
+      <div class="swatch"><div class="swatch-color" style="background:#FDF6EC;border:1px solid rgba(0,0,0,0.06);"></div><div class="swatch-info"><span class="swatch-name">Cream</span><span class="swatch-hex">--cream · #FDF6EC</span><span class="swatch-use">Page background</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FFFAF4;border:1px solid rgba(0,0,0,0.06);"></div><div class="swatch-info"><span class="swatch-name">Warm White</span><span class="swatch-hex">--warm-white · #FFFAF4</span><span class="swatch-use">Card backgrounds</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E8923A;"></div><div class="swatch-info"><span class="swatch-name">Amber</span><span class="swatch-hex">--amber · #E8923A</span><span class="swatch-use">Accent, active states, like button</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#C97520;"></div><div class="swatch-info"><span class="swatch-name">Amber Deep</span><span class="swatch-hex">--amber-deep · #C97520</span><span class="swatch-use">Amber hover state</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#A84E2A;"></div><div class="swatch-info"><span class="swatch-name">Clay</span><span class="swatch-hex">--clay · #A84E2A</span><span class="swatch-use">Primary CTA, brand headings, pass button</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F2C4A0;"></div><div class="swatch-info"><span class="swatch-name">Blush</span><span class="swatch-hex">--blush · #F2C4A0</span><span class="swatch-use">Light fills, selected states, tags</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#4A6E5C;"></div><div class="swatch-info"><span class="swatch-name">Sage</span><span class="swatch-hex">--sage · #4A6E5C</span><span class="swatch-use">Positive tags, no-kill badge, approve</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#7EA88E;"></div><div class="swatch-info"><span class="swatch-name">Sage Light</span><span class="swatch-hex">--sage-light · #7EA88E</span><span class="swatch-use">Sage tints, borders</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#7B9DB0;"></div><div class="swatch-info"><span class="swatch-name">Rain</span><span class="swatch-hex">--rain · #7B9DB0</span><span class="swatch-use">Location tags, shelter badges, info</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#B8D0DC;"></div><div class="swatch-info"><span class="swatch-name">Rain Light</span><span class="swatch-hex">--rain-light · #B8D0DC</span><span class="swatch-use">Vancouver badge, rain fills</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1E1A17;"></div><div class="swatch-info"><span class="swatch-name">Charcoal</span><span class="swatch-hex">--charcoal · #1E1A17</span><span class="swatch-use">Dark sections, primary text</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6B5E52;"></div><div class="swatch-info"><span class="swatch-name">Mid</span><span class="swatch-hex">--mid · #6B5E52</span><span class="swatch-use">Secondary text, meta info</span></div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TYPOGRAPHY
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="typography">
+    <div class="ds-section-title">Type <span>Scale</span></div>
+
+    <div style="margin-top:24px;">
+      <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-light);margin-bottom:12px;">FRAUNCES — Display font</div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Hero</div><div class="type-spec">900 · 72px / 5rem<br>letter-spacing: -0.03em</div></div><div style="font-family:var(--font-display);font-size:4rem;font-weight:900;letter-spacing:-0.03em;line-height:1;color:var(--charcoal);">Find your match.</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">H1 Italic</div><div class="type-spec">300 italic · 48px<br>colour: --clay</div></div><div style="font-family:var(--font-display);font-size:3rem;font-weight:300;font-style:italic;letter-spacing:-0.03em;line-height:1;color:var(--clay);">forever friends</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">H2</div><div class="type-spec">700 · 36px<br>letter-spacing: -0.02em</div></div><div style="font-family:var(--font-display);font-size:2.25rem;font-weight:700;letter-spacing:-0.02em;line-height:1.1;color:var(--charcoal);">Section heading</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">H3 / Card name</div><div class="type-spec">700 · 22px</div></div><div style="font-family:var(--font-display);font-size:1.375rem;font-weight:700;color:var(--charcoal);">Animal or org name</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Stat number</div><div class="type-spec">900 · 40px<br>colour: --clay</div></div><div style="font-family:var(--font-display);font-size:2.5rem;font-weight:900;color:var(--clay);">2,400+</div></div>
+    </div>
+
+    <div style="margin-top:28px;">
+      <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid-light);margin-bottom:12px;">DM SANS — Body font</div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Body</div><div class="type-spec">300 · 16px · 1.75 lh</div></div><div style="font-family:var(--font-body);font-size:1rem;font-weight:300;line-height:1.75;color:var(--charcoal);max-width:400px;">Swipe through hundreds of pets from local shelters and fosters. Fall in love first. Handle the paperwork second.</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">UI / Labels</div><div class="type-spec">400–500 · 14px</div></div><div style="font-family:var(--font-body);font-size:0.875rem;font-weight:400;color:var(--charcoal);">Button label · Nav link · Card meta</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Caption / Micro</div><div class="type-spec">400 · 12px<br>colour: --mid</div></div><div style="font-family:var(--font-body);font-size:0.75rem;color:var(--mid);">Days in care · Timestamp · Attribution</div></div>
+      <div class="type-row"><div class="type-meta"><div class="type-label">Eyebrow / Label</div><div class="type-spec">500 · 11px · uppercase<br>letter-spacing: 0.1em</div></div><div style="font-family:var(--font-body);font-size:0.69rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);">Section label · Overline</div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SPACING & RADIUS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="spacing">
+    <div class="ds-section-title">Spacing <span>& Radius</span></div>
+    <div class="ds-row fourths" style="margin-top:24px;">
+      <div class="ds-item"><div class="ds-item-label">Border Radius</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:20px;background:var(--amber);border-radius:100px;"></div><span style="font-size:0.72rem;color:var(--mid);">--r-pill: 100px (pills, CTAs)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:30px;background:var(--amber);border-radius:20px;"></div><span style="font-size:0.72rem;color:var(--mid);">--r-card: 20px (cards)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:26px;background:var(--amber);border-radius:12px;"></div><span style="font-size:0.72rem;color:var(--mid);">--r-inner: 12px (inner)</span></div>
+          <div style="display:flex;align-items:center;gap:10px;"><div style="width:40px;height:22px;background:var(--amber);border-radius:10px;"></div><span style="font-size:0.72rem;color:var(--mid);">--r-btn: 10px (inputs, sm btns)</span></div>
+        </div>
+      </div>
+      <div class="ds-item" style="grid-column:span 3;"><div class="ds-item-label">Spacing Scale</div>
+        <div style="display:flex;align-items:flex-end;gap:4px;margin-top:16px;">
+          <div style="text-align:center;"><div style="width:4px;height:4px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">4</div></div>
+          <div style="text-align:center;"><div style="width:8px;height:8px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">8</div></div>
+          <div style="text-align:center;"><div style="width:12px;height:12px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">12</div></div>
+          <div style="text-align:center;"><div style="width:16px;height:16px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">16</div></div>
+          <div style="text-align:center;"><div style="width:20px;height:20px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">20</div></div>
+          <div style="text-align:center;"><div style="width:24px;height:24px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">24</div></div>
+          <div style="text-align:center;"><div style="width:32px;height:32px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">32</div></div>
+          <div style="text-align:center;"><div style="width:40px;height:40px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">40</div></div>
+          <div style="text-align:center;"><div style="width:48px;height:48px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">48</div></div>
+          <div style="text-align:center;"><div style="width:64px;height:64px;background:var(--clay);margin:0 auto 4px;border-radius:2px;"></div><div style="font-size:0.6rem;color:var(--mid);">64</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       BUTTONS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="buttons">
+    <div class="ds-section-title">Button <span>Variants</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">All variants</div>
+        <div class="ds-demo" style="display:flex;flex-direction:column;gap:12px;">
+          <div><button class="btn btn-primary">♥ I'm Interested</button></div>
+          <div><button class="btn btn-primary btn-lg">🐾 Start Swiping</button></div>
+          <div><button class="btn btn-secondary">View Animal →</button></div>
+          <div><button class="btn btn-ghost">Save for later</button></div>
+          <div><button class="btn btn-danger">✗ Reject Application</button></div>
+          <div class="flex-row">
+            <button class="btn btn-icon btn-primary" style="background:var(--clay);">♥</button>
+            <button class="btn btn-icon" style="background:rgba(107,94,82,0.12);color:var(--mid);">✕</button>
+            <button class="btn btn-icon" style="background:var(--sage);color:white;">⭐</button>
+            <button class="btn btn-icon" style="background:var(--rain);color:white;">↩</button>
+          </div>
+          <div class="flex-row">
+            <button class="btn btn-primary btn-sm">Small</button>
+            <button class="btn btn-secondary btn-sm">Small outline</button>
+          </div>
+        </div>
+        <div class="ds-item-spec">Hover all buttons to see transitions. Primary: clay → amber-deep on hover. All CTAs translateY(-2px).</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Dark background variants</div>
+        <div class="ds-demo dark" style="display:flex;flex-direction:column;gap:12px;">
+          <div><button class="btn btn-primary">🐾 Download App</button></div>
+          <div><button class="btn btn-secondary" style="border-color:rgba(253,246,236,0.4);color:var(--cream);">Learn more</button></div>
+          <div><button class="btn btn-ghost" style="color:rgba(253,246,236,0.6);">Skip for now</button></div>
+        </div>
+        <div class="ds-item-spec">On dark: primary stays clay. Outline uses cream border + text. Ghost uses cream opacity.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAGS & BADGES
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="tags">
+    <div class="ds-section-title">Tags <span>& Badges</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">Trait Tags (inline with animals)</div>
+        <div class="ds-demo">
+          <div class="tag-row">
+            <span class="tag tag-blush">High energy</span>
+            <span class="tag tag-blush">Needs yard</span>
+            <span class="tag tag-green">Apartment ok</span>
+            <span class="tag tag-green">Good with kids</span>
+            <span class="tag tag-green">Dog friendly</span>
+            <span class="tag tag-blue">Foster-based</span>
+            <span class="tag tag-blue">Vancouver</span>
+            <span class="tag tag-charcoal">Senior</span>
+          </div>
+        </div>
+        <div class="ds-item-spec">Blush = neutral/caution. Green = positive. Blue = info/location. Charcoal = status.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Status Badges (on cards)</div>
+        <div class="ds-demo" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span class="badge badge-urgent">🔥 Urgent</span>
+          <span class="badge badge-new">🌱 New</span>
+          <span class="badge badge-bonded">💕 Bonded pair</span>
+          <span class="badge badge-nokill">♻️ No-kill</span>
+          <span class="badge badge-verified">✓ Verified</span>
+        </div>
+        <div class="ds-item-spec">Badges = absolute positioned on card photos. Uppercase, 0.65rem, tight letter-spacing.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CARDS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="cards">
+    <div class="ds-section-title">Card <span>Components</span></div>
+
+    <!-- Animal card full -->
+    <div style="margin-top:24px;">
+      <div class="ds-item-label" style="margin-bottom:12px;">Animal Card — Full (Swipe stack)</div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;">
+        <div class="animal-card-full">
+          <div class="animal-card-photo" style="background:#f0c8a0;">
+            🐶
+            <div class="photo-overlay"></div>
+            <div class="photo-name">Linus & Chester</div>
+            <div class="photo-meta">Senior · Havanese mix · BC SPCA</div>
+            <span class="ribbon"><span class="badge badge-urgent">🔥 Urgent</span></span>
+            <span class="shelter-badge">BC SPCA Van</span>
+          </div>
+          <div class="animal-card-body">
+            <div class="tag-row" style="margin-bottom:10px;">
+              <span class="tag tag-charcoal">Senior</span>
+              <span class="tag tag-green">Low energy</span>
+              <span class="tag tag-blue">Bonded pair</span>
+            </div>
+            <div class="animal-card-compat">
+              <div class="compat-row compat-yes">✓ Apartment friendly</div>
+              <div class="compat-row compat-yes">✓ Good with seniors</div>
+              <div class="compat-row compat-no">✗ No other dogs</div>
+            </div>
+            <div class="animal-card-footer">
+              <span class="days-badge">In care: 34 days</span>
+              <div class="card-actions-mini">
+                <button class="card-btn-mini card-btn-pass">✕</button>
+                <button class="card-btn-mini card-btn-like">♥</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="animal-card-full">
+          <div class="animal-card-photo" style="background:#c5d8c7;">
+            🐈
+            <div class="photo-overlay"></div>
+            <div class="photo-name">Apricot</div>
+            <div class="photo-meta">Adult · Domestic Short Hair · VOKRA</div>
+            <span class="ribbon"><span class="badge badge-new">🌱 New</span></span>
+            <span class="shelter-badge">VOKRA</span>
+          </div>
+          <div class="animal-card-body">
+            <div class="tag-row" style="margin-bottom:10px;">
+              <span class="tag tag-green">Foster-raised</span>
+              <span class="tag tag-blue">Indoor</span>
+              <span class="tag tag-green">No-kill</span>
+            </div>
+            <div class="animal-card-compat">
+              <div class="compat-row compat-yes">✓ Great for apartments</div>
+              <div class="compat-row compat-yes">✓ Good with calm kids</div>
+              <div class="compat-row compat-no">✗ Prefers no dogs</div>
+            </div>
+            <div class="animal-card-footer">
+              <span class="days-badge">In care: 12 days</span>
+              <div class="card-actions-mini">
+                <button class="card-btn-mini card-btn-pass">✕</button>
+                <button class="card-btn-mini card-btn-like">♥</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px;">
+      <div class="ds-item-label" style="margin-bottom:12px;">Animal Card — Compact Grid</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+        <div class="animal-card-compact"><div class="compact-photo" style="background:#f0c8a0;">🐶</div><div class="compact-body"><div class="compact-org">BC SPCA Van</div><div class="compact-name">Snickers</div><div class="compact-meta">Adult · Mixed breed</div></div></div>
+        <div class="animal-card-compact"><div class="compact-photo" style="background:#c5d8c7;">🐱</div><div class="compact-body"><div class="compact-org">VOKRA</div><div class="compact-name">Leona</div><div class="compact-meta">Adult · DSH</div></div></div>
+        <div class="animal-card-compact"><div class="compact-photo" style="background:#d8c8d8;">🐈</div><div class="compact-body"><div class="compact-org">VOKRA</div><div class="compact-name">Toretto</div><div class="compact-meta">Young · Tabby</div></div></div>
+        <div class="animal-card-compact"><div class="compact-photo" style="background:#e0d0b8;">🐕</div><div class="compact-body"><div class="compact-org">BC SPCA W.Van</div><div class="compact-name">Queso</div><div class="compact-meta">Adult · Mixed</div></div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px;">
+      <div class="ds-item-label" style="margin-bottom:12px;">Shelter Pill (dark bg) · Org Profile Card · Stat Card</div>
+      <div class="ds-demo dark" style="margin-bottom:16px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="shelter-pill"><span class="shelter-pill-icon">🏥</span><span class="shelter-pill-name">BC SPCA Vancouver</span><span class="shelter-pill-loc">E 7th Ave</span></div>
+          <div class="shelter-pill"><span class="shelter-pill-icon">🐱</span><span class="shelter-pill-name">VOKRA</span><span class="shelter-pill-loc">Wall St, Van</span></div>
+          <div class="shelter-pill"><span class="shelter-pill-icon">🐈</span><span class="shelter-pill-name">RAPS</span><span class="shelter-pill-loc">Richmond</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;">
+        <div class="org-card">
+          <div class="org-card-header">
+            <div class="org-avatar">B</div>
+            <div><div class="org-name">BC SPCA Vancouver</div><div class="org-loc">📍 1205 E 7th Ave</div></div>
+          </div>
+          <div class="badge badge-nokill" style="margin-bottom:10px;">♻️ No-kill</div>
+          <div class="org-desc">The BC SPCA is BC's only organization with authority to enforce animal cruelty laws. Two Vancouver facilities, non-profit vet hospital.</div>
+          <div class="org-stats-row">
+            <div><div class="org-stat-num">248</div><div class="org-stat-lbl">Listed now</div></div>
+            <div><div class="org-stat-num">53K+</div><div class="org-stat-lbl">Helped/year</div></div>
+          </div>
+        </div>
+        <div class="stat-card"><div class="stat-card-num">248</div><div class="stat-card-lbl">Animals available</div><div class="stat-card-trend">↑ 12 this week</div></div>
+        <div class="stat-card"><div class="stat-card-num">1.4K</div><div class="stat-card-lbl">Cats placed/yr</div><div class="stat-card-trend">VOKRA · No-kill</div></div>
+        <div class="stat-card"><div class="stat-card-num">370+</div><div class="stat-card-lbl">Sanctuary cats</div><div class="stat-card-trend">RAPS · Richmond</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FORM ELEMENTS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="forms">
+    <div class="ds-section-title">Form <span>Elements</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">Inputs</div>
+        <div class="ds-demo" style="display:flex;flex-direction:column;gap:14px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Full name <span class="required">*</span></label>
+            <input class="form-input" type="text" placeholder="Sarah Chen">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">City</label>
+            <select class="form-input form-select"><option>Vancouver</option><option>Burnaby</option><option>Richmond</option><option>North Vancouver</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Error state</label>
+            <input class="form-input error" type="email" value="not-an-email">
+            <div class="form-error">Please enter a valid email address.</div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">About [Animal Name]</label>
+            <textarea class="form-input form-textarea" placeholder="Tell us why you're interested in adopting this animal…"></textarea>
+            <div class="form-hint">Minimum 50 characters. Be specific — shelters read every application.</div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Selection Controls</div>
+        <div class="ds-demo" style="display:flex;flex-direction:column;gap:20px;">
+          <div>
+            <div class="form-label" style="margin-bottom:8px;">Toggle switches</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="toggle-wrap"><div class="toggle on" onclick="this.classList.toggle('on')"></div><span class="toggle-label">New match notifications</span></div>
+              <div class="toggle-wrap"><div class="toggle" onclick="this.classList.toggle('on')"></div><span class="toggle-label">Shelter news updates</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:8px;">Checkboxes</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="checkbox-wrap" onclick="this.querySelector('.checkbox').classList.toggle('checked')"><div class="checkbox checked"></div><span class="checkbox-text">I'm open to animals with special needs</span></div>
+              <div class="checkbox-wrap" onclick="this.querySelector('.checkbox').classList.toggle('checked')"><div class="checkbox"></div><span class="checkbox-text">I can handle a shy or anxious animal</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:8px;">Pill selector (multi)</div>
+            <div class="pill-select-row">
+              <button class="pill-select selected" onclick="this.classList.toggle('selected')">🐶 Dog</button>
+              <button class="pill-select" onclick="this.classList.toggle('selected')">🐱 Cat</button>
+              <button class="pill-select selected" onclick="this.classList.toggle('selected')">🐰 Rabbit</button>
+              <button class="pill-select" onclick="this.classList.toggle('selected')">🐦 Bird</button>
+            </div>
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:8px;">Radio group</div>
+            <div class="radio-group">
+              <div class="radio-item selected" onclick="document.querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><div class="radio-dot"></div><span class="radio-item-text">🛋 Homebody — I prefer relaxed walks</span></div>
+              <div class="radio-item" onclick="document.querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><div class="radio-dot"></div><span class="radio-item-text">🚶 Moderate — I walk daily</span></div>
+              <div class="radio-item" onclick="document.querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')"><div class="radio-dot"></div><span class="radio-item-text">🏃 Very active — I hike and run</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="nav">
+    <div class="ds-section-title">Navigation <span>Components</span></div>
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:20px;">
+      <div>
+        <div class="ds-item-label" style="margin-bottom:8px;">Top nav bar</div>
+        <div class="app-nav">
+          <div class="nav-logo-ds">Paw<span>Swipe</span></div>
+          <div class="nav-links-ds">
+            <a href="#" class="nav-link-ds active">Discover</a>
+            <a href="#" class="nav-link-ds">Shelters</a>
+            <a href="#" class="nav-link-ds">How it works</a>
+          </div>
+          <div class="nav-actions">
+            <span class="nav-bell">🔔</span>
+            <div class="nav-avatar">SC</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ds-item-label" style="margin-bottom:8px;">Bottom tab bar (mobile /app)</div>
+        <div class="ds-demo tight" style="max-width:360px;">
+          <div class="tab-bar">
+            <div class="tab-item active"><div class="tab-icon">🐾</div><div class="tab-label">Discover</div></div>
+            <div class="tab-item"><div class="tab-icon tab-badge">♥</div><div class="tab-label">Matches</div></div>
+            <div class="tab-item"><div class="tab-icon">📋</div><div class="tab-label">Apply</div></div>
+            <div class="tab-item"><div class="tab-icon">💬</div><div class="tab-label">Messages</div></div>
+            <div class="tab-item"><div class="tab-icon">👤</div><div class="tab-label">Profile</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODALS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="modals">
+    <div class="ds-section-title">Modal <span>Patterns</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">Base modal</div>
+        <div class="modal-overlay">
+          <div class="modal">
+            <div class="modal-header">
+              <div class="modal-title" style="font-family:var(--font-display);font-size:1.3rem;font-weight:700;">Schedule meet & greet</div>
+              <div class="modal-close">✕</div>
+            </div>
+            <div class="modal-body">Choose a time to visit Linus & Chester at BC SPCA Vancouver, 1205 E 7th Ave. Bring all household members if possible.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+              <button class="pill-select selected">Sat May 23</button>
+              <button class="pill-select">Sun May 24</button>
+              <button class="pill-select">Sat May 30</button>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-ghost btn-sm">Cancel</button>
+              <button class="btn btn-primary btn-sm">📅 Confirm time</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Match celebration modal</div>
+        <div style="border-radius:var(--r-inner);overflow:hidden;">
+          <div class="match-modal">
+            <span class="match-emoji">🐾</span>
+            <div class="match-title">It's a Match!</div>
+            <div class="match-sub">BC SPCA Vancouver received your interest in Linus & Chester</div>
+            <div style="display:flex;flex-direction:column;gap:8px;position:relative;">
+              <button class="btn btn-primary" style="width:100%;justify-content:center;">💬 Message BC SPCA</button>
+              <button class="btn btn-ghost" style="color:rgba(253,246,236,0.6);">Keep Swiping</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       EMPTY STATES
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="empty">
+    <div class="ds-section-title">Empty <span>States</span></div>
+    <div class="ds-row thirds" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">No more animals</div>
+        <div class="ds-demo">
+          <div class="empty-state">
+            <div class="empty-icon">🎉</div>
+            <div class="empty-title">You've seen everyone nearby!</div>
+            <div class="empty-desc">Shelters update listings daily. Check back tomorrow for new arrivals.</div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:8px;">Browse BC SPCA →</button>
+          </div>
+        </div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">No matches yet</div>
+        <div class="ds-demo">
+          <div class="empty-state">
+            <div class="empty-icon">🐾</div>
+            <div class="empty-title">No matches yet</div>
+            <div class="empty-desc">Swipe right on any animal you love to start a conversation with their shelter.</div>
+            <button class="btn btn-primary btn-sm" style="margin-top:8px;">Start swiping →</button>
+          </div>
+        </div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">No messages</div>
+        <div class="ds-demo">
+          <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <div class="empty-title">No conversations yet</div>
+            <div class="empty-desc">Like an animal to start chatting with their shelter directly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LOADING STATES
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="loading">
+    <div class="ds-section-title">Loading <span>Skeletons</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">Card skeleton</div>
+        <div class="skeleton-card" style="width:240px;">
+          <div class="skeleton skeleton-photo"></div>
+          <div class="skeleton-body">
+            <div class="skeleton skeleton-line wide"></div>
+            <div class="skeleton skeleton-line medium"></div>
+            <div class="skeleton skeleton-line short"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Grid skeleton</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="skeleton-card"><div class="skeleton" style="height:80px;"></div><div class="skeleton-body"><div class="skeleton skeleton-line wide"></div><div class="skeleton skeleton-line medium"></div></div></div>
+          <div class="skeleton-card"><div class="skeleton" style="height:80px;"></div><div class="skeleton-body"><div class="skeleton skeleton-line wide"></div><div class="skeleton skeleton-line medium"></div></div></div>
+          <div class="skeleton-card"><div class="skeleton" style="height:80px;"></div><div class="skeleton-body"><div class="skeleton skeleton-line wide"></div><div class="skeleton skeleton-line medium"></div></div></div>
+          <div class="skeleton-card"><div class="skeleton" style="height:80px;"></div><div class="skeleton-body"><div class="skeleton skeleton-line wide"></div><div class="skeleton skeleton-line medium"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ALERTS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="alerts">
+    <div class="ds-section-title">Alert <span>Variants</span></div>
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px;">
+      <div class="alert alert-success"><div class="alert-icon">✓</div><div class="alert-content"><div class="alert-title">Application submitted</div><div class="alert-desc">BC SPCA Vancouver will respond to your application within 3–5 business days.</div></div><div class="alert-dismiss">✕</div></div>
+      <div class="alert alert-warning"><div class="alert-icon">⚠</div><div class="alert-content"><div class="alert-title">Linus & Chester have a pending application</div><div class="alert-desc">Another adopter has applied. Your interest has been noted — you may still be considered.</div></div><div class="alert-dismiss">✕</div></div>
+      <div class="alert alert-error"><div class="alert-icon">✕</div><div class="alert-content"><div class="alert-title">Application not approved</div><div class="alert-desc">BC SPCA has decided to proceed with another applicant for Queso. Keep swiping — your perfect match is out there.</div></div><div class="alert-dismiss">✕</div></div>
+      <div class="alert alert-info"><div class="alert-icon">ℹ</div><div class="alert-content"><div class="alert-title">VOKRA requires a phone interview</div><div class="alert-desc">As part of VOKRA's adoption process, all applicants complete a 45–60 minute phone interview before meeting the animal.</div></div><div class="alert-dismiss">✕</div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       AVATARS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="avatars">
+    <div class="ds-section-title">Avatars <span>& Identity</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">User avatars (sizes)</div>
+        <div class="ds-demo" style="display:flex;align-items:center;gap:16px;">
+          <div class="avatar avatar-sm avatar-user">SC</div>
+          <div class="avatar avatar-md avatar-user">SC</div>
+          <div class="avatar avatar-lg avatar-user">SC</div>
+          <div class="avatar avatar-xl avatar-user">SC</div>
+        </div>
+        <div class="ds-item-spec">32 / 48 / 80 / 96px. Initials fallback from first + last name. Clay bg, cream text.</div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Shelter logos</div>
+        <div class="ds-demo" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div style="text-align:center;"><div class="avatar avatar-md avatar-shelter">B</div><div style="font-size:0.62rem;color:var(--mid);margin-top:4px;">BC SPCA</div></div>
+          <div style="text-align:center;"><div class="avatar avatar-md avatar-shelter" style="background:#4A6E5C;">V</div><div style="font-size:0.62rem;color:var(--mid);margin-top:4px;">VOKRA</div></div>
+          <div style="text-align:center;"><div class="avatar avatar-md avatar-shelter" style="background:#7B9DB0;">R</div><div style="font-size:0.62rem;color:var(--mid);margin-top:4px;">RAPS</div></div>
+          <div style="text-align:center;"><div class="avatar avatar-md avatar-shelter" style="background:#C97520;">L</div><div style="font-size:0.62rem;color:var(--mid);margin-top:4px;">LAPS</div></div>
+        </div>
+        <div class="ds-item-spec">Shelter avatars use rounded-square (14px radius). First letter of org. Unique colour per org.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PROGRESS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="ds-section" id="progress">
+    <div class="ds-section-title">Progress <span>& Indicators</span></div>
+    <div class="ds-row" style="margin-top:24px;">
+      <div class="ds-item">
+        <div class="ds-item-label">Onboarding progress bar</div>
+        <div class="ds-demo" style="display:flex;flex-direction:column;gap:16px;">
+          <div><div style="font-size:0.72rem;color:var(--mid);margin-bottom:6px;">Step 1 of 6</div><div class="progress-wrap"><div class="progress-fill" style="width:16.6%;"></div></div></div>
+          <div><div style="font-size:0.72rem;color:var(--mid);margin-bottom:6px;">Step 3 of 6</div><div class="progress-wrap"><div class="progress-fill" style="width:50%;"></div></div></div>
+          <div><div style="font-size:0.72rem;color:var(--mid);margin-bottom:6px;">Step 6 of 6</div><div class="progress-wrap"><div class="progress-fill" style="width:100%;"></div></div></div>
+        </div>
+      </div>
+      <div class="ds-item">
+        <div class="ds-item-label">Live indicator</div>
+        <div class="ds-demo" style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:8px;height:8px;background:#4caf7d;border-radius:50%;animation:pulse 2s infinite;flex-shrink:0;"></div>
+            <div style="font-size:0.85rem;color:var(--mid);"><strong style="color:var(--charcoal);">248 animals</strong> listed right now</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:8px;height:8px;background:var(--amber);border-radius:50%;animation:pulse 2s infinite 0.5s;flex-shrink:0;"></div>
+            <div style="font-size:0.85rem;color:var(--mid);"><strong style="color:var(--charcoal);">12 new listings</strong> this week</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div style="padding:40px 0 20px;border-top:1px solid var(--light-stroke);margin-top:20px;">
+    <div style="font-size:0.72rem;color:var(--mid-light);text-align:center;">PawSwipe Design System v1.0 · Vancouver & Lower Mainland · All components use CSS custom properties defined in :root · Never hardcode colours</div>
+  </div>
+
+</main>
+
+<style>
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(76,175,125,0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(76,175,125,0); }
+}
+</style>
+
+</body>
+</html>

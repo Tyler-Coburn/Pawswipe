@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Animal — BC SPCA Vancouver · PawSwipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.12);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --sidebar:240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{background:#F0E8DE;font-family:var(--fb);font-weight:300;color:var(--charcoal);display:flex;min-height:100vh;}
+
+/* SIDEBAR (reused from dashboard) */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--charcoal);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:40;}
+.sidebar-top{padding:22px 18px 16px;}
+.sidebar-logo{font-family:var(--fd);font-weight:900;font-size:1.1rem;color:var(--cream);letter-spacing:-.02em;}
+.sidebar-logo span{color:var(--amber);}
+.sidebar-portal{font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-top:2px;}
+.sidebar-divider{height:1px;background:rgba(255,255,255,.07);margin:12px 0;}
+.sidebar-shelter{padding:12px 18px;display:flex;align-items:center;gap:10px;}
+.sidebar-shelter-avatar{width:34px;height:34px;border-radius:9px;background:var(--clay);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:900;font-size:.85rem;color:var(--cream);flex-shrink:0;}
+.sidebar-shelter-name{font-size:.8rem;font-weight:500;color:var(--cream);}
+.nav-section{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(253,246,236,.25);padding:14px 18px 5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:.82rem;color:rgba(253,246,236,.55);cursor:pointer;border-left:2px solid transparent;transition:all .18s;text-decoration:none;}
+.nav-item:hover{color:var(--cream);background:rgba(255,255,255,.04);border-left-color:rgba(232,146,58,.4);}
+.nav-item.active{color:var(--cream);background:rgba(232,146,58,.1);border-left-color:var(--amber);}
+.nav-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;min-width:18px;height:18px;background:var(--clay);border-radius:100px;font-size:.6rem;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+.sidebar-bottom{margin-top:auto;padding:12px 0;}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:var(--cream);border-bottom:1px solid var(--ls);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.back-link{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--mid);text-decoration:none;transition:color .18s;}
+.back-link:hover{color:var(--clay);}
+.topbar-title{font-family:var(--fd);font-weight:700;font-size:1rem;color:var(--charcoal);}
+.topbar-sub{font-size:.75rem;color:var(--mid);}
+
+/* 2-COL LAYOUT */
+.page-grid{display:flex;gap:0;flex:1;overflow:hidden;}
+.form-col{flex:1;overflow-y:auto;padding:24px 24px 120px;scrollbar-width:thin;}
+.preview-col{width:310px;min-width:310px;border-left:1px solid var(--ls);background:var(--warm-white);display:flex;flex-direction:column;overflow:hidden;}
+
+/* ACCORDION */
+.accordion{margin-bottom:10px;}
+.accordion-header{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:12px;
+  padding:14px 16px;cursor:pointer;transition:background .18s;
+}
+.accordion.open .accordion-header{border-radius:12px 12px 0 0;border-bottom-color:transparent;}
+.accordion-header:hover{background:var(--amber-pale);}
+.accordion-title{display:flex;align-items:center;gap:10px;font-size:.88rem;font-weight:500;color:var(--charcoal);}
+.accordion-icon-left{font-size:1rem;}
+.accordion-chevron{font-size:.8rem;color:var(--mid-light);transition:transform .2s;}
+.accordion.open .accordion-chevron{transform:rotate(90deg);}
+.accordion-badge{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:100px;background:var(--sage-pale);color:var(--sage);}
+.accordion-body{
+  background:var(--warm-white);border:1px solid var(--ls);border-top:none;
+  border-radius:0 0 12px 12px;padding:18px 16px;
+  display:none;
+}
+.accordion.open .accordion-body{display:block;}
+
+/* FORM FIELDS */
+.field{margin-bottom:14px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field-label{font-size:.78rem;font-weight:500;color:var(--charcoal);margin-bottom:5px;display:block;}
+.field-input,.field-select,.field-textarea{
+  width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--ls);
+  background:var(--cream);font-family:var(--fb);font-size:.86rem;font-weight:300;
+  color:var(--charcoal);outline:none;transition:border-color .2s,box-shadow .2s;
+  appearance:none;
+}
+.field-input:focus,.field-select:focus,.field-textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,146,58,.12);}
+.field-select{background-image:url("data:image/svg+xml,%3Csvg width='10' height='7' viewBox='0 0 10 7' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B5E52' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer;}
+.field-textarea{min-height:80px;resize:vertical;line-height:1.6;}
+.char-count{font-size:.68rem;color:var(--mid-light);text-align:right;margin-top:3px;}
+
+/* Species cards */
+.species-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px;}
+.species-card{
+  background:var(--cream);border:2px solid var(--ls);border-radius:10px;
+  padding:10px 6px;cursor:pointer;text-align:center;transition:all .18s;
+  position:relative;
+}
+.species-card:hover{border-color:rgba(232,146,58,.35);}
+.species-card.selected{border-color:var(--amber);background:var(--amber-pale);}
+.species-card .scheck{
+  position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:50%;
+  background:var(--amber);color:white;font-size:.45rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(0);transition:all .2s;
+}
+.species-card.selected .scheck{opacity:1;transform:scale(1);}
+.species-emoji{font-size:1.4rem;display:block;margin-bottom:4px;}
+.species-label{font-size:.65rem;font-weight:500;color:var(--mid);}
+
+/* Pills */
+.pill-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.pill{
+  padding:6px 14px;border-radius:100px;border:1.5px solid var(--ls);
+  background:var(--cream);font-size:.78rem;font-weight:400;color:var(--mid);
+  cursor:pointer;transition:all .18s;font-family:var(--fb);
+}
+.pill:hover{border-color:var(--amber);color:var(--clay);}
+.pill.selected{background:var(--clay);border-color:var(--clay);color:white;font-weight:500;}
+
+/* Toggle */
+.toggle-wrap{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:10px;}
+.toggle{width:40px;height:22px;background:rgba(107,94,82,.2);border-radius:100px;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--amber);}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle.on::after{transform:translateX(18px);}
+.toggle-label{font-size:.83rem;color:var(--charcoal);font-weight:400;}
+
+/* Breed search */
+.breed-search-wrap{position:relative;}
+.breed-dropdown{
+  position:absolute;top:100%;left:0;right:0;z-index:20;
+  background:var(--cream);border:1.5px solid var(--amber);border-top:none;
+  border-radius:0 0 10px 10px;
+  max-height:160px;overflow-y:auto;scrollbar-width:thin;
+  display:none;
+}
+.breed-dropdown.open{display:block;}
+.breed-option{padding:8px 12px;font-size:.83rem;cursor:pointer;color:var(--charcoal);transition:background .15s;}
+.breed-option:hover{background:var(--amber-pale);}
+
+/* PHOTO ZONE */
+.photo-drop-zone{
+  border:2px dashed var(--amber);border-radius:12px;
+  padding:32px 20px;text-align:center;cursor:pointer;
+  transition:background .18s;margin-bottom:12px;
+}
+.photo-drop-zone:hover,.photo-drop-zone.drag-over{background:var(--amber-pale);}
+.drop-icon{font-size:2.5rem;display:block;margin-bottom:8px;opacity:.6;}
+.drop-title{font-size:.9rem;font-weight:500;color:var(--charcoal);}
+.drop-sub{font-size:.75rem;color:var(--mid-light);margin-top:4px;}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+.photo-thumb{
+  aspect-ratio:1;border-radius:8px;background:var(--blush);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;position:relative;overflow:hidden;cursor:pointer;
+  border:2px solid transparent;transition:border-color .18s;
+}
+.photo-thumb:hover{border-color:var(--amber);}
+.photo-thumb.primary{border-color:var(--amber);}
+.photo-thumb-label{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(30,26,23,.7);color:white;font-size:.55rem;font-weight:600;
+  text-align:center;padding:3px;letter-spacing:.04em;text-transform:uppercase;
+  opacity:0;transition:opacity .18s;
+}
+.photo-thumb:hover .photo-thumb-label{opacity:1;}
+.photo-thumb.primary .photo-thumb-label{opacity:1;background:rgba(232,146,58,.8);}
+
+/* Radio group */
+.radio-group{display:flex;flex-direction:column;gap:6px;}
+.radio-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border-radius:9px;border:1.5px solid var(--ls);background:var(--cream);
+  cursor:pointer;transition:all .18s;
+}
+.radio-item:hover{border-color:rgba(232,146,58,.35);}
+.radio-item.selected{border-color:var(--clay);background:var(--amber-pale);}
+.radio-dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--mid-light);flex-shrink:0;transition:border-color .18s;display:flex;align-items:center;justify-content:center;}
+.radio-item.selected .radio-dot{border-color:var(--clay);}
+.radio-item.selected .radio-dot::after{content:'';width:7px;height:7px;background:var(--clay);border-radius:50%;}
+.radio-label{font-size:.84rem;font-weight:400;color:var(--charcoal);}
+
+/* SUB Q */
+.sub-q{max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .25s ease;opacity:0;}
+.sub-q.open{max-height:200px;opacity:1;}
+
+/* ═══ PREVIEW PANEL ═══ */
+.preview-header{
+  padding:14px 16px;border-bottom:1px solid var(--ls);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.preview-title{font-size:.82rem;font-weight:600;color:var(--charcoal);}
+.preview-toggles{display:flex;gap:4px;}
+.preview-toggle-btn{
+  padding:4px 10px;border-radius:7px;border:1px solid var(--ls);
+  background:transparent;font-family:var(--fb);font-size:.68rem;color:var(--mid);cursor:pointer;
+  transition:all .15s;
+}
+.preview-toggle-btn.active{background:var(--clay);color:white;border-color:var(--clay);}
+.preview-area{flex:1;overflow-y:auto;padding:20px 16px;display:flex;align-items:flex-start;justify-content:center;}
+
+/* Preview card */
+.preview-card{
+  width:100%;max-width:280px;
+  background:var(--warm-white);border-radius:18px;
+  overflow:hidden;box-shadow:0 8px 28px rgba(30,26,23,.12);
+}
+.preview-photo{
+  height:180px;display:flex;align-items:center;justify-content:center;
+  font-size:6rem;position:relative;transition:background .3s;
+}
+.preview-badge-row{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;}
+.preview-badge{
+  padding:3px 9px;border-radius:100px;
+  font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+}
+.pb-urgent{background:var(--clay);color:white;}
+.pb-shelter{background:rgba(30,26,23,.5);color:white;backdrop-filter:blur(4px);}
+.preview-name-area{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(transparent,rgba(30,26,23,.75));}
+.preview-pname{font-family:var(--fd);font-weight:700;font-size:1.2rem;color:white;line-height:1;}
+.preview-pmeta{font-size:.68rem;color:rgba(255,255,255,.78);margin-top:2px;}
+.preview-body{padding:12px 14px 14px;}
+.preview-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.pt{padding:2px 8px;border-radius:100px;font-size:.65rem;font-weight:500;}
+.pt-green{background:var(--sage-pale);color:var(--sage);}
+.pt-blue{background:var(--rain-pale);color:var(--rain);}
+.pt-blush{background:var(--blush);color:var(--clay);}
+.preview-compat{display:flex;flex-direction:column;gap:2px;margin-bottom:8px;}
+.pc-row{font-size:.68rem;display:flex;gap:4px;}
+.pc-yes{color:var(--sage);}
+.pc-no{color:var(--clay);}
+.preview-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ls);padding-top:8px;margin-top:8px;}
+.preview-days{font-size:.62rem;color:var(--mid-light);}
+.preview-actions{display:flex;gap:4px;}
+.pact-btn{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;}
+.pact-pass{background:rgba(107,94,82,.1);color:var(--mid);}
+.pact-like{background:var(--clay);color:white;}
+
+.preview-note{
+  padding:14px 16px;border-top:1px solid var(--ls);
+  font-size:.72rem;color:var(--mid);line-height:1.5;flex-shrink:0;
+  background:rgba(253,246,236,.5);
+}
+
+/* ═══ ACTION BAR ═══ */
+.action-bar{
+  position:fixed;bottom:0;left:var(--sidebar);right:0;
+  background:var(--cream);border-top:1px solid var(--ls);
+  padding:14px 24px;display:flex;gap:10px;align-items:center;
+  z-index:30;
+}
+.action-bar-right{display:flex;gap:8px;margin-left:auto;}
+.btn-ghost{padding:10px 20px;border-radius:100px;border:none;background:transparent;color:var(--mid);font-family:var(--fb);font-size:.85rem;cursor:pointer;transition:all .18s;}
+.btn-ghost:hover{color:var(--charcoal);background:var(--warm-white);}
+.btn-outline{padding:10px 20px;border-radius:100px;border:1.5px solid var(--clay);background:transparent;color:var(--clay);font-family:var(--fb);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s;}
+.btn-outline:hover{background:var(--clay);color:white;}
+.btn-primary{padding:11px 24px;border-radius:100px;background:var(--clay);color:white;border:none;font-family:var(--fb);font-size:.88rem;font-weight:500;cursor:pointer;transition:all .18s;box-shadow:0 3px 14px rgba(168,78,42,.28);}
+.btn-primary:hover{background:var(--amber-deep);transform:translateY(-1px);}
+.draft-note{font-size:.72rem;color:var(--mid-light);}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo">Paw<span>Swipe</span></div>
+    <div class="sidebar-portal">Shelter Portal</div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-shelter">
+    <div class="sidebar-shelter-avatar">B</div>
+    <div>
+      <div class="sidebar-shelter-name">BC SPCA Vancouver</div>
+    </div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="nav-section">Navigation</div>
+  <a class="nav-item" href="shelter-dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+  <a class="nav-item active" href="shelter-add-animal.html"><span class="nav-icon">🐾</span> Animals</a>
+  <a class="nav-item" href="shelter-application-review.html"><span class="nav-icon">📋</span> Applications<span class="nav-badge">7</span></a>
+  <a class="nav-item" href="app-messages.html"><span class="nav-icon">💬</span> Messages</a>
+  <a class="nav-item" href="#"><span class="nav-icon">📈</span> Analytics</a>
+  <a class="nav-item" href="#"><span class="nav-icon">⚙️</span> Settings</a>
+  <div class="sidebar-bottom">
+    <div class="sidebar-divider"></div>
+    <a class="nav-item" href="#" style="color:rgba(253,246,236,.35);"><span class="nav-icon">🚪</span> Sign out</a>
+  </div>
+</aside>
+
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="shelter-dashboard.html">← Dashboard</a>
+      <div style="color:var(--mid-light);">›</div>
+      <div>
+        <div class="topbar-title">New Animal Listing</div>
+        <div class="topbar-sub">BC SPCA Vancouver · Draft · Auto-saved 2m ago</div>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:var(--sage);font-weight:500;">● Live preview updating</div>
+  </div>
+
+  <div class="page-grid">
+
+    <!-- ═══ FORM COL ═══ -->
+    <div class="form-col">
+
+      <!-- SECTION 1: BASIC INFO -->
+      <div class="accordion open" id="acc-basic">
+        <div class="accordion-header" onclick="toggleAccordion('acc-basic')">
+          <div class="accordion-title">
+            <span class="accordion-icon-left">📋</span>
+            Basic Information
+            <span class="accordion-badge">Required</span>
+          </div>
+          <span class="accordion-chevron">›</span>
+        </div>
+        <div class="accordion-body">
+          <div class="field">
+            <label class="field-label">Animal name</label>
+            <input class="field-input" type="text" placeholder="e.g. Linus & Chester" id="f-name" oninput="updatePreview()">
+          </div>
+
+          <div class="field">
+            <label class="field-label">Species</label>
+            <div class="species-grid" id="f-species">
+              <div class="species-card" data-val="dog" onclick="selectSpecies(this)">
+                <div class="scheck">✓</div>
+                <span class="species-emoji">🐶</span>
+                <div class="species-label">Dog</div>
+              </div>
+              <div class="species-card" data-val="cat" onclick="selectSpecies(this)">
+                <div class="scheck">✓</div>
+                <span class="species-emoji">🐱</span>
+                <div class="species-label">Cat</div>
+              </div>
+              <div class="species-card" data-val="rabbit" onclick="selectSpecies(this)">
+                <div class="scheck">✓</div>
+                <span class="species-emoji">🐰</span>
+                <div class="species-label">Rabbit</div>
+              </div>
+              <div class="species-card" data-val="bird" onclick="selectSpecies(this)">
+                <div class="scheck">✓</div>
+                <span class="species-emoji">🐦</span>
+                <div class="species-label">Bird</div>
+              </div>
+              <div class="species-card" data-val="small" onclick="selectSpecies(this)">
+                <div class="scheck">✓</div>
+                <span class="species-emoji">🐹</span>
+                <div class="species-label">Small</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Primary breed</label>
+              <div class="breed-search-wrap">
+                <input class="field-input" type="text" placeholder="Type to search breeds…" id="f-breed" oninput="searchBreed(this)" autocomplete="off">
+                <div class="breed-dropdown" id="breed-dd"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Mix / Secondary breed <span style="font-weight:300;color:var(--mid-light);">(optional)</span></label>
+              <input class="field-input" type="text" placeholder="e.g. Chihuahua mix">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Sex</label>
+            <div class="pill-row">
+              <button class="pill" data-group="sex" onclick="selectPillGroup(this)">Male</button>
+              <button class="pill" data-group="sex" onclick="selectPillGroup(this)">Female</button>
+              <button class="pill" data-group="sex" onclick="selectPillGroup(this)">Unknown</button>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Age</label>
+              <select class="field-select" id="f-age" onchange="updatePreview()">
+                <option value="">Select…</option>
+                <option>Baby / Kitten</option>
+                <option>Young (1–3 yrs)</option>
+                <option>Adult (3–8 yrs)</option>
+                <option>Senior (8+ yrs)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Size</label>
+              <div class="pill-row" style="flex-wrap:nowrap;">
+                <button class="pill" data-group="size" onclick="selectPillGroup(this)" style="padding:6px 10px;">Small</button>
+                <button class="pill" data-group="size" onclick="selectPillGroup(this)" style="padding:6px 10px;">Medium</button>
+                <button class="pill" data-group="size" onclick="selectPillGroup(this)" style="padding:6px 10px;">Large</button>
+                <button class="pill" data-group="size" onclick="selectPillGroup(this)" style="padding:6px 8px;">XL</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Colour</label>
+              <input class="field-input" type="text" placeholder="e.g. Golden, cream">
+            </div>
+            <div class="field">
+              <label class="field-label">Coat <span style="font-weight:300;color:var(--mid-light);">(optional)</span></label>
+              <input class="field-input" type="text" placeholder="e.g. Short, wavy">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: PHOTOS -->
+      <div class="accordion" id="acc-photos">
+        <div class="accordion-header" onclick="toggleAccordion('acc-photos')">
+          <div class="accordion-title">
+            <span class="accordion-icon-left">📸</span>
+            Photos &amp; Media
+          </div>
+          <span class="accordion-chevron">›</span>
+        </div>
+        <div class="accordion-body">
+          <div class="photo-drop-zone" id="dropZone"
+            ondragover="event.preventDefault();this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="handleDrop(event)"
+            onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFileInput(this)">
+            <span class="drop-icon">🐾</span>
+            <div class="drop-title">Drop photos here or click to browse</div>
+            <div class="drop-sub">JPG, PNG, WEBP · Max 10 photos · First photo = primary</div>
+          </div>
+
+          <div class="photo-grid" id="photoGrid">
+            <!-- Placeholder thumbs -->
+            <div class="photo-thumb primary" style="background:#EDD5BC;" title="Primary photo">
+              🐶
+              <div class="photo-thumb-label">Primary</div>
+            </div>
+            <div class="photo-thumb" style="background:#D4C0A8;">🐕<div class="photo-thumb-label">Set as primary</div></div>
+            <div class="photo-thumb" style="background:#E4CCB0;">🦮<div class="photo-thumb-label">Set as primary</div></div>
+            <div class="photo-thumb" style="background:#D8C8B0;">🐩<div class="photo-thumb-label">Set as primary</div></div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Video URL <span style="font-weight:300;color:var(--mid-light);">(YouTube or Vimeo, optional)</span></label>
+            <input class="field-input" type="url" placeholder="https://youtube.com/watch?v=…">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: TRAITS -->
+      <div class="accordion" id="acc-traits">
+        <div class="accordion-header" onclick="toggleAccordion('acc-traits')">
+          <div class="accordion-title">
+            <span class="accordion-icon-left">🌟</span>
+            Personality &amp; Traits
+          </div>
+          <span class="accordion-chevron">›</span>
+        </div>
+        <div class="accordion-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Energy level</label>
+              <div class="pill-row">
+                <button class="pill" data-group="energy" onclick="selectPillGroup(this)">Low</button>
+                <button class="pill" data-group="energy" onclick="selectPillGroup(this)">Medium</button>
+                <button class="pill" data-group="energy" onclick="selectPillGroup(this)">High</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Training</label>
+              <div class="pill-row">
+                <button class="pill" data-group="training" onclick="selectPillGroup(this)">None</button>
+                <button class="pill" data-group="training" onclick="selectPillGroup(this)">Basic</button>
+                <button class="pill" data-group="training" onclick="selectPillGroup(this)">Well-trained</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Good with dogs?</label>
+              <div class="pill-row">
+                <button class="pill" data-group="dogs" onclick="selectPillGroup(this)">Yes</button>
+                <button class="pill" data-group="dogs" onclick="selectPillGroup(this)">No</button>
+                <button class="pill" data-group="dogs" onclick="selectPillGroup(this)">Unknown</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Good with cats?</label>
+              <div class="pill-row">
+                <button class="pill" data-group="cats" onclick="selectPillGroup(this)">Yes</button>
+                <button class="pill" data-group="cats" onclick="selectPillGroup(this)">No</button>
+                <button class="pill" data-group="cats" onclick="selectPillGroup(this)">Unknown</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Good with children?</label>
+              <div class="pill-row">
+                <button class="pill" data-group="kids" onclick="selectPillGroup(this)">Yes</button>
+                <button class="pill" data-group="kids" onclick="selectPillGroup(this)">Depends</button>
+                <button class="pill" data-group="kids" onclick="selectPillGroup(this)">No</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Apartment friendly?</label>
+              <div class="pill-row">
+                <button class="pill" data-group="apt" onclick="selectPillGroup(this)">Yes</button>
+                <button class="pill" data-group="apt" onclick="selectPillGroup(this)">With exercise</button>
+                <button class="pill" data-group="apt" onclick="selectPillGroup(this)">No</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Needs yard?</label>
+              <div class="pill-row">
+                <button class="pill" data-group="yard" onclick="selectPillGroup(this)">Yes</button>
+                <button class="pill" data-group="yard" onclick="selectPillGroup(this)">Preferred</button>
+                <button class="pill" data-group="yard" onclick="selectPillGroup(this)">No</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Good with seniors?</label>
+              <div style="margin-top:4px;">
+                <div class="toggle-wrap" onclick="this.querySelector('.toggle').classList.toggle('on')">
+                  <div class="toggle"></div>
+                  <span class="toggle-label">Yes, great with seniors</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+            <div>
+              <div class="toggle-wrap" id="special-toggle" onclick="toggleSpecialNeeds()">
+                <div class="toggle" id="special-toggle-el"></div>
+                <span class="toggle-label">Special needs</span>
+              </div>
+              <div class="sub-q" id="special-q" style="margin-top:6px;">
+                <textarea class="field-textarea" placeholder="Describe medical or behavioural needs…" style="min-height:60px;"></textarea>
+              </div>
+            </div>
+            <div>
+              <div class="toggle-wrap" onclick="this.querySelector('.toggle').classList.toggle('on');updatePreview()">
+                <div class="toggle" id="urgent-toggle"></div>
+                <span class="toggle-label">Mark as urgent 🔥</span>
+              </div>
+              <div class="toggle-wrap" style="margin-top:8px;" onclick="this.querySelector('.toggle').classList.toggle('on')">
+                <div class="toggle" id="bonded-toggle"></div>
+                <span class="toggle-label">Bonded with another animal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: DESCRIPTION -->
+      <div class="accordion" id="acc-desc">
+        <div class="accordion-header" onclick="toggleAccordion('acc-desc')">
+          <div class="accordion-title">
+            <span class="accordion-icon-left">✍️</span>
+            Description &amp; Story
+          </div>
+          <span class="accordion-chevron">›</span>
+        </div>
+        <div class="accordion-body">
+          <div class="field">
+            <label class="field-label">Their story <span style="color:var(--clay);">*</span></label>
+            <textarea class="field-textarea" id="f-desc" style="min-height:120px;"
+              placeholder="Write [Name]'s story — help adopters connect emotionally. Include personality, favourite things, quirks, and what kind of home they'd thrive in. Be specific and warm — this is what moves people to apply.
+
+Example: 'Linus and Chester have been together their whole lives and would be lost without each other. Linus is the social one — always first to greet visitors with a gentle wag. Chester is the thinker, happy to watch the world from his favourite window perch. Together they fill a home with quiet joy.'"
+              oninput="updateCharCount('f-desc','desc-count',100);updatePreview()"
+              maxlength="1500"></textarea>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <div id="desc-count" class="char-count">Minimum 100 characters</div>
+              <div id="desc-total" class="char-count">0 / 1500</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 5: STATUS -->
+      <div class="accordion" id="acc-status">
+        <div class="accordion-header" onclick="toggleAccordion('acc-status')">
+          <div class="accordion-title">
+            <span class="accordion-icon-left">📡</span>
+            Status &amp; Visibility
+          </div>
+          <span class="accordion-chevron">›</span>
+        </div>
+        <div class="accordion-body">
+          <div class="field">
+            <label class="field-label">Listing status</label>
+            <div class="radio-group" id="f-status">
+              <div class="radio-item" data-val="draft" onclick="selectRadio('f-status',this)">
+                <div class="radio-dot"></div>
+                <div class="radio-label">Draft — save but don't publish yet</div>
+              </div>
+              <div class="radio-item selected" data-val="available" onclick="selectRadio('f-status',this)">
+                <div class="radio-dot"></div>
+                <div class="radio-label">Available — live on PawSwipe now</div>
+              </div>
+              <div class="radio-item" data-val="pending" onclick="selectRadio('f-status',this)">
+                <div class="radio-dot"></div>
+                <div class="radio-label">Pending — applications paused</div>
+              </div>
+              <div class="radio-item" data-val="onhold" onclick="selectRadio('f-status',this)">
+                <div class="radio-dot"></div>
+                <div class="radio-label">On Hold — reserved for an applicant</div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Published date</label>
+            <input class="field-input" type="date" value="2026-05-18">
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /form-col -->
+
+    <!-- ═══ PREVIEW COL ═══ -->
+    <div class="preview-col">
+      <div class="preview-header">
+        <div class="preview-title">Live preview</div>
+        <div class="preview-toggles">
+          <button class="preview-toggle-btn active" onclick="setPreviewSize('full',this)">Full</button>
+          <button class="preview-toggle-btn" onclick="setPreviewSize('medium',this)">Med</button>
+          <button class="preview-toggle-btn" onclick="setPreviewSize('compact',this)">Small</button>
+        </div>
+      </div>
+
+      <div class="preview-area" id="previewArea">
+        <div class="preview-card" id="previewCard">
+          <div class="preview-photo" id="prev-photo" style="background:#EDD5BC;">
+            <div class="preview-badge-row">
+              <span class="preview-badge pb-urgent" id="prev-urgent" style="display:none;">🔥 Urgent</span>
+              <span class="preview-badge pb-shelter">BC SPCA Van</span>
+            </div>
+            <span id="prev-emoji">🐶</span>
+            <div class="preview-name-area">
+              <div class="preview-pname" id="prev-name">Animal name…</div>
+              <div class="preview-pmeta" id="prev-meta">Age · Breed · Org</div>
+            </div>
+          </div>
+          <div class="preview-body">
+            <div class="preview-tags" id="prev-tags">
+              <span class="pt pt-blue">Add species</span>
+              <span class="pt pt-green">Fill traits</span>
+            </div>
+            <div class="preview-compat" id="prev-compat">
+              <div class="pc-row" style="color:var(--mid-light);">Compatibility details appear here</div>
+            </div>
+            <div class="preview-footer">
+              <span class="preview-days" id="prev-days">Just listed</span>
+              <div class="preview-actions">
+                <button class="pact-btn pact-pass">✕</button>
+                <button class="pact-btn pact-like">♥</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-note">
+        This is exactly how your listing will appear to adopters on PawSwipe. Updates reflect immediately as you type.
+      </div>
+    </div>
+
+  </div><!-- /page-grid -->
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <span class="draft-note">💾 Draft saved automatically</span>
+    <div class="action-bar-right">
+      <button class="btn-ghost" onclick="showToast('Draft saved')">Save draft</button>
+      <button class="btn-outline">Preview listing</button>
+      <button class="btn-primary" onclick="publish()">Publish listing →</button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div id="toast" style="position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--charcoal);color:var(--cream);padding:10px 20px;border-radius:100px;font-size:.82rem;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;"></div>
+
+<script>
+const breeds = ['Labrador Retriever','Golden Retriever','French Bulldog','German Shepherd','Poodle','Bulldog','Beagle','Rottweiler','Yorkshire Terrier','Dachshund','Siberian Husky','Boxer','Havanese','Chihuahua','Maltese','Shih Tzu','Doberman','Great Dane','Mixed Breed / Unknown','Domestic Short Hair','Domestic Long Hair','Tabby','Siamese','Persian','Bengal','British Shorthair','Ragdoll','Scottish Fold','Maine Coon','Sphynx','Holland Lop','Mini Rex','Angora','Cockatiel','Budgerigar','Lovebird','Guinea Pig','Hamster','Gerbil','Ferret'];
+const speciesEmojis = {dog:'🐶',cat:'🐱',rabbit:'🐰',bird:'🐦',small:'🐹'};
+let previewSize = 'full';
+
+function toggleAccordion(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function selectSpecies(el) {
+  document.querySelectorAll('.species-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  updatePreview();
+}
+
+function selectPillGroup(el) {
+  const group = el.dataset.group;
+  document.querySelectorAll(`.pill[data-group="${group}"]`).forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  updatePreview();
+}
+
+function selectRadio(containerId, el) {
+  document.querySelectorAll(`#${containerId} .radio-item`).forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function searchBreed(input) {
+  const q = input.value.toLowerCase();
+  const dd = document.getElementById('breed-dd');
+  if (!q) { dd.classList.remove('open'); return; }
+  const matches = breeds.filter(b => b.toLowerCase().includes(q)).slice(0, 6);
+  if (!matches.length) { dd.classList.remove('open'); return; }
+  dd.innerHTML = matches.map(b => `<div class="breed-option" onclick="selectBreed('${b}')">${b}</div>`).join('');
+  dd.classList.add('open');
+}
+
+function selectBreed(breed) {
+  document.getElementById('f-breed').value = breed;
+  document.getElementById('breed-dd').classList.remove('open');
+  updatePreview();
+}
+
+function toggleSpecialNeeds() {
+  const tog = document.getElementById('special-toggle-el');
+  tog.classList.toggle('on');
+  document.getElementById('special-q').classList.toggle('open', tog.classList.contains('on'));
+}
+
+function updatePreview() {
+  const name = document.getElementById('f-name').value || 'Animal name…';
+  const age = document.getElementById('f-age').value;
+  const breed = document.getElementById('f-breed').value;
+  const speciesEl = document.querySelector('.species-card.selected');
+  const speciesVal = speciesEl ? speciesEl.dataset.val : null;
+  const isUrgent = document.getElementById('urgent-toggle').classList.contains('on');
+
+  document.getElementById('prev-name').textContent = name;
+  document.getElementById('prev-meta').textContent = [age, breed || 'Breed TBD', 'BC SPCA Van'].filter(Boolean).join(' · ');
+  document.getElementById('prev-urgent').style.display = isUrgent ? '' : 'none';
+
+  if (speciesVal) {
+    document.getElementById('prev-emoji').textContent = speciesEmojis[speciesVal] || '🐾';
+    const colors = {dog:'#EDD5BC',cat:'#F2D6B0',rabbit:'#D8C8B0',bird:'#C8D8D4',small:'#D4C8DC'};
+    document.getElementById('prev-photo').style.background = colors[speciesVal] || '#EDD5BC';
+  }
+
+  // Build tags
+  const tags = [];
+  if (speciesVal) tags.push(`<span class="pt pt-blue">${speciesVal.charAt(0).toUpperCase()+speciesVal.slice(1)}</span>`);
+  const apt = document.querySelector('.pill[data-group="apt"].selected');
+  if (apt && apt.textContent === 'Yes') tags.push('<span class="pt pt-green">Apartment ok</span>');
+  const energy = document.querySelector('.pill[data-group="energy"].selected');
+  if (energy) tags.push(`<span class="pt pt-blush">${energy.textContent} energy</span>`);
+  document.getElementById('prev-tags').innerHTML = tags.length ? tags.join('') : '<span class="pt pt-blue" style="color:var(--mid-light);">Fill in traits</span>';
+}
+
+function setPreviewSize(size, btn) {
+  previewSize = size;
+  document.querySelectorAll('.preview-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const card = document.getElementById('previewCard');
+  const sizes = {full:'280px',medium:'220px',compact:'160px'};
+  card.style.maxWidth = sizes[size];
+  card.querySelector('.preview-photo').style.height = size === 'compact' ? '100px' : size === 'medium' ? '140px' : '180px';
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  showToast('📸 ' + e.dataTransfer.files.length + ' photo(s) added');
+}
+
+function handleFileInput(input) {
+  if (input.files.length) showToast('📸 ' + input.files.length + ' photo(s) selected');
+}
+
+function updateCharCount(inputId, countId, min) {
+  const el = document.getElementById(inputId);
+  const count = el.value.trim().length;
+  const counter = document.getElementById(countId);
+  const total = document.getElementById('desc-total');
+  if (total) total.textContent = count + ' / 1500';
+  if (count >= min) { counter.textContent = count + ' characters ✓'; counter.style.color = 'var(--sage)'; }
+  else { counter.textContent = count + '/' + min + ' min characters'; counter.style.color = ''; }
+}
+
+function publish() {
+  showToast('✅ Listing published to PawSwipe! Adopters can now discover this animal.');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(-20px)'; }, 3000);
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.breed-search-wrap')) document.getElementById('breed-dd').classList.remove('open');
+});
+</script>
+</body>
+</html>

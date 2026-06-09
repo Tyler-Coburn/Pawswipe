@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawSwipe — Brand Assets</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,900;1,9..144,300;1,9..144,900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #E8E0D6; font-family: 'DM Sans', sans-serif; font-weight: 300; padding: 48px; color: #1E1A17; }
+  h1 { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; }
+  h1 em { font-style: italic; font-weight: 300; color: #A84E2A; }
+  .subtitle { color: #6B5E52; margin-bottom: 48px; font-size: 0.9rem; }
+  .section { margin-bottom: 56px; }
+  .section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #9B8E84; margin-bottom: 16px; display: block; }
+  .asset-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+  .asset-box {
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(30,26,23,0.1);
+    display: flex; flex-direction: column;
+  }
+  .asset-box .canvas { display: flex; align-items: center; justify-content: center; padding: 32px; }
+  .asset-box .meta { background: white; padding: 12px 16px; font-size: 0.72rem; color: #6B5E52; line-height: 1.5; }
+  .asset-box .meta strong { display: block; font-size: 0.8rem; color: #1E1A17; font-weight: 500; margin-bottom: 2px; }
+
+  /* ── ICON MARK SVG ── */
+  .icon-mark { width: 80px; height: 80px; }
+
+  /* ── WORDMARK LOCKUP ── */
+  .wordmark { display: flex; align-items: center; gap: 14px; }
+  .wordmark-text { font-family: 'Fraunces', serif; font-size: 2.4rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+  .wordmark-text .paw { color: #A84E2A; font-style: italic; }
+  .wordmark-text .swipe { color: #E8923A; }
+
+  .wordmark-sm .wordmark-text { font-size: 1.4rem; }
+  .wordmark-sm .icon-mark { width: 44px; height: 44px; }
+
+  /* ── STACKED LOCKUP ── */
+  .stacked { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .stacked .tagline { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #6B5E52; }
+
+  /* ── OG IMAGE ── */
+  .og-image {
+    width: 600px; height: 315px;
+    background: #1E1A17;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .og-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 80% at 50% 30%, rgba(232,146,58,0.18) 0%, transparent 65%);
+  }
+  .og-content {
+    position: relative;
+    z-index: 2;
+    padding: 28px 32px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .og-logo { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .og-logo .paw { color: #A84E2A; font-style: italic; }
+  .og-logo .swipe { color: #E8923A; }
+  .og-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(184,208,220,0.2); color: #B8D0DC; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; margin-top: 6px; }
+  .og-headline { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.7rem; letter-spacing: -0.03em; color: #FDF6EC; line-height: 1.05; }
+  .og-headline em { font-style: italic; font-weight: 300; color: #F2C4A0; }
+  .og-orgs { display: flex; gap: 16px; align-items: center; }
+  .og-org { font-size: 0.68rem; font-weight: 500; color: rgba(253,246,236,0.45); letter-spacing: 0.06em; text-transform: uppercase; }
+  .og-divider { width: 1px; height: 10px; background: rgba(253,246,236,0.2); }
+  .og-paw {
+    position: absolute;
+    bottom: -30px; right: -20px;
+    font-size: 9rem;
+    opacity: 0.05;
+    transform: rotate(15deg);
+    line-height: 1;
+    pointer-events: none;
+  }
+  /* Vancouver skyline */
+  .og-skyline {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+  }
+  .og-mountains {
+    position: absolute;
+    bottom: 0; right: 0; left: 0;
+  }
+
+  /* ── FAVICON SIZES ── */
+  .favicon-row { display: flex; gap: 16px; align-items: flex-end; }
+  .favicon-box { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .favicon-box span { font-size: 0.65rem; color: #9B8E84; }
+
+  /* ── COLOUR USAGE ── */
+  .color-rule { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(232,146,58,0.15); }
+  .color-chip { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<h1>PawSwipe <em>Brand Assets</em></h1>
+<div class="subtitle">All logo variants, favicon sizes, and OG image · v1.0 · Vancouver & Lower Mainland</div>
+
+<!-- ═══════════ ICON MARK ═══════════ -->
+<div class="section">
+  <span class="section-label">Icon Mark — Paw + Swipe arrow</span>
+  <div class="asset-row">
+    <!-- Light bg -->
+    <div class="asset-box">
+      <div class="canvas" style="background:#FDF6EC;">
+        <svg class="icon-mark" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/>
+          <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="meta"><strong>Icon — Light background</strong>80×80px · Use on cream, warm-white</div>
+    </div>
+    <!-- Dark bg -->
+    <div class="asset-box">
+      <div class="canvas" style="background:#1E1A17;">
+        <svg class="icon-mark" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40" cy="52" rx="14" ry="16" fill="#E8923A"/>
+          <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#E8923A"/>
+          <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#E8923A"/>
+          <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#E8923A"/>
+          <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#E8923A"/>
+          <path d="M30 50 L40 43 L50 50" stroke="#1E1A17" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="40" y1="43" x2="40" y2="61" stroke="#1E1A17" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="meta"><strong>Icon — Dark background</strong>80×80px · Use on charcoal sections</div>
+    </div>
+    <!-- Large -->
+    <div class="asset-box">
+      <div class="canvas" style="background:#FDF6EC;">
+        <svg viewBox="0 0 80 80" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/>
+          <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+          <path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="meta"><strong>Icon — App Store size</strong>160×160 display · 1024×1024 export</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ HORIZONTAL LOCKUP ═══════════ -->
+<div class="section">
+  <span class="section-label">Horizontal Lockup — Primary logo format</span>
+  <div class="asset-row">
+    <!-- Light -->
+    <div class="asset-box" style="flex:1;min-width:300px;">
+      <div class="canvas" style="background:#FDF6EC;justify-content:flex-start;padding:28px 32px;">
+        <div class="wordmark">
+          <svg viewBox="0 0 80 80" width="52" height="52" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/>
+            <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="wordmark-text"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        </div>
+      </div>
+      <div class="meta"><strong>Horizontal — Light</strong>Primary. Use for nav bar, headers, landing page.</div>
+    </div>
+    <!-- Dark -->
+    <div class="asset-box" style="flex:1;min-width:300px;">
+      <div class="canvas" style="background:#1E1A17;justify-content:flex-start;padding:28px 32px;">
+        <div class="wordmark">
+          <svg viewBox="0 0 80 80" width="52" height="52" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="52" rx="14" ry="16" fill="#E8923A"/>
+            <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#E8923A"/>
+            <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#E8923A"/>
+            <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#E8923A"/>
+            <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#E8923A"/>
+            <path d="M30 50 L40 43 L50 50" stroke="#1E1A17" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="40" y1="43" x2="40" y2="61" stroke="#1E1A17" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="wordmark-text"><span style="color:#FDF6EC;font-style:italic;">Paw</span><span class="swipe">Swipe</span></div>
+        </div>
+      </div>
+      <div class="meta"><strong>Horizontal — Dark</strong>Use on charcoal sections, footer, dark overlays.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ STACKED LOCKUP ═══════════ -->
+<div class="section">
+  <span class="section-label">Stacked Lockup + Small Variant</span>
+  <div class="asset-row">
+    <div class="asset-box">
+      <div class="canvas" style="background:#FDF6EC;padding:36px 48px;">
+        <div class="stacked">
+          <svg viewBox="0 0 80 80" width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/>
+            <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <div class="wordmark-text" style="font-size:2rem;"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+          <div class="tagline">Vancouver & Lower Mainland</div>
+        </div>
+      </div>
+      <div class="meta"><strong>Stacked — With tagline</strong>Use on splash screens, loading states, print.</div>
+    </div>
+    <div class="asset-box">
+      <div class="canvas" style="background:#FDF6EC;">
+        <div class="wordmark wordmark-sm">
+          <svg viewBox="0 0 80 80" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/>
+            <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+            <path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="wordmark-text" style="font-size:1.4rem;"><span class="paw">Paw</span><span class="swipe">Swipe</span></div>
+        </div>
+      </div>
+      <div class="meta"><strong>Small — Nav bar size</strong>Use at 28–32px height in navigation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FAVICON SIZES ═══════════ -->
+<div class="section">
+  <span class="section-label">Favicon Sizes</span>
+  <div class="asset-box" style="display:inline-block;">
+    <div class="canvas" style="background:#FDF6EC;gap:24px;">
+      <div class="favicon-row">
+        <div class="favicon-box">
+          <svg viewBox="0 0 80 80" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/><ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/></svg>
+          <span>16px</span>
+        </div>
+        <div class="favicon-box">
+          <svg viewBox="0 0 80 80" width="32" height="32" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/><ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+          <span>32px</span>
+        </div>
+        <div class="favicon-box">
+          <svg viewBox="0 0 80 80" width="48" height="48" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/><ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+          <span>48px</span>
+        </div>
+        <div class="favicon-box">
+          <svg viewBox="0 0 80 80" width="96" height="96" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/><ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+          <span>96px</span>
+        </div>
+        <div class="favicon-box">
+          <svg viewBox="0 0 80 80" width="180" height="180" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/><ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+          <span>180px (apple-touch)</span>
+        </div>
+      </div>
+    </div>
+    <div class="meta"><strong>Favicon export guide</strong>Export icon-only SVG as PNG at each size. Name: favicon-16.png, favicon-32.png, apple-touch-icon.png (180px)</div>
+  </div>
+</div>
+
+<!-- ═══════════ OG IMAGE ═══════════ -->
+<div class="section">
+  <span class="section-label">Open Graph Image — 1200×630px (shown at 600×315)</span>
+  <div class="og-image">
+    <div class="og-gradient"></div>
+    <!-- Vancouver skyline SVG at bottom -->
+    <svg class="og-skyline" viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+      <!-- Mountains (North Shore) -->
+      <polygon points="0,120 60,40 120,80 200,20 280,65 360,30 420,70 480,50 560,80 600,60 600,120" fill="rgba(46,41,34,0.6)"/>
+      <!-- Buildings (Vancouver skyline silhouette) -->
+      <rect x="30" y="85" width="18" height="35" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="52" y="78" width="14" height="42" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="52" y="72" width="4" height="10" fill="rgba(30,26,23,0.8)"/><!-- antenna -->
+      <rect x="70" y="90" width="22" height="30" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="96" y="82" width="16" height="38" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="116" y="76" width="12" height="44" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="116" y="70" width="3" height="10" fill="rgba(30,26,23,0.8)"/>
+      <rect x="132" y="88" width="20" height="32" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="156" y="80" width="14" height="40" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="174" y="86" width="18" height="34" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <rect x="196" y="92" width="24" height="28" fill="rgba(30,26,23,0.8)" rx="1"/>
+      <!-- Harbour water hint -->
+      <rect x="0" y="115" width="600" height="5" fill="rgba(123,157,176,0.15)" rx="0"/>
+      <!-- Window lights -->
+      <rect x="55" y="80" width="2" height="2" fill="rgba(232,146,58,0.6)" rx="0.5"/>
+      <rect x="60" y="84" width="2" height="2" fill="rgba(232,146,58,0.4)" rx="0.5"/>
+      <rect x="99" y="87" width="2" height="2" fill="rgba(232,146,58,0.5)" rx="0.5"/>
+      <rect x="119" y="82" width="2" height="2" fill="rgba(232,146,58,0.6)" rx="0.5"/>
+      <rect x="159" y="86" width="2" height="2" fill="rgba(232,146,58,0.4)" rx="0.5"/>
+    </svg>
+    <div class="og-paw">🐾</div>
+    <div class="og-content">
+      <div>
+        <div class="og-logo"><span class="paw" style="color:#A84E2A;font-style:italic;">Paw</span><span class="swipe" style="color:#E8923A;">Swipe</span></div>
+        <div class="og-badge">📍 Vancouver & Lower Mainland</div>
+      </div>
+      <div>
+        <div class="og-headline">Find your <em>perfect match</em><br>in Vancouver.</div>
+      </div>
+      <div class="og-orgs">
+        <span class="og-org">BC SPCA</span>
+        <div class="og-divider"></div>
+        <span class="og-org">VOKRA</span>
+        <div class="og-divider"></div>
+        <span class="og-org">RAPS</span>
+        <div class="og-divider"></div>
+        <span class="og-org">LAPS</span>
+        <div class="og-divider"></div>
+        <span class="og-org">City of Vancouver</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:10px;font-size:0.72rem;color:#9B8E84;">Shown at 50% scale. Export at 1200×630px for Facebook, Twitter, LinkedIn, iMessage previews.</div>
+</div>
+
+<!-- ═══════════ COLOUR USAGE RULES ═══════════ -->
+<div class="section">
+  <span class="section-label">Colour Usage Rules</span>
+  <div style="background:white;border-radius:16px;padding:20px 24px;max-width:560px;box-shadow:0 4px 20px rgba(30,26,23,0.08);">
+    <div class="color-rule"><div class="color-chip" style="background:#A84E2A;"></div><div><strong style="font-size:0.82rem;">Clay #A84E2A</strong> — "Paw" wordmark, primary CTAs, urgent badges, clay bg sections</div></div>
+    <div class="color-rule"><div class="color-chip" style="background:#E8923A;"></div><div><strong style="font-size:0.82rem;">Amber #E8923A</strong> — "Swipe" wordmark, active states, like button, progress bars</div></div>
+    <div class="color-rule"><div class="color-chip" style="background:#FDF6EC;border:1px solid rgba(0,0,0,0.08);"></div><div><strong style="font-size:0.82rem;">Cream #FDF6EC</strong> — Page background. Never use pure white as page bg.</div></div>
+    <div class="color-rule"><div class="color-chip" style="background:#1E1A17;"></div><div><strong style="font-size:0.82rem;">Charcoal #1E1A17</strong> — Dark sections, shelter strip, footer, shelters dashboard sidebar</div></div>
+    <div class="color-rule" style="border:none;"><div class="color-chip" style="background:#4A6E5C;"></div><div><strong style="font-size:0.82rem;">Sage #4A6E5C</strong> — Positive traits, no-kill orgs, approve actions. Secondary only.</div></div>
+  </div>
+</div>
+
+<!-- ═══════════ SPACING / CLEARSPACE ═══════════ -->
+<div class="section">
+  <span class="section-label">Logo Clearspace Rule</span>
+  <div style="background:white;border-radius:16px;padding:32px;display:inline-block;box-shadow:0 4px 20px rgba(30,26,23,0.08);">
+    <div style="position:relative;display:inline-block;">
+      <div style="position:absolute;inset:-16px;border:1.5px dashed rgba(232,146,58,0.4);border-radius:8px;pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg viewBox="0 0 80 80" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/><ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/><ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/><path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+        <span style="font-family:'Fraunces',serif;font-weight:900;font-size:1.4rem;letter-spacing:-0.02em;"><span style="color:#A84E2A;font-style:italic;">Paw</span><span style="color:#E8923A;">Swipe</span></span>
+      </div>
+    </div>
+    <div style="font-size:0.72rem;color:#9B8E84;margin-top:20px;">Minimum clearspace = icon height on all sides (≈16px at nav bar scale)</div>
+  </div>
+</div>
+
+</body>
+</html>

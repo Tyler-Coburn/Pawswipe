@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — BC SPCA Vancouver · PawSwipe Shelter Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FDF6EC;--warm-white:#FFFAF4;
+  --amber:#E8923A;--amber-deep:#C97520;--amber-pale:#FBE8D4;
+  --clay:#A84E2A;--clay-deep:#7D3419;
+  --sage:#4A6E5C;--sage-pale:#D6EAE0;
+  --blush:#F2C4A0;
+  --rain:#7B9DB0;--rain-pale:#E8F2F7;
+  --charcoal:#1E1A17;--charcoal-mid:#28231F;--charcoal-lite:#34302C;
+  --mid:#6B5E52;--mid-light:#9B8E84;
+  --ls:rgba(232,146,58,0.12);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',sans-serif;
+  --sidebar:240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{background:#F0E8DE;font-family:var(--fb);font-weight:300;color:var(--charcoal);display:flex;min-height:100vh;}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--charcoal);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;height:100vh;
+  overflow-y:auto;z-index:40;
+}
+.sidebar-top{padding:22px 18px 16px;}
+.sidebar-logo{font-family:var(--fd);font-weight:900;font-size:1.1rem;color:var(--cream);letter-spacing:-.02em;}
+.sidebar-logo span{color:var(--amber);}
+.sidebar-portal{
+  font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);margin-top:2px;
+}
+.sidebar-divider{height:1px;background:rgba(255,255,255,.07);margin:12px 0;}
+.sidebar-shelter{
+  padding:12px 18px;
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-shelter-avatar{
+  width:34px;height:34px;border-radius:9px;
+  background:var(--clay);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:.85rem;color:var(--cream);flex-shrink:0;
+}
+.sidebar-shelter-name{font-size:.8rem;font-weight:500;color:var(--cream);}
+.sidebar-shelter-loc{font-size:.68rem;color:rgba(253,246,236,.4);margin-top:1px;}
+
+.nav-section{
+  font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(253,246,236,.25);padding:14px 18px 5px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 18px;font-size:.82rem;font-weight:400;
+  color:rgba(253,246,236,.55);cursor:pointer;
+  border-left:2px solid transparent;transition:all .18s;
+  text-decoration:none;position:relative;
+}
+.nav-item:hover{color:var(--cream);background:rgba(255,255,255,.04);border-left-color:rgba(232,146,58,.4);}
+.nav-item.active{color:var(--cream);background:rgba(232,146,58,.1);border-left-color:var(--amber);}
+.nav-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;min-width:18px;height:18px;
+  background:var(--clay);border-radius:100px;
+  font-size:.6rem;font-weight:700;color:white;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+}
+.sidebar-bottom{margin-top:auto;padding:12px 0;}
+
+/* ═══ MAIN ═══ */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* Top bar */
+.topbar{
+  background:var(--cream);border-bottom:1px solid var(--ls);
+  padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:30;
+}
+.topbar-greeting{font-family:var(--fd);font-size:1.05rem;font-weight:700;color:var(--charcoal);}
+.topbar-date{font-size:.78rem;color:var(--mid);margin-top:2px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-search{
+  display:flex;align-items:center;gap:8px;
+  background:var(--warm-white);border:1px solid var(--ls);border-radius:8px;
+  padding:7px 12px;
+}
+.search-inp{background:none;border:none;outline:none;font-family:var(--fb);font-size:.8rem;color:var(--charcoal);width:160px;}
+.search-inp::placeholder{color:var(--mid-light);}
+.add-btn{
+  padding:8px 18px;border-radius:8px;
+  background:var(--amber);color:white;border:none;
+  font-family:var(--fb);font-size:.82rem;font-weight:500;cursor:pointer;
+  transition:all .18s;display:flex;align-items:center;gap:6px;
+  box-shadow:0 2px 10px rgba(232,146,58,.3);
+}
+.add-btn:hover{background:var(--amber-deep);transform:translateY(-1px);}
+.topbar-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--clay);color:white;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:.75rem;font-weight:900;
+}
+
+/* ═══ CONTENT ═══ */
+.content{padding:24px 28px 48px;display:flex;gap:20px;}
+.content-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:20px;}
+.content-side{width:260px;min-width:260px;}
+
+/* KPI TILES */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.kpi-card{
+  background:var(--warm-white);border-radius:14px;
+  border:1px solid var(--ls);padding:18px 18px 16px;
+  transition:transform .2s,box-shadow .2s;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,26,23,.08);}
+.kpi-label{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mid-light);margin-bottom:8px;}
+.kpi-num{font-family:var(--fd);font-weight:900;font-size:2rem;line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:.72rem;color:var(--mid);line-height:1.4;}
+.kpi-trend{font-size:.7rem;font-weight:600;margin-top:4px;}
+.trend-up{color:var(--sage);}
+.trend-alert{color:var(--clay);}
+.kpi-icon{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;margin-bottom:10px;
+}
+
+/* SECTION HEADERS */
+.section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-title{font-family:var(--fd);font-weight:700;font-size:1rem;color:var(--charcoal);}
+.section-link{font-size:.75rem;color:var(--amber);font-weight:500;cursor:pointer;text-decoration:none;}
+.section-link:hover{color:var(--amber-deep);}
+
+/* TABLE */
+.table-wrap{background:var(--warm-white);border-radius:14px;border:1px solid var(--ls);overflow:hidden;}
+.table-header-row{
+  display:flex;align-items:center;
+  padding:10px 16px;
+  background:var(--cream);border-bottom:1px solid var(--ls);
+  font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mid-light);
+  gap:0;
+}
+.table-row{
+  display:flex;align-items:center;
+  padding:12px 16px;border-bottom:1px solid var(--ls);
+  gap:0;transition:background .15s;cursor:pointer;
+}
+.table-row:last-child{border-bottom:none;}
+.table-row:hover{background:rgba(253,246,236,.7);}
+
+/* Column widths for applications table */
+.col-animal{flex:0 0 120px;}
+.col-applicant{flex:0 0 120px;}
+.col-submitted{flex:0 0 100px;}
+.col-status{flex:0 0 100px;}
+.col-action{flex:1;text-align:right;}
+
+/* Listings columns */
+.col-photo{flex:0 0 44px;}
+.col-name{flex:0 0 100px;}
+.col-species{flex:0 0 70px;}
+.col-days{flex:0 0 70px;}
+.col-apps{flex:0 0 70px;}
+.col-lstatus{flex:0 0 90px;}
+.col-edit{flex:1;text-align:right;}
+
+/* Animal photo in table */
+.animal-photo-thumb{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+}
+
+/* Status pills */
+.status-pill{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 9px;border-radius:100px;
+  font-size:.62rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+}
+.sp-new       {background:var(--amber-pale);color:var(--amber-deep);}
+.sp-reviewing {background:var(--rain-pale);color:var(--rain);}
+.sp-approved  {background:var(--sage-pale);color:var(--sage);}
+.sp-rejected  {border:1px solid rgba(107,94,82,.25);color:var(--mid);}
+.sp-available {background:var(--sage-pale);color:var(--sage);}
+.sp-pending   {background:var(--amber-pale);color:var(--amber-deep);}
+.sp-onhold    {background:rgba(168,78,42,.1);color:var(--clay);}
+
+/* Action buttons */
+.tbl-btn{
+  padding:5px 12px;border-radius:7px;border:1px solid var(--ls);
+  background:var(--warm-white);font-family:var(--fb);font-size:.72rem;font-weight:500;
+  color:var(--charcoal);cursor:pointer;transition:all .15s;text-decoration:none;
+}
+.tbl-btn:hover{background:var(--clay);color:white;border-color:var(--clay);}
+.tbl-btn.msg{color:var(--rain);border-color:rgba(123,157,176,.3);}
+.tbl-btn.msg:hover{background:var(--rain);color:white;border-color:var(--rain);}
+.cell-text{font-size:.82rem;color:var(--charcoal);}
+.cell-sub{font-size:.7rem;color:var(--mid);margin-top:1px;}
+
+/* ═══ SIDE PANEL ═══ */
+.side-card{background:var(--warm-white);border-radius:14px;border:1px solid var(--ls);overflow:hidden;margin-bottom:14px;}
+.side-card-hdr{
+  padding:14px 16px 10px;border-bottom:1px solid var(--ls);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.side-card-title{font-family:var(--fd);font-weight:700;font-size:.92rem;color:var(--charcoal);}
+
+/* Message thread compact */
+.msg-thread{
+  padding:12px 16px;border-bottom:1px solid var(--ls);
+  display:flex;gap:10px;cursor:pointer;transition:background .15s;
+}
+.msg-thread:last-child{border-bottom:none;}
+.msg-thread:hover{background:rgba(253,246,236,.7);}
+.msg-avatar{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-weight:900;font-size:.82rem;color:white;flex-shrink:0;
+}
+.msg-body{flex:1;min-width:0;}
+.msg-name{font-size:.8rem;font-weight:500;color:var(--charcoal);}
+.msg-animal{font-size:.7rem;color:var(--rain);}
+.msg-preview{font-size:.75rem;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
+.msg-time{font-size:.65rem;color:var(--mid-light);flex-shrink:0;margin-top:2px;}
+.unread-dot{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px;}
+
+/* Quick stats sidebar */
+.quick-stat{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-bottom:1px solid var(--ls);
+}
+.quick-stat:last-child{border-bottom:none;}
+.qs-label{font-size:.78rem;color:var(--mid);}
+.qs-val{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--charcoal);}
+
+/* Activity chart */
+.mini-chart{
+  padding:14px 16px 10px;
+  display:flex;align-items:flex-end;gap:4px;
+}
+.chart-bar{
+  flex:1;border-radius:3px 3px 0 0;
+  background:var(--amber);opacity:.7;transition:opacity .18s;cursor:pointer;
+  position:relative;
+}
+.chart-bar:hover{opacity:1;}
+.chart-bar.today{opacity:1;background:var(--clay);}
+.chart-labels{
+  display:flex;padding:0 16px 12px;gap:4px;
+}
+.chart-label{flex:1;text-align:center;font-size:.6rem;color:var(--mid-light);}
+
+/* Alert banner */
+.alert-banner{
+  background:rgba(168,78,42,.08);border:1px solid rgba(168,78,42,.2);
+  border-radius:10px;padding:11px 14px;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.alert-icon{font-size:1rem;flex-shrink:0;}
+.alert-text{flex:1;}
+.alert-title{font-size:.82rem;font-weight:500;color:var(--clay);}
+.alert-sub{font-size:.74rem;color:var(--mid);margin-top:1px;}
+.alert-btn{
+  padding:5px 12px;border-radius:7px;
+  background:var(--clay);color:white;border:none;
+  font-family:var(--fb);font-size:.72rem;font-weight:500;cursor:pointer;
+  white-space:nowrap;flex-shrink:0;transition:background .18s;
+}
+.alert-btn:hover{background:var(--clay-deep);}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo">Paw<span>Swipe</span></div>
+    <div class="sidebar-portal">Shelter Portal</div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-shelter">
+    <div class="sidebar-shelter-avatar">B</div>
+    <div>
+      <div class="sidebar-shelter-name">BC SPCA Vancouver</div>
+      <div class="sidebar-shelter-loc">E 7th Ave · Verified ✓</div>
+    </div>
+  </div>
+  <div class="sidebar-divider"></div>
+
+  <div class="nav-section">Navigation</div>
+  <a class="nav-item active" href="shelter-dashboard.html">
+    <span class="nav-icon">📊</span> Dashboard
+  </a>
+  <a class="nav-item" href="shelter-add-animal.html">
+    <span class="nav-icon">🐾</span> Animals
+    <span style="margin-left:auto;font-size:.7rem;color:rgba(253,246,236,.35);">12</span>
+  </a>
+  <a class="nav-item" href="shelter-application-review.html">
+    <span class="nav-icon">📋</span> Applications
+    <span class="nav-badge">7</span>
+  </a>
+  <a class="nav-item" href="app-messages.html">
+    <span class="nav-icon">💬</span> Messages
+    <span class="nav-badge" style="background:var(--amber);">2</span>
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">📈</span> Analytics
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">⚙️</span> Settings
+  </a>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-divider"></div>
+    <a class="nav-item" href="#" style="color:rgba(253,246,236,.35);">
+      <span class="nav-icon">🚪</span> Sign out
+    </a>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-greeting">Good morning, Vancouver Branch 👋</div>
+      <div class="topbar-date">Monday, May 18, 2026 · 9:14 AM</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span style="color:var(--mid-light);">🔍</span>
+        <input class="search-inp" placeholder="Search animals, applicants…">
+      </div>
+      <button class="add-btn" onclick="window.location='shelter-add-animal.html'">
+        + Add animal
+      </button>
+      <div class="topbar-avatar">SB</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="content-main">
+
+      <!-- Alert -->
+      <div class="alert-banner">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-text">
+          <div class="alert-title">3 applications need a response within 48 hours</div>
+          <div class="alert-sub">Sarah C. · Linus &amp; Chester · submitted 6 days ago — response overdue</div>
+        </div>
+        <button class="alert-btn" onclick="window.location='shelter-application-review.html'">Review now →</button>
+      </div>
+
+      <!-- KPI TILES -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:var(--sage-pale);">🐾</div>
+          <div class="kpi-label">Animals available</div>
+          <div class="kpi-num" style="color:var(--sage);">12</div>
+          <div class="kpi-sub">Dogs, cats, small animals</div>
+          <div class="kpi-trend trend-up">↑ 3 this week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:var(--amber-pale);">📋</div>
+          <div class="kpi-label">New applications</div>
+          <div class="kpi-num" style="color:var(--amber-deep);">7</div>
+          <div class="kpi-sub kpi-trend trend-alert">3 need response today</div>
+          <div class="kpi-trend" style="color:var(--mid);margin-top:2px;">↑ 4 since last week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:var(--rain-pale);">💬</div>
+          <div class="kpi-label">Active conversations</div>
+          <div class="kpi-num" style="color:var(--rain);">5</div>
+          <div class="kpi-sub">2 unread messages</div>
+          <div class="kpi-trend" style="color:var(--mid);">Avg. 4h response time</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:var(--sage-pale);">🏡</div>
+          <div class="kpi-label">Adoptions this month</div>
+          <div class="kpi-num" style="color:var(--clay);">4</div>
+          <div class="kpi-sub">Toretto, Marble, Bruno, Iris</div>
+          <div class="kpi-trend trend-up">↑ 2 vs last month</div>
+        </div>
+      </div>
+
+      <!-- APPLICATIONS TABLE -->
+      <div>
+        <div class="section-hdr">
+          <div class="section-title">Applications needing attention</div>
+          <a class="section-link" href="shelter-application-review.html">View all 7 →</a>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header-row">
+            <span class="col-animal">Animal</span>
+            <span class="col-applicant">Applicant</span>
+            <span class="col-submitted">Submitted</span>
+            <span class="col-status">Status</span>
+            <span class="col-action">Action</span>
+          </div>
+
+          <div class="table-row" onclick="window.location='shelter-application-review.html'">
+            <div class="col-animal"><div class="cell-text">Linus &amp; Chester</div><div class="cell-sub">Bonded seniors</div></div>
+            <div class="col-applicant"><div class="cell-text">Sarah Chen</div><div class="cell-sub">Kitsilano, Van</div></div>
+            <div class="col-submitted"><div class="cell-text">May 10</div><div class="cell-sub" style="color:var(--clay);">8 days ago ⚠</div></div>
+            <div class="col-status"><span class="status-pill sp-reviewing">Reviewing</span></div>
+            <div class="col-action"><button class="tbl-btn" onclick="event.stopPropagation();window.location='shelter-application-review.html'">Review →</button></div>
+          </div>
+
+          <div class="table-row" onclick="window.location='shelter-application-review.html'">
+            <div class="col-animal"><div class="cell-text">Snickers</div><div class="cell-sub">Adult mixed</div></div>
+            <div class="col-applicant"><div class="cell-text">James Park</div><div class="cell-sub">East Van</div></div>
+            <div class="col-submitted"><div class="cell-text">May 14</div><div class="cell-sub">4 days ago</div></div>
+            <div class="col-status"><span class="status-pill sp-new">New</span></div>
+            <div class="col-action"><button class="tbl-btn" onclick="event.stopPropagation();window.location='shelter-application-review.html'">Review →</button></div>
+          </div>
+
+          <div class="table-row" onclick="window.location='shelter-application-review.html'">
+            <div class="col-animal"><div class="cell-text">Marble</div><div class="cell-sub">Young tabby</div></div>
+            <div class="col-applicant"><div class="cell-text">Elena Voronova</div><div class="cell-sub">Burnaby</div></div>
+            <div class="col-submitted"><div class="cell-text">May 16</div><div class="cell-sub">2 days ago</div></div>
+            <div class="col-status"><span class="status-pill sp-new">New</span></div>
+            <div class="col-action"><button class="tbl-btn" onclick="event.stopPropagation();window.location='shelter-application-review.html'">Review →</button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-animal"><div class="cell-text">Bruno</div><div class="cell-sub">Adult lab mix</div></div>
+            <div class="col-applicant"><div class="cell-text">Marcus Williams</div><div class="cell-sub">North Van</div></div>
+            <div class="col-submitted"><div class="cell-text">May 12</div><div class="cell-sub">6 days ago</div></div>
+            <div class="col-status"><span class="status-pill sp-approved">Approved</span></div>
+            <div class="col-action"><button class="tbl-btn msg">Message</button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-animal"><div class="cell-text">Linus &amp; Chester</div><div class="cell-sub">Bonded seniors</div></div>
+            <div class="col-applicant"><div class="cell-text">Wei Zhang</div><div class="cell-sub">Richmond</div></div>
+            <div class="col-submitted"><div class="cell-text">May 9</div><div class="cell-sub">9 days ago</div></div>
+            <div class="col-status"><span class="status-pill sp-rejected">Withdrawn</span></div>
+            <div class="col-action"><span style="font-size:.72rem;color:var(--mid-light);">Applicant withdrew</span></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- LISTINGS TABLE -->
+      <div>
+        <div class="section-hdr">
+          <div class="section-title">Your current listings</div>
+          <a class="section-link" href="shelter-add-animal.html">+ New listing</a>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header-row">
+            <span class="col-photo"></span>
+            <span class="col-name">Name</span>
+            <span class="col-species">Species</span>
+            <span class="col-days">Days listed</span>
+            <span class="col-apps">Apps</span>
+            <span class="col-lstatus">Status</span>
+            <span class="col-edit">Edit</span>
+          </div>
+
+          <div class="table-row">
+            <div class="col-photo"><div class="animal-photo-thumb" style="background:#EDD5BC;">🐶</div></div>
+            <div class="col-name"><div class="cell-text">Linus &amp; Chester</div></div>
+            <div class="col-species"><div class="cell-text">Dog</div></div>
+            <div class="col-days"><div class="cell-text" style="color:var(--clay);">34 days ⚠</div></div>
+            <div class="col-apps"><div class="cell-text" style="color:var(--amber-deep);font-weight:600;">5</div></div>
+            <div class="col-lstatus"><span class="status-pill sp-available">Available</span></div>
+            <div class="col-edit"><a class="tbl-btn" href="shelter-add-animal.html">Edit</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-photo"><div class="animal-photo-thumb" style="background:#E0C8B0;">🐕</div></div>
+            <div class="col-name"><div class="cell-text">Snickers</div></div>
+            <div class="col-species"><div class="cell-text">Dog</div></div>
+            <div class="col-days"><div class="cell-text" style="color:var(--clay);">41 days ⚠</div></div>
+            <div class="col-apps"><div class="cell-text">3</div></div>
+            <div class="col-lstatus"><span class="status-pill sp-available">Available</span></div>
+            <div class="col-edit"><a class="tbl-btn" href="shelter-add-animal.html">Edit</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-photo"><div class="animal-photo-thumb" style="background:#C8D4C8;">🐱</div></div>
+            <div class="col-name"><div class="cell-text">Marble</div></div>
+            <div class="col-species"><div class="cell-text">Cat</div></div>
+            <div class="col-days"><div class="cell-text">12 days</div></div>
+            <div class="col-apps"><div class="cell-text">2</div></div>
+            <div class="col-lstatus"><span class="status-pill sp-pending">Pending</span></div>
+            <div class="col-edit"><a class="tbl-btn" href="shelter-add-animal.html">Edit</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-photo"><div class="animal-photo-thumb" style="background:#D8C8B0;">🐕</div></div>
+            <div class="col-name"><div class="cell-text">Bruno</div></div>
+            <div class="col-species"><div class="cell-text">Dog</div></div>
+            <div class="col-days"><div class="cell-text">19 days</div></div>
+            <div class="col-apps"><div class="cell-text">4</div></div>
+            <div class="col-lstatus"><span class="status-pill sp-onhold">On Hold</span></div>
+            <div class="col-edit"><a class="tbl-btn" href="shelter-add-animal.html">Edit</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-photo"><div class="animal-photo-thumb" style="background:#C8D8D4;">🐈</div></div>
+            <div class="col-name"><div class="cell-text">Iris</div></div>
+            <div class="col-species"><div class="cell-text">Cat</div></div>
+            <div class="col-days"><div class="cell-text">28 days</div></div>
+            <div class="col-apps"><div class="cell-text">1</div></div>
+            <div class="col-lstatus"><span class="status-pill sp-available">Available</span></div>
+            <div class="col-edit"><a class="tbl-btn" href="shelter-add-animal.html">Edit</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-photo"><div class="animal-photo-thumb" style="background:#D8C8D8;">🐰</div></div>
+            <div class="col-name"><div class="cell-text">Pebble</div></div>
+            <div class="col-species"><div class="cell-text">Rabbit</div></div>
+            <div class="col-days"><div class="cell-text">7 days</div></div>
+            <div class="col-apps"><div class="cell-text">0</div></div>
+            <div class="col-lstatus"><span class="status-pill sp-available">Available</span></div>
+            <div class="col-edit"><a class="tbl-btn" href="shelter-add-animal.html">Edit</a></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /content-main -->
+
+    <!-- ═══ SIDEBAR RIGHT ═══ -->
+    <div class="content-side">
+
+      <!-- Recent messages -->
+      <div class="side-card">
+        <div class="side-card-hdr">
+          <div class="side-card-title">Recent messages</div>
+          <a class="section-link" href="app-messages.html">View all →</a>
+        </div>
+        <div class="msg-thread">
+          <div class="msg-avatar" style="background:var(--clay);">SC</div>
+          <div class="msg-body">
+            <div class="msg-name">Sarah Chen</div>
+            <div class="msg-animal">Re: Linus &amp; Chester</div>
+            <div class="msg-preview">Saturday at 1pm is perfect! See you then 🐾</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+            <div class="msg-time">1h ago</div>
+            <div class="unread-dot"></div>
+          </div>
+        </div>
+        <div class="msg-thread">
+          <div class="msg-avatar" style="background:var(--rain);">JP</div>
+          <div class="msg-body">
+            <div class="msg-name">James Park</div>
+            <div class="msg-animal">Re: Snickers</div>
+            <div class="msg-preview">Hi, is Snickers still available? I'd love to…</div>
+          </div>
+          <div class="msg-time">3h ago</div>
+        </div>
+        <div class="msg-thread">
+          <div class="msg-avatar" style="background:var(--sage);">EV</div>
+          <div class="msg-body">
+            <div class="msg-name">Elena Voronova</div>
+            <div class="msg-animal">Re: Marble</div>
+            <div class="msg-preview">Thank you! We'd love to schedule a visit.</div>
+          </div>
+          <div class="msg-time">Yesterday</div>
+        </div>
+      </div>
+
+      <!-- Swipe activity chart -->
+      <div class="side-card">
+        <div class="side-card-hdr">
+          <div class="side-card-title">Profile views (7 days)</div>
+        </div>
+        <div class="mini-chart">
+          <div class="chart-bar" style="height:32px;" title="Mon: 8 views"></div>
+          <div class="chart-bar" style="height:48px;" title="Tue: 12 views"></div>
+          <div class="chart-bar" style="height:38px;" title="Wed: 10 views"></div>
+          <div class="chart-bar" style="height:60px;" title="Thu: 15 views"></div>
+          <div class="chart-bar" style="height:44px;" title="Fri: 11 views"></div>
+          <div class="chart-bar" style="height:72px;" title="Sat: 18 views"></div>
+          <div class="chart-bar today" style="height:52px;" title="Today: 13 views"></div>
+        </div>
+        <div class="chart-labels">
+          <span class="chart-label">Mon</span>
+          <span class="chart-label">Tue</span>
+          <span class="chart-label">Wed</span>
+          <span class="chart-label">Thu</span>
+          <span class="chart-label">Fri</span>
+          <span class="chart-label">Sat</span>
+          <span class="chart-label" style="color:var(--clay);font-weight:600;">Today</span>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="side-card">
+        <div class="side-card-hdr">
+          <div class="side-card-title">This month</div>
+        </div>
+        <div class="quick-stat"><span class="qs-label">Profile views</span><span class="qs-val">247</span></div>
+        <div class="quick-stat"><span class="qs-label">Swipe right rate</span><span class="qs-val" style="color:var(--sage);">38%</span></div>
+        <div class="quick-stat"><span class="qs-label">Application rate</span><span class="qs-val">12%</span></div>
+        <div class="quick-stat"><span class="qs-label">Avg. days to adopt</span><span class="qs-val">18 days</span></div>
+        <div class="quick-stat"><span class="qs-label">Response time</span><span class="qs-val" style="color:var(--amber-deep);">4.2 hrs ↑</span></div>
+      </div>
+
+    </div><!-- /content-side -->
+  </div><!-- /content -->
+</div><!-- /main -->
+
+</body>
+</html>

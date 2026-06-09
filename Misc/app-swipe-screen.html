@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawSwipe — Discover</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FDF6EC; --warm-white: #FFFAF4;
+  --amber: #E8923A; --amber-deep: #C97520; --amber-pale: #FBE8D4;
+  --clay: #A84E2A; --clay-deep: #7D3419;
+  --sage: #4A6E5C; --sage-pale: #D6EAE0;
+  --blush: #F2C4A0;
+  --rain: #7B9DB0; --rain-pale: #E8F2F7;
+  --charcoal: #1E1A17;
+  --mid: #6B5E52; --mid-light: #9B8E84;
+  --light-stroke: rgba(232,146,58,0.15);
+  --font-d: 'Fraunces', Georgia, serif;
+  --font-b: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; overflow: hidden;
+  background: var(--cream);
+  font-family: var(--font-b);
+  font-weight: 300;
+  color: var(--charcoal);
+  user-select: none;
+}
+
+/* ── LAYOUT SHELL ── */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--cream);
+}
+@media (min-width: 480px) {
+  body { background: #E8DDD2; }
+  .app-shell { box-shadow: 0 0 60px rgba(30,26,23,0.18); }
+}
+
+/* ── HEADER ── */
+.app-header {
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  background: rgba(253,246,236,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--light-stroke);
+  flex-shrink: 0;
+  z-index: 20;
+}
+.header-logo { font-family: var(--font-d); font-weight: 900; font-size: 1.25rem; color: var(--clay); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+.header-logo .paw-icon { font-size: 1.1rem; }
+.header-logo .swipe { color: var(--amber); }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--mid); transition: background 0.2s, color 0.2s; }
+.header-btn:hover { background: var(--amber-pale); color: var(--clay); }
+.avatar { width: 34px; height: 34px; background: var(--clay); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-size: 0.78rem; font-weight: 900; color: white; cursor: pointer; }
+.notif-dot { position: relative; }
+.notif-dot::after { content: ''; position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--clay); border-radius: 50%; border: 2px solid var(--cream); }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  height: 50px;
+  display: flex; align-items: center;
+  padding: 0 14px;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  background: var(--warm-white);
+  border-bottom: 1px solid var(--light-stroke);
+  box-shadow: 0 2px 8px rgba(30,26,23,0.05);
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-pill {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1.5px solid var(--light-stroke);
+  background: var(--cream);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--mid);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+  font-family: var(--font-b);
+}
+.filter-pill:hover { border-color: var(--amber); color: var(--clay); }
+.filter-pill.active { background: var(--clay); border-color: var(--clay); color: white; font-weight: 500; }
+
+/* ── CARD STAGE ── */
+.card-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 12px 16px 4px;
+}
+.stage-counter {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 0.72rem;
+  color: var(--mid-light);
+  z-index: 5;
+}
+
+/* ── PET CARDS ── */
+.pet-card {
+  position: absolute;
+  width: 320px;
+  background: var(--warm-white);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(30,26,23,0.14);
+  transition: box-shadow 0.3s ease;
+  touch-action: none;
+}
+
+/* card z-positions */
+.pet-card[data-pos="0"] { z-index: 10; }
+.pet-card[data-pos="1"] { z-index: 9; pointer-events: none; }
+.pet-card[data-pos="2"] { z-index: 8; pointer-events: none; }
+
+/* Photo area */
+.card-photo {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.card-photo-gradient {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100px;
+  background: linear-gradient(transparent, rgba(30,26,23,0.75));
+}
+.card-photo-info {
+  position: absolute;
+  bottom: 12px; left: 14px; right: 14px;
+}
+.card-photo-name {
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: white;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.card-photo-meta {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.82);
+  margin-top: 3px;
+}
+.card-ribbon {
+  position: absolute;
+  top: 11px; left: 11px;
+}
+.card-org-badge {
+  position: absolute;
+  top: 11px; right: 11px;
+  background: rgba(30,26,23,0.55);
+  backdrop-filter: blur(6px);
+  color: rgba(255,255,255,0.9);
+  font-size: 0.62rem;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 4px 9px;
+  border-radius: 100px;
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badge-urgent { background: var(--clay); color: white; }
+.badge-new    { background: var(--sage); color: white; }
+.badge-bonded { background: var(--rain); color: white; }
+
+/* Card body */
+.card-body { padding: 14px 16px 16px; }
+.tag-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.tag {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.t-blush    { background: var(--blush); color: var(--clay); }
+.t-green    { background: var(--sage-pale); color: var(--sage); }
+.t-blue     { background: var(--rain-pale); color: var(--rain); }
+.t-dark     { background: var(--charcoal); color: var(--cream); }
+.compat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.compat-row { font-size: 0.71rem; display: flex; align-items: center; gap: 4px; color: var(--mid); }
+.compat-yes { color: var(--sage); }
+.compat-no  { color: var(--clay); }
+.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--light-stroke); }
+.days-in-care { font-size: 0.65rem; color: var(--mid-light); }
+.days-long { color: var(--clay); font-weight: 500; }
+.info-link { font-size: 0.7rem; color: var(--rain); font-weight: 500; cursor: pointer; text-decoration: none; }
+
+/* SWIPE OVERLAYS */
+.swipe-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-d);
+  font-weight: 900;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.08s ease;
+  z-index: 20;
+}
+.overlay-right {
+  background: rgba(74,110,92,0.88);
+  color: white;
+  flex-direction: column;
+  gap: 4px;
+}
+.overlay-right .overlay-icon { font-size: 2.5rem; }
+.overlay-right .overlay-label { font-size: 1.4rem; letter-spacing: 0.1em; }
+.overlay-left {
+  background: rgba(168,78,42,0.88);
+  color: white;
+  flex-direction: column;
+  gap: 4px;
+}
+.overlay-left .overlay-icon { font-size: 2.5rem; }
+.overlay-left .overlay-label { font-size: 1.4rem; letter-spacing: 0.1em; }
+.overlay-super {
+  background: rgba(123,157,176,0.88);
+  color: white;
+  flex-direction: column;
+  gap: 4px;
+}
+.overlay-super .overlay-icon { font-size: 2.5rem; }
+.overlay-super .overlay-label { font-size: 1.4rem; letter-spacing: 0.1em; }
+
+/* ── ACTION BUTTONS ── */
+.action-bar {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-shrink: 0;
+  background: var(--cream);
+  padding: 0 20px;
+}
+.action-btn {
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  position: relative;
+}
+.action-btn:hover { transform: scale(1.08); }
+.action-btn:active { transform: scale(0.94); }
+.btn-rewind  { width: 48px; height: 48px; background: var(--warm-white); color: var(--mid); box-shadow: 0 4px 16px rgba(30,26,23,0.1); border: 1.5px solid var(--light-stroke); font-size: 1rem; }
+.btn-rewind:hover { background: var(--amber-pale); color: var(--amber-deep); border-color: var(--amber); }
+.btn-pass    { width: 62px; height: 62px; background: var(--warm-white); color: var(--clay); box-shadow: 0 6px 24px rgba(168,78,42,0.18); border: 2px solid rgba(168,78,42,0.2); font-size: 1.5rem; }
+.btn-pass:hover { background: var(--clay); color: white; box-shadow: 0 8px 28px rgba(168,78,42,0.35); }
+.btn-like    { width: 62px; height: 62px; background: var(--clay); color: white; box-shadow: 0 6px 24px rgba(168,78,42,0.3); font-size: 1.5rem; }
+.btn-like:hover { background: var(--amber-deep); box-shadow: 0 8px 32px rgba(168,78,42,0.45); }
+.btn-super   { width: 48px; height: 48px; background: var(--sage); color: white; box-shadow: 0 4px 16px rgba(74,110,92,0.25); font-size: 1rem; }
+.btn-super:hover { background: #3A5E4C; box-shadow: 0 6px 20px rgba(74,110,92,0.4); }
+.btn-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--charcoal);
+  color: var(--cream);
+  font-size: 0.62rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.btn-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: var(--charcoal); }
+.action-btn:hover .btn-tooltip { opacity: 1; }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  height: 60px;
+  display: flex;
+  align-items: stretch;
+  background: var(--warm-white);
+  border-top: 1px solid var(--light-stroke);
+  flex-shrink: 0;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  color: var(--mid-light);
+  transition: color 0.18s ease;
+  position: relative;
+  border: none;
+  background: none;
+  font-family: var(--font-b);
+  padding: 6px 0 10px;
+}
+.tab-item.active { color: var(--amber); }
+.tab-item:hover:not(.active) { color: var(--clay); }
+.tab-icon { font-size: 1.2rem; line-height: 1; }
+.tab-label { font-size: 0.57rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+.tab-badge::after {
+  content: attr(data-count);
+  position: absolute;
+  top: 4px; right: calc(50% - 18px);
+  min-width: 16px; height: 16px;
+  background: var(--clay);
+  border-radius: 100px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px;
+  border: 2px solid var(--warm-white);
+}
+
+/* ── FLOATING ANIMATION ── */
+@keyframes float { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-8px) rotate(0deg);} }
+.pet-card[data-pos="0"] { animation: float 4s ease-in-out infinite; }
+.pet-card[data-pos="0"].dragging { animation: none; }
+
+/* ── MATCH OVERLAY ── */
+.match-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30,26,23,0.92);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.match-overlay.visible { opacity: 1; pointer-events: all; }
+.match-modal {
+  background: var(--charcoal);
+  border-radius: 28px;
+  padding: 44px 32px 36px;
+  max-width: 340px;
+  width: calc(100% - 40px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.85) translateY(20px);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.match-overlay.visible .match-modal { transform: scale(1) translateY(0); }
+.match-modal-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(232,146,58,0.18) 0%, transparent 65%);
+}
+.confetti-layer {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.confetti-paw {
+  position: absolute;
+  font-size: 1.4rem;
+  opacity: 0;
+  animation: confetti-fly 1.4s ease-out forwards;
+}
+@keyframes confetti-fly {
+  0%   { opacity: 1; transform: translate(0,0) scale(0.5); }
+  60%  { opacity: 0.8; }
+  100% { opacity: 0; transform: var(--fly-to) scale(1); }
+}
+.match-modal-content { position: relative; z-index: 2; }
+.match-animal-photo { font-size: 4rem; margin-bottom: 10px; animation: pop 0.5s 0.2s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes pop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.match-title { font-family: var(--font-d); font-weight: 900; font-size: 2.2rem; color: var(--cream); letter-spacing: -0.03em; margin-bottom: 4px; }
+.match-subtitle { font-size: 0.85rem; color: rgba(253,246,236,0.6); margin-bottom: 6px; }
+.match-animal-name { font-family: var(--font-d); font-size: 1.3rem; font-weight: 700; color: var(--blush); margin-bottom: 4px; }
+.match-shelter { font-size: 0.78rem; color: rgba(253,246,236,0.5); margin-bottom: 24px; }
+.match-btn-primary { display: block; width: 100%; padding: 14px; border-radius: 100px; background: var(--clay); color: white; border: none; font-family: var(--font-b); font-size: 0.9rem; font-weight: 500; cursor: pointer; margin-bottom: 10px; transition: background 0.18s ease, transform 0.15s ease; }
+.match-btn-primary:hover { background: var(--amber-deep); transform: translateY(-1px); }
+.match-btn-ghost { display: block; width: 100%; padding: 12px; border-radius: 100px; background: transparent; color: rgba(253,246,236,0.55); border: 1.5px solid rgba(255,255,255,0.12); font-family: var(--font-b); font-size: 0.85rem; cursor: pointer; transition: color 0.18s ease, border-color 0.18s ease; }
+.match-btn-ghost:hover { color: var(--cream); border-color: rgba(255,255,255,0.3); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 24px;
+  gap: 12px;
+  height: 100%;
+}
+.empty-state.visible { display: flex; }
+.empty-icon { font-size: 3.5rem; }
+.empty-title { font-family: var(--font-d); font-weight: 700; font-size: 1.4rem; color: var(--charcoal); }
+.empty-desc { font-size: 0.88rem; color: var(--mid); line-height: 1.6; max-width: 260px; }
+.empty-links { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+.empty-link { padding: 9px 18px; border-radius: 100px; font-size: 0.8rem; font-weight: 500; text-decoration: none; transition: all 0.18s; }
+.empty-link.primary { background: var(--clay); color: white; }
+.empty-link.outline { border: 1.5px solid var(--clay); color: var(--clay); }
+.empty-link:hover { opacity: 0.85; transform: translateY(-1px); }
+
+/* ── KEYBOARD HINT ── */
+.keyboard-hint {
+  position: absolute;
+  bottom: 100px; left: 50%; transform: translateX(-50%);
+  background: rgba(30,26,23,0.7);
+  color: rgba(253,246,236,0.7);
+  font-size: 0.65rem;
+  padding: 5px 12px;
+  border-radius: 100px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+.keyboard-hint.hidden { opacity: 0; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 70px; left: 50%; transform: translateX(-50%) translateY(-20px);
+  background: var(--charcoal);
+  color: var(--cream);
+  padding: 10px 18px;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 400;
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  max-width: calc(100vw - 48px);
+  text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-logo">
+      <svg viewBox="0 0 80 80" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="40" cy="52" rx="14" ry="16" fill="#A84E2A"/>
+        <ellipse cx="19" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+        <ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+        <ellipse cx="48" cy="25" rx="7.5" ry="8.5" fill="#A84E2A"/>
+        <ellipse cx="61" cy="35" rx="7.5" ry="8.5" fill="#A84E2A"/>
+        <path d="M30 50 L40 43 L50 50" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <line x1="40" y1="43" x2="40" y2="61" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+      <span>Paw<span class="swipe">Swipe</span></span>
+    </div>
+    <div class="header-right">
+      <button class="header-btn notif-dot" title="Notifications">🔔</button>
+      <div class="avatar" title="Your profile">SC</div>
+    </div>
+  </header>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-pill active" data-filter="all">All</button>
+    <button class="filter-pill" data-filter="dogs">🐶 Dogs</button>
+    <button class="filter-pill" data-filter="cats">🐱 Cats</button>
+    <button class="filter-pill" data-filter="small">🐰 Small</button>
+    <button class="filter-pill" data-filter="urgent">🔥 Urgent</button>
+    <button class="filter-pill" data-filter="near">📍 Near Me</button>
+    <button class="filter-pill" data-filter="nokill">♻️ No-kill</button>
+  </div>
+
+  <!-- CARD STAGE -->
+  <div class="card-stage" id="cardStage">
+    <div class="stage-counter" id="stageCounter"></div>
+    <!-- Cards injected by JS -->
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🎉</div>
+      <div class="empty-title">You've seen everyone nearby!</div>
+      <div class="empty-desc">Shelters update listings daily. Check back tomorrow for new arrivals — or browse directly.</div>
+      <div class="empty-links">
+        <a class="empty-link primary" href="https://adopt.spca.bc.ca/" target="_blank">BC SPCA →</a>
+        <a class="empty-link outline" href="https://www.vokra.ca/adopt" target="_blank">VOKRA →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-bar">
+    <button class="action-btn btn-rewind" id="btnRewind" onclick="rewind()">
+      ↩
+      <div class="btn-tooltip">Undo (Backspace)</div>
+    </button>
+    <button class="action-btn btn-pass" id="btnPass" onclick="triggerPass()">
+      ✕
+      <div class="btn-tooltip">Pass (← arrow)</div>
+    </button>
+    <button class="action-btn btn-like" id="btnLike" onclick="triggerLike()">
+      ♥
+      <div class="btn-tooltip">Like (→ arrow)</div>
+    </button>
+    <button class="action-btn btn-super" id="btnSuper" onclick="triggerSuper()">
+      ⭐
+      <div class="btn-tooltip">Super like (↑ arrow)</div>
+    </button>
+  </div>
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar">
+    <button class="tab-item active">
+      <div class="tab-icon">🐾</div>
+      <div class="tab-label">Discover</div>
+    </button>
+    <button class="tab-item" data-count="3" style="--badge:1;">
+      <div class="tab-icon tab-badge" data-count="3">♥</div>
+      <div class="tab-label">Matches</div>
+    </button>
+    <button class="tab-item">
+      <div class="tab-icon">📋</div>
+      <div class="tab-label">Apply</div>
+    </button>
+    <button class="tab-item">
+      <div class="tab-icon tab-badge" data-count="2">💬</div>
+      <div class="tab-label">Messages</div>
+    </button>
+    <button class="tab-item">
+      <div class="tab-icon">👤</div>
+      <div class="tab-label">Profile</div>
+    </button>
+  </nav>
+</div>
+
+<!-- MATCH OVERLAY -->
+<div class="match-overlay" id="matchOverlay">
+  <div class="match-modal">
+    <div class="match-modal-glow"></div>
+    <div class="confetti-layer" id="confettiLayer"></div>
+    <div class="match-modal-content">
+      <div class="match-animal-photo" id="matchPhoto">🐶</div>
+      <div class="match-title">It's a Match!</div>
+      <div class="match-subtitle">Your interest has been sent to</div>
+      <div class="match-animal-name" id="matchAnimalName">Linus & Chester</div>
+      <div class="match-shelter" id="matchShelter">BC SPCA Vancouver</div>
+      <button class="match-btn-primary" onclick="closeMatch('message')">💬 Message BC SPCA Vancouver</button>
+      <button class="match-btn-ghost" onclick="closeMatch('swipe')">Keep Swiping</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- KEYBOARD HINT -->
+<div class="keyboard-hint" id="kbHint">← → arrow keys to swipe · ↑ super-like · Backspace to undo</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// ANIMAL DATA — Real Vancouver animals from verified sources
+// ══════════════════════════════════════════════════════════
+const animals = [
+  {
+    id: 1, name: 'Linus & Chester', emoji: '🐶',
+    bg: '#EDD5BC', species: 'dog',
+    breed: 'Havanese mix / Chihuahua-Dachshund',
+    age: 'Senior', sex: 'Male',
+    org: 'BC SPCA Vancouver', orgShort: 'BC SPCA Van',
+    location: 'E 7th Ave, Vancouver',
+    badge: { type: 'urgent', label: '🔥 Urgent' },
+    tags: [{l:'Senior',c:'t-dark'},{l:'Bonded pair',c:'t-blue'},{l:'Low energy',c:'t-green'}],
+    compat: [{ok:true,l:'Apartment friendly'},{ok:true,l:'Good with seniors'},{ok:false,l:'No other dogs'},{ok:true,l:'Cat friendly'}],
+    days: 34, urgent: true,
+    filter: 'dogs'
+  },
+  {
+    id: 2, name: 'Apricot', emoji: '🐱',
+    bg: '#F2D6B0', species: 'cat',
+    breed: 'Domestic Short Hair',
+    age: 'Adult', sex: 'Female',
+    org: 'VOKRA', orgShort: 'VOKRA',
+    location: 'Foster-based, Vancouver',
+    badge: { type: 'new', label: '🌱 New' },
+    tags: [{l:'Foster-raised',c:'t-green'},{l:'No-kill',c:'t-green'},{l:'Indoor',c:'t-blue'}],
+    compat: [{ok:true,l:'Great for apartments'},{ok:true,l:'Calm kids ok'},{ok:false,l:'Prefers no dogs'},{ok:true,l:'Other cats ok'}],
+    days: 12, urgent: false,
+    filter: 'cats'
+  },
+  {
+    id: 3, name: 'Queso', emoji: '🐕',
+    bg: '#DCCFB8', species: 'dog',
+    breed: 'Mixed breed',
+    age: 'Adult', sex: 'Male',
+    org: 'BC SPCA West Vancouver', orgShort: 'BC SPCA W.Van',
+    location: '1020 Pound Rd, West Vancouver',
+    badge: null,
+    tags: [{l:'House-trained',c:'t-green'},{l:'West Van',c:'t-blue'},{l:'Medium energy',c:'t-blush'}],
+    compat: [{ok:true,l:'Dog-experienced home'},{ok:true,l:'Good with kids'},{ok:false,l:'No cats please'},{ok:true,l:'Yard preferred'}],
+    days: 8, urgent: false,
+    filter: 'dogs'
+  },
+  {
+    id: 4, name: 'Leona', emoji: '🐈',
+    bg: '#D4C8DC', species: 'cat',
+    breed: 'Domestic Short Hair',
+    age: 'Adult', sex: 'Female',
+    org: 'VOKRA', orgShort: 'VOKRA',
+    location: 'Foster-based, East Vancouver',
+    badge: { type: 'urgent', label: '🔥 Long stay' },
+    tags: [{l:'Shy at first',c:'t-blush'},{l:'No-kill',c:'t-green'},{l:'Adults only',c:'t-dark'}],
+    compat: [{ok:true,l:'Quiet apartment'},{ok:false,l:'No young children'},{ok:false,l:'No dogs'},{ok:true,l:'One cat ok'}],
+    days: 67, urgent: true,
+    filter: 'cats'
+  },
+  {
+    id: 5, name: 'Toretto', emoji: '🐈‍⬛',
+    bg: '#C8D4C8', species: 'cat',
+    breed: 'Tabby Mix',
+    age: 'Young', sex: 'Male',
+    org: 'VOKRA', orgShort: 'VOKRA',
+    location: 'Foster-based, Kitsilano',
+    badge: { type: 'new', label: '🌱 New arrival' },
+    tags: [{l:'Playful',c:'t-blush'},{l:'Foster-raised',c:'t-green'},{l:'Kitten energy',c:'t-blush'}],
+    compat: [{ok:true,l:'Great for apartments'},{ok:true,l:'Kids 8+ ok'},{ok:true,l:'Dogs ok (gradual)'},{ok:true,l:'Other cats ok'}],
+    days: 5, urgent: false,
+    filter: 'cats'
+  },
+  {
+    id: 6, name: 'Snickers', emoji: '🐶',
+    bg: '#E0C8B0', species: 'dog',
+    breed: 'Mixed breed',
+    age: 'Adult', sex: 'Male',
+    org: 'BC SPCA Vancouver', orgShort: 'BC SPCA Van',
+    location: 'E 7th Ave, Vancouver',
+    badge: { type: 'urgent', label: '🔥 Urgent' },
+    tags: [{l:'Energetic',c:'t-blush'},{l:'Needs yard',c:'t-dark'},{l:'Leash training',c:'t-blush'}],
+    compat: [{ok:false,l:'Needs a yard'},{ok:true,l:'Good with teens'},{ok:false,l:'No other dogs'},{ok:false,l:'No cats'}],
+    days: 41, urgent: true,
+    filter: 'dogs'
+  },
+  {
+    id: 7, name: 'Crema & Pico', emoji: '🐱',
+    bg: '#C8D8D4', species: 'cat',
+    breed: 'Domestic Short Hair',
+    age: 'Adult', sex: 'Female',
+    org: 'BC SPCA West Vancouver', orgShort: 'BC SPCA W.Van',
+    location: '1020 Pound Rd, West Vancouver',
+    badge: { type: 'bonded', label: '💕 Bonded pair' },
+    tags: [{l:'Bonded pair',c:'t-blue'},{l:'Cats-only home',c:'t-blush'},{l:'Gentle',c:'t-green'}],
+    compat: [{ok:true,l:'Apartment perfect'},{ok:false,l:'No dogs'},{ok:true,l:'Calm adults'},{ok:true,l:'Senior-friendly'}],
+    days: 19, urgent: false,
+    filter: 'cats'
+  },
+  {
+    id: 8, name: 'Maple', emoji: '🐰',
+    bg: '#D8C8B8', species: 'rabbit',
+    breed: 'Holland Lop',
+    age: 'Young', sex: 'Female',
+    org: 'RAPS', orgShort: 'RAPS Richmond',
+    location: 'Richmond, BC',
+    badge: { type: 'new', label: '🌱 New' },
+    tags: [{l:'Rabbit',c:'t-blue'},{l:'No-kill',c:'t-green'},{l:'Apartment ok',c:'t-green'}],
+    compat: [{ok:true,l:'Great for apartments'},{ok:true,l:'Gentle with kids'},{ok:true,l:'No other pets needed'},{ok:true,l:'First-time pet ok'}],
+    days: 3, urgent: false,
+    filter: 'small'
+  }
+];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let queue = [...animals];
+let history = [];
+let activeFilter = 'all';
+let isDragging = false;
+let startX = 0, startY = 0, currentX = 0;
+let dragCard = null;
+let swipeThreshold = 110;
+let kbHintHidden = false;
+
+// ══════════════════════════════════════════════════════════
+// CARD RENDERING
+// ══════════════════════════════════════════════════════════
+function getFiltered() {
+  if (activeFilter === 'all') return queue;
+  if (activeFilter === 'urgent') return queue.filter(a => a.urgent);
+  if (activeFilter === 'nokill') return queue.filter(a => ['VOKRA','RAPS'].includes(a.org.split(' ')[0]));
+  return queue.filter(a => a.filter === activeFilter || (activeFilter === 'near' && a.location.includes('Vancouver')));
+}
+
+function buildCard(animal, pos) {
+  const card = document.createElement('div');
+  card.className = 'pet-card';
+  card.dataset.id = animal.id;
+  card.dataset.pos = pos;
+
+  const daysClass = animal.days > 30 ? 'days-long' : '';
+  const compatHtml = animal.compat.map(c =>
+    `<div class="compat-row ${c.ok ? 'compat-yes' : 'compat-no'}">${c.ok ? '✓' : '✗'} ${c.l}</div>`
+  ).join('');
+  const tagHtml = animal.tags.map(t => `<span class="tag ${t.c}">${t.l}</span>`).join('');
+  const badgeHtml = animal.badge
+    ? `<div class="card-ribbon"><span class="badge badge-${animal.badge.type}">${animal.badge.label}</span></div>` : '';
+
+  card.innerHTML = `
+    <div class="swipe-overlay overlay-right" id="ol-right-${animal.id}">
+      <div class="overlay-icon">♥</div>
+      <div class="overlay-label">ADOPT</div>
+    </div>
+    <div class="swipe-overlay overlay-left" id="ol-left-${animal.id}">
+      <div class="overlay-icon">✕</div>
+      <div class="overlay-label">PASS</div>
+    </div>
+    <div class="swipe-overlay overlay-super" id="ol-super-${animal.id}">
+      <div class="overlay-icon">⭐</div>
+      <div class="overlay-label">SUPER</div>
+    </div>
+    <div class="card-photo" style="background:${animal.bg};">
+      ${animal.emoji}
+      <div class="card-photo-gradient"></div>
+      <div class="card-photo-info">
+        <div class="card-photo-name">${animal.name}</div>
+        <div class="card-photo-meta">${animal.age} · ${animal.breed}</div>
+      </div>
+      ${badgeHtml}
+      <div class="card-org-badge">${animal.orgShort}</div>
+    </div>
+    <div class="card-body">
+      <div class="tag-row">${tagHtml}</div>
+      <div class="compat-grid">${compatHtml}</div>
+      <div class="card-footer">
+        <span class="days-in-care ${daysClass}">In care: ${animal.days} days</span>
+        <a class="info-link">More info →</a>
+      </div>
+    </div>
+  `;
+
+  // Only attach drag to front card
+  if (pos === 0) {
+    card.addEventListener('mousedown', startDrag);
+    card.addEventListener('touchstart', startDrag, { passive: true });
+  }
+
+  return card;
+}
+
+function positionCard(card, pos) {
+  const transforms = [
+    'translate(-50%,-50%) rotate(0deg) scale(1)',
+    'translate(calc(-50% + 14px), calc(-50% + 12px)) rotate(-2.5deg) scale(0.94)',
+    'translate(calc(-50% + 26px), calc(-50% + 22px)) rotate(4deg) scale(0.89)'
+  ];
+  const opacities = [1, 0.82, 0.65];
+  card.dataset.pos = pos;
+  card.style.left = '50%';
+  card.style.top = '50%';
+  card.style.transform = transforms[pos] || transforms[2];
+  card.style.opacity = opacities[pos] || 0.5;
+  card.style.transition = pos === 0 ? 'none' : 'transform 0.35s ease, opacity 0.35s ease';
+}
+
+function renderCards() {
+  const stage = document.getElementById('cardStage');
+  const empty = document.getElementById('emptyState');
+  const counter = document.getElementById('stageCounter');
+
+  // Remove old cards
+  stage.querySelectorAll('.pet-card').forEach(c => c.remove());
+
+  const visible = getFiltered();
+
+  if (visible.length === 0) {
+    empty.classList.add('visible');
+    counter.textContent = '';
+    document.getElementById('btnLike').disabled = true;
+    document.getElementById('btnPass').disabled = true;
+    document.getElementById('btnSuper').disabled = true;
+    return;
+  }
+
+  empty.classList.remove('visible');
+  document.getElementById('btnLike').disabled = false;
+  document.getElementById('btnPass').disabled = false;
+  document.getElementById('btnSuper').disabled = false;
+
+  counter.textContent = `${queue.indexOf(visible[0]) + 1} / ${queue.length}`;
+
+  const toShow = visible.slice(0, 3);
+  toShow.reverse().forEach((animal, i) => {
+    const pos = toShow.length - 1 - i;
+    const card = buildCard(animal, pos);
+    positionCard(card, pos);
+    stage.insertBefore(card, stage.firstChild);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// DRAG INTERACTION
+// ══════════════════════════════════════════════════════════
+function startDrag(e) {
+  if (e.type === 'mousedown' && e.button !== 0) return;
+  hideKbHint();
+
+  dragCard = e.currentTarget;
+  isDragging = false;
+
+  const point = e.touches ? e.touches[0] : e;
+  startX = point.clientX;
+  startY = point.clientY;
+
+  dragCard.classList.add('dragging');
+
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, { passive: true });
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+}
+
+function onDrag(e) {
+  if (!dragCard) return;
+  const point = e.touches ? e.touches[0] : e;
+  currentX = point.clientX - startX;
+  const currentY = point.clientY - startY;
+
+  if (Math.abs(currentX) > 5) isDragging = true;
+  if (!isDragging) return;
+
+  const rotate = currentX / 22;
+  dragCard.style.transition = 'none';
+  dragCard.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY * 0.3}px)) rotate(${rotate}deg) scale(1)`;
+
+  // Overlay opacity
+  const ratio = Math.min(Math.abs(currentX) / swipeThreshold, 1);
+  const rightOl = dragCard.querySelector('.overlay-right');
+  const leftOl  = dragCard.querySelector('.overlay-left');
+  if (currentX > 0) {
+    rightOl.style.opacity = ratio;
+    leftOl.style.opacity = 0;
+  } else {
+    leftOl.style.opacity = ratio;
+    rightOl.style.opacity = 0;
+  }
+}
+
+function endDrag(e) {
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+  document.removeEventListener('touchend', endDrag);
+
+  if (!dragCard || !isDragging) {
+    if (dragCard) {
+      dragCard.classList.remove('dragging');
+      dragCard.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+      dragCard.style.transform = 'translate(-50%,-50%) rotate(0deg) scale(1)';
+      dragCard.querySelectorAll('.swipe-overlay').forEach(o => o.style.opacity = 0);
+    }
+    dragCard = null;
+    isDragging = false;
+    return;
+  }
+
+  if (Math.abs(currentX) > swipeThreshold) {
+    const dir = currentX > 0 ? 'right' : 'left';
+    flyCard(dragCard, dir);
+  } else {
+    // Spring back
+    dragCard.classList.remove('dragging');
+    dragCard.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease';
+    dragCard.style.transform = 'translate(-50%,-50%) rotate(0deg) scale(1)';
+    dragCard.querySelectorAll('.swipe-overlay').forEach(o => { o.style.transition = 'opacity 0.2s ease'; o.style.opacity = 0; });
+  }
+
+  dragCard = null;
+  isDragging = false;
+  currentX = 0;
+}
+
+// ══════════════════════════════════════════════════════════
+// SWIPE MECHANICS
+// ══════════════════════════════════════════════════════════
+function flyCard(card, direction) {
+  const animalId = parseInt(card.dataset.id);
+  const animal = queue.find(a => a.id === animalId);
+
+  card.style.transition = 'transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.35s ease';
+
+  if (direction === 'right') {
+    card.style.transform = 'translate(calc(-50% + 140vw), -50%) rotate(25deg) scale(1)';
+  } else if (direction === 'left') {
+    card.style.transform = 'translate(calc(-50% - 140vw), -50%) rotate(-25deg) scale(1)';
+  } else if (direction === 'up') {
+    card.style.transform = 'translate(-50%, calc(-50% - 140vh)) scale(0.8)';
+    card.querySelector('.overlay-super').style.opacity = 1;
+  }
+  card.style.opacity = '0';
+
+  // Record in history
+  if (animal) history.push({ animal, direction });
+
+  // Remove from queue
+  const idx = queue.findIndex(a => a.id === animalId);
+  if (idx !== -1) queue.splice(idx, 1);
+
+  setTimeout(() => {
+    card.remove();
+    renderCards();
+
+    // Match celebration on right swipe
+    if (direction === 'right' && animal) {
+      setTimeout(() => showMatch(animal), 180);
+    }
+    // Super like toast
+    if (direction === 'up' && animal) {
+      showToast(`⭐ Super-liked ${animal.name}! ${animal.org} has been notified.`);
+    }
+  }, 420);
+}
+
+function triggerLike() {
+  const front = document.querySelector('.pet-card[data-pos="0"]');
+  if (!front) return;
+  front.querySelectorAll('.swipe-overlay').forEach(o => o.style.transition = 'opacity 0.12s ease');
+  front.querySelector('.overlay-right').style.opacity = '1';
+  setTimeout(() => flyCard(front, 'right'), 120);
+}
+
+function triggerPass() {
+  const front = document.querySelector('.pet-card[data-pos="0"]');
+  if (!front) return;
+  front.querySelectorAll('.swipe-overlay').forEach(o => o.style.transition = 'opacity 0.12s ease');
+  front.querySelector('.overlay-left').style.opacity = '1';
+  setTimeout(() => flyCard(front, 'left'), 120);
+}
+
+function triggerSuper() {
+  const front = document.querySelector('.pet-card[data-pos="0"]');
+  if (!front) return;
+  flyCard(front, 'up');
+}
+
+function rewind() {
+  if (history.length === 0) { showToast('Nothing to undo!'); return; }
+  const { animal } = history.pop();
+  queue.unshift(animal);
+  renderCards();
+  showToast(`↩ Brought back ${animal.name}`);
+}
+
+// ══════════════════════════════════════════════════════════
+// MATCH MODAL
+// ══════════════════════════════════════════════════════════
+function showMatch(animal) {
+  const overlay = document.getElementById('matchOverlay');
+  document.getElementById('matchPhoto').textContent = animal.emoji;
+  document.getElementById('matchAnimalName').textContent = animal.name;
+  document.getElementById('matchShelter').textContent = animal.org;
+
+  // Update message button text
+  overlay.querySelector('.match-btn-primary').textContent = `💬 Message ${animal.org}`;
+
+  // Spawn confetti
+  const layer = document.getElementById('confettiLayer');
+  layer.innerHTML = '';
+  const paws = ['🐾', '🐾', '🐾', '🐾', '🐾', '🐾', '🐾', '🐾', '🐾', '🐾'];
+  paws.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'confetti-paw';
+    el.textContent = p;
+    const angle = (i / paws.length) * 360;
+    const dist = 80 + Math.random() * 60;
+    const dx = Math.cos(angle * Math.PI / 180) * dist;
+    const dy = Math.sin(angle * Math.PI / 180) * dist;
+    el.style.left = '50%';
+    el.style.top = '50%';
+    el.style.setProperty('--fly-to', `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.2)`);
+    el.style.animationDelay = `${i * 0.06}s`;
+    el.style.fontSize = `${1.2 + Math.random() * 0.8}rem`;
+    layer.appendChild(el);
+  });
+
+  overlay.classList.add('visible');
+}
+
+function closeMatch(action) {
+  document.getElementById('matchOverlay').classList.remove('visible');
+  if (action === 'message') showToast('📬 Opening message thread with shelter…');
+}
+
+// ══════════════════════════════════════════════════════════
+// FILTERS
+// ══════════════════════════════════════════════════════════
+document.getElementById('filterBar').addEventListener('click', e => {
+  const pill = e.target.closest('.filter-pill');
+  if (!pill) return;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.filter;
+  // Re-sort queue: filtered animals first
+  renderCards();
+});
+
+// ══════════════════════════════════════════════════════════
+// KEYBOARD
+// ══════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  switch (e.key) {
+    case 'ArrowRight': e.preventDefault(); triggerLike(); break;
+    case 'ArrowLeft':  e.preventDefault(); triggerPass(); break;
+    case 'ArrowUp':    e.preventDefault(); triggerSuper(); break;
+    case 'Backspace':  e.preventDefault(); rewind(); break;
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function hideKbHint() {
+  if (kbHintHidden) return;
+  kbHintHidden = true;
+  document.getElementById('kbHint').classList.add('hidden');
+}
+
+// Hide keyboard hint after 6s anyway
+setTimeout(hideKbHint, 6000);
+
+// Tab bar switching
+document.querySelectorAll('.tab-item').forEach((tab, i) => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const labels = ['Discover', 'Matches', 'Applications', 'Messages', 'Profile'];
+    if (i !== 0) showToast(`${labels[i]} coming in Sprint 2 →`);
+  });
+});
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+renderCards();
+</script>
+</body>
+</html>
