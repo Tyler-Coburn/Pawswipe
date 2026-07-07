@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Building2, MapPin, ShieldCheck, ArrowRight } from "lucide-react";
+import { Building2, MapPin, ArrowRight } from "lucide-react";
 import type { Shelter } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,6 @@ export function ShelterCard({ shelter }: { shelter: Shelter }) {
             <Building2 className="h-6 w-6 text-primary" />
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-background/90 backdrop-blur px-2.5 py-1 text-xs font-medium text-foreground/80">
-            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
             {shelter.source === "rescuegroups" || shelter.source === "petfinder"
               ? "External listing"
               : shelter.source === "shelter-direct"

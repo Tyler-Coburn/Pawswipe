@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
-import { PawPrint, Heart, MapPin, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
+import { PawPrint, Heart, MapPin, Building2, CheckCircle2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const About = () => {
@@ -28,8 +28,8 @@ const About = () => {
               body: "Built for Vancouver, Burnaby, Richmond, the North Shore, and beyond. We surface pets whose shelter is within reach so meet-and-greets stay easy.",
             },
             {
-              icon: ShieldCheck,
-              title: "Shelter-confirmed",
+              icon: Building2,
+              title: "Shelter-led",
               body: "Every listing is synced from a local shelter or rescue adoption feed. Shelters confirm availability and make all final adoption decisions. No marketplaces, no brokers.",
             },
             {
