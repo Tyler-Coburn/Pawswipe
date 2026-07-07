@@ -62,6 +62,13 @@ describe("normalizePet (RescueGroups shape)", () => {
     const anon = normalizePet({ animalID: "1", animalName: "Mo" }, "rescuegroups");
     expect(anon.shelterName).toBe("Local shelter");
   });
+
+  it("reports unknown sex as 'unknown' instead of fabricating female", () => {
+    const noSex = normalizePet({ animalID: "1", animalName: "Mo" }, "rescuegroups");
+    expect(noSex.gender).toBe("unknown");
+    const explicitFemale = normalizePet({ animalID: "2", animalName: "Lu", animalSex: "Female" }, "rescuegroups");
+    expect(explicitFemale.gender).toBe("female");
+  });
 });
 
 describe("looksLikeNonPetRecord", () => {

@@ -110,7 +110,7 @@ const PetDetail = () => {
                 </div>
                 <h1 className="mt-3 font-display text-3xl md:text-4xl font-semibold tracking-tight break-words">{pet.name}</h1>
                 <p className="mt-1 text-muted-foreground break-words">
-                  {pet.breed} · {pet.age} · {pet.gender === "male" ? "Male" : "Female"} · {pet.size}
+                  {pet.breed} · {pet.age} · {pet.gender === "male" ? "Male" : pet.gender === "female" ? "Female" : "Sex not listed"} · {pet.size}
                 </p>
               </div>
               <button
@@ -144,7 +144,7 @@ const PetDetail = () => {
             {(pet.sourceUrl || pet.lastSyncedAt) && (
               <div className="mt-4 rounded-2xl border border-border bg-grad-card p-3 text-xs text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1">
                 {pet.lastSyncedAt && <span>Synced {Math.max(0, Math.floor((Date.now() - new Date(pet.lastSyncedAt).getTime()) / 3600000))}h ago</span>}
-                {pet.lastUpdatedAt && <span>Shelter last updated {Math.floor((Date.now() - new Date(pet.lastUpdatedAt).getTime()) / 86400000)}d ago</span>}
+                {pet.lastUpdatedAt && <span>Shelter last updated {Math.max(0, Math.floor((Date.now() - new Date(pet.lastUpdatedAt).getTime()) / 86400000))}d ago</span>}
                 {pet.sourceUrl && (
                   <a href={pet.sourceUrl} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1 font-medium text-primary hover:underline">
                     View original listing <ExternalLink className="h-3 w-3" />

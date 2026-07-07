@@ -1,10 +1,6 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-
-// The provider registry imports the Supabase client, which requires env vars
-// at module load — stub it so these unit tests don't need a configured .env.
-vi.mock("@/integrations/supabase/client", () => ({ supabase: {} }));
-
 import { getDataMode, getAdoptionProvider, listProviders } from "@/lib/providers/adoptionProvider";
+// Note: @/integrations/supabase/client is mocked globally in src/test/setup.ts.
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -28,10 +24,18 @@ describe("getDataMode", () => {
     expect(getDataMode()).toBe("mock");
   });
 
-  it("defaults to rescuegroups when unset or invalid", () => {
+  it("defaults to rescuegroups when empty or invalid", () => {
     vi.stubEnv("VITE_DATA_MODE", "");
     expect(getDataMode()).toBe("rescuegroups");
     vi.stubEnv("VITE_DATA_MODE", "not-a-provider");
+    expect(getDataMode()).toBe("rescuegroups");
+  });
+
+  it("defaults to rescuegroups when the env var is entirely undefined", () => {
+    // Guards the optional-chain path in getDataMode: a production deploy with
+    // VITE_DATA_MODE unset must not throw. stubEnv(undefined) deletes the key.
+    vi.stubEnv("VITE_DATA_MODE", undefined as unknown as string);
+    expect(() => getDataMode()).not.toThrow();
     expect(getDataMode()).toBe("rescuegroups");
   });
 });

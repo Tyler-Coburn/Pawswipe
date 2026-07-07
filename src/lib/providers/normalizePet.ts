@@ -41,7 +41,7 @@ export function normalizePet(raw: Record<string, any>, source: DataSource): Pet 
     breed: buildBreed(raw),
     age: ageRaw ?? "Unknown",
     ageGroup,
-    gender: sex.startsWith("m") ? "male" : "female",
+    gender: sex.startsWith("m") ? "male" : sex.startsWith("f") ? "female" : "unknown",
     size,
     weightKg: Number(raw.weightKg ?? 0),
     energyLevel: normalizeEnergy(raw.animalActivityLevel) ?? (raw.energyLevel as EnergyLevel) ?? "medium",

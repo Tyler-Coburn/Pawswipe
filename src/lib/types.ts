@@ -35,7 +35,7 @@ export interface Pet {
   breed: string;
   age: string; // e.g. "2 years"
   ageGroup: AgeGroup;
-  gender: "male" | "female";
+  gender: "male" | "female" | "unknown";
   size: Size;
   weightKg: number;
   energyLevel: EnergyLevel;
