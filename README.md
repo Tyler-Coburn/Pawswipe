@@ -83,8 +83,15 @@ npm run test       # vitest run
 npm run lint       # eslint
 ```
 
+## Documentation
+
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — layers, data flow, auth, routing
+- [docs/DATABASE.md](docs/DATABASE.md) — schema, RLS, privacy model, RPCs
+- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) — setup, scripts, conventions
+
 ## Repo layout
 
 - `src/` — app code (pages, components, providers, API stand-ins)
 - `supabase/` — migrations, edge functions, config
+- `docs/` — technical reference (architecture, database, contributing)
 - `Misc/` — early static prototypes and design references (pre-Vite history; not part of the app)
