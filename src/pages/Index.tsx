@@ -4,6 +4,7 @@ import {
   Heart,
   Compass,
   ShieldCheck,
+  Building2,
   MapPin,
   Sparkles,
   ArrowRight,
@@ -69,7 +70,7 @@ const Index = () => {
             </div>
 
             <div className="mt-8 flex flex-wrap gap-6 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Shelter-confirmed adoption</span>
+              <span className="inline-flex items-center gap-2"><Building2 className="h-4 w-4 text-primary" /> Shelters make the final call</span>
               <span className="inline-flex items-center gap-2"><Heart className="h-4 w-4 text-accent" /> No pet sales</span>
               <span className="inline-flex items-center gap-2"><Sparkles className="h-4 w-4 text-info" /> Live adoption feeds</span>
             </div>
@@ -145,7 +146,7 @@ const Index = () => {
             {[
               { Icon: Activity, label: "Live adoption feed" },
               { Icon: Ban, label: "No pet sales" },
-              { Icon: ShieldCheck, label: "Shelter-confirmed adoption" },
+              { Icon: Building2, label: "Shelters make the final call" },
               { Icon: Bookmark, label: "Saved pets with account" },
               { Icon: MapPin, label: "Vancouver / Lower Mainland" },
             ].map(({ Icon, label }) => (

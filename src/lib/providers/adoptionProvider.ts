@@ -23,8 +23,8 @@ const REGISTRY: Record<ProviderId, AdoptionProvider> = {
 
 export function getDataMode(): ProviderId {
   const raw = (import.meta.env.VITE_DATA_MODE as string | undefined)?.toLowerCase();
-  if (raw === "rescuegroups" || raw === "petfinder") return raw;
-  return "rescuegroups"; // default — falls back to mock on failure inside callers
+  if (raw === "mock" || raw === "rescuegroups" || raw === "petfinder") return raw;
+  return "rescuegroups"; // default — callers surface provider errors; no silent mock fallback
 }
 
 export function getAdoptionProvider(): AdoptionProvider {

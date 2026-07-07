@@ -1,4 +1,4 @@
-import { Heart, X, Info, MapPin, ShieldCheck, Send, Globe } from "lucide-react";
+import { Heart, X, Info, MapPin, Building2, Send, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { Pet } from "@/lib/types";
 import { PetArt } from "./PetArt";
@@ -57,13 +57,13 @@ export function SwipeCard({ pet, stackOffset = 0, onPass, onSave, swipeClass = "
                 </span>
               </h2>
               <p className="text-sm text-muted-foreground truncate">
-                {pet.breed} · {pet.gender === "male" ? "Male" : "Female"} · {pet.size}
+                {pet.breed} · {pet.gender === "male" ? "Male" : pet.gender === "female" ? "Female" : "Sex not listed"} · {pet.size}
               </p>
             </div>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+              <Building2 className="h-3.5 w-3.5 text-primary" />
               <span className="truncate max-w-[12rem]">{pet.shelterName}</span>
             </span>
             <SourceBadge source={pet.source ?? "mock"} />

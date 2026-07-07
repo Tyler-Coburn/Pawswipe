@@ -4,7 +4,7 @@ export function normalizeShelter(raw: Record<string, any>, source: DataSource): 
   const now = new Date().toISOString();
   return {
     id: `${source}-${raw.id ?? cryptoId()}`,
-    name: raw.name ?? "Partner shelter",
+    name: raw.name ?? "Local shelter",
     location: raw.location ?? raw.address ?? "",
     city: (raw.city as LowerMainlandCity) ?? "Vancouver",
     verified: !!raw.verified,

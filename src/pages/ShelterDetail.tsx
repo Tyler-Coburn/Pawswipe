@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, Building2, Clock, ExternalLink, Globe, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
+import { ArrowRight, Building2, Clock, ExternalLink, Globe, Mail, MapPin, Phone } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -82,11 +82,11 @@ const ShelterDetail = () => {
               <div className="flex flex-wrap items-center gap-2">
                 {shelter.source === "shelter-direct" ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-primary">
-                    <ShieldCheck className="h-3.5 w-3.5" /> Managed on PawSwipe
+                    <Building2 className="h-3.5 w-3.5" /> Managed on PawSwipe
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground/80">
-                    <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Listed on PawSwipe
+                    <Building2 className="h-3.5 w-3.5 text-primary" /> Listed on PawSwipe
                   </span>
                 )}
                 <SourceBadge source={shelter.source ?? "mock"} />

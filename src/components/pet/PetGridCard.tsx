@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, MapPin, ShieldCheck } from "lucide-react";
+import { Heart, MapPin, Building2 } from "lucide-react";
 import type { Pet } from "@/lib/types";
 import { PetArt } from "./PetArt";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -24,7 +24,7 @@ export function PetGridCard({ pet }: { pet: Pet }) {
               </h3>
             </Link>
             <p className="text-xs text-muted-foreground truncate">
-              {pet.breed} · {pet.age} · {pet.gender === "male" ? "♂" : "♀"}
+              {pet.breed} · {pet.age}{pet.gender === "male" ? " · ♂" : pet.gender === "female" ? " · ♀" : ""}
             </p>
           </div>
           <button
@@ -48,7 +48,7 @@ export function PetGridCard({ pet }: { pet: Pet }) {
         </div>
         <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
           <span className="inline-flex items-center gap-1.5 min-w-0">
-            <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
+            <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
             <span className="truncate">{pet.shelterName}</span>
           </span>
           <SourceBadge source={pet.source ?? "mock"} />
