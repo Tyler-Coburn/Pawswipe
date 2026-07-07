@@ -64,7 +64,7 @@ export const rescueGroupsProvider = {
           name: p.shelterName,
           city: p.locationCity,
           website: p.sourceUrl,
-          description: `Partner rescue listing ${p.shelterName} on RescueGroups. Confirm details and adoption process directly with the shelter.`,
+          description: `${p.shelterName} lists adoptable pets on RescueGroups. Confirm details and adoption process directly with the shelter.`,
           adoptionProcess: [
             "Browse the shelter's official listing",
             "Submit the shelter's application or contact form",

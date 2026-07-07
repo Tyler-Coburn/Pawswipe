@@ -48,7 +48,7 @@ export function normalizePet(raw: Record<string, any>, source: DataSource): Pet 
     locationCity,
     distanceKm: Number(raw.distanceKm ?? 0),
     shelterId: `${source}-org-${orgId}`,
-    shelterName: raw.orgName ?? raw.shelterName ?? "Partner shelter",
+    shelterName: raw.orgName ?? raw.shelterName ?? "Local shelter",
     images: images.length ? images : ["g1"],
     bio: description,
     idealHome: raw.idealHome ?? "",

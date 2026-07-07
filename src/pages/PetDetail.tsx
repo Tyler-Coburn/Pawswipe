@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Heart, MapPin, ShieldCheck, Send, Phone, Mail, CalendarClock, Building2, Syringe, Stethoscope, Users, Dog, Cat, ExternalLink } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Send, Phone, Mail, CalendarClock, Building2, Syringe, Stethoscope, Users, Dog, Cat, ExternalLink } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -135,7 +135,7 @@ const PetDetail = () => {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold truncate">{pet.shelterName}</p>
                 <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
-                  <ShieldCheck className="h-3 w-3 text-primary" /> Verified shelter
+                  <Building2 className="h-3 w-3 text-primary" /> Local shelter or rescue — confirm details directly
                 </p>
               </div>
               <span className="text-xs text-primary font-medium">View →</span>
