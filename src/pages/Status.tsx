@@ -33,7 +33,7 @@ const Status = () => {
               icon: Globe,
               status: "live",
               title: "Live adoption listings",
-              body: "Pet listings are synced in real time from RescueGroups, a trusted shelter data platform. Availability and details may change quickly as shelters update their records.",
+              body: "Pet listings are synced from RescueGroups, a listing platform used by shelters and rescues across North America. Availability and details may change quickly as shelters update their records — always confirm with the shelter.",
             },
             {
               icon: Database,
