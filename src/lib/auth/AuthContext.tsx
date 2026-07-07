@@ -9,7 +9,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { signInWithOAuth } from "@/lib/auth/oauthProvider";
 
 interface AuthContextValue {
   user: User | null;
@@ -66,14 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = useCallback(async (redirectTo?: string) => {
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: redirectTo ?? window.location.origin + "/profile",
-      });
-      if ("error" in result && result.error) {
-        const msg = result.error instanceof Error ? result.error.message : String(result.error);
-        return { error: msg, redirected: false };
-      }
-      return { error: null, redirected: Boolean((result as { redirected?: boolean }).redirected) };
+      return await signInWithOAuth("google", redirectTo ?? window.location.origin + "/profile");
     } catch (e) {
       return { error: e instanceof Error ? e.message : String(e), redirected: false };
     }
